@@ -1,25 +1,10 @@
-# Aurora AI — KI-System
+# aurora-ai — REBUILD
 
-> **Produkt-Repo des A-TownChain-Ökosystems** · [Monorepo](https://github.com/A-TownChain-Okosystems/a-townchain-os) · [Docs-Hub](https://github.com/A-TownChain-Okosystems/a-townchain-os-docs) · Mainnet: **15.09.2026**
+Aurora AI — Neuaufbau gem. AD-019-Muster (eine Implementierung je Verantwortlichkeit).
 
-Aurora ist das KI-System des Ökosystems: Agenten-Laufzeit (12 Agenten via Macro), KnowledgeBase & VectorStore, ModelHub & LlmRouter, ContextWindow, AI-Studio. Kernel-Integration ausschließlich über Event-Bridge + Capability-Tokens (AD-012), nie direkter Kernel-Speicher.
+**Gesamtinhalt vor dem Abbau** (byte-identisch verifiziert am 06.09.2026):
+im Wiki-Vault unter
+[a-townchain-os-docs/docs/archive/monorepo-full/](https://github.com/A-TownChain-Okosystems/a-townchain-os-docs/tree/main/docs/archive/monorepo-full)
 
-## Module (aus Monorepo `src/modules/` überführt)
-
-| Modul | Dateien | Zeilen |
-|---|---|---|
-| `atc-aurora-core` | 21 | 775 |
-| `atc-aurora-agents` | 26 | 1,105 |
-| `atc-aurora-memory` | 21 | 730 |
-| `atc-aurora-runtime` | 14 | 475 |
-| `atc-aurora-ai` | 32 | 1,040 |
-| `atc-aistudio` | 263 | 76,045 |
-| **Total** | **377** | **80,170** |
-
-## Richtlinien
-
-- Architektur-Vorgaben: AD-012/AD-013 (ShivaCore Microkernel, Gate v1.1) — siehe Docs-Hub `docs/architecture/`
-- Neue Produkt-Entwicklung läuft hier; Integration & Deployment über das Monorepo
-- Standards: ATC-01…35 · ATS-1000…1007 · Lizenz: All Rights Reserved (Michael Wroblewski / ShivaCore / A-TownChain-Okosystems)
-
-*Eingerichtet am 06.09.2026 durch Agent Aurora (Base44) im Auftrag des Owners.*
+Die Git-Historie dieses Repos enthält jede Datei weiterhin (Reversibilität).
+Rebuild-Stand: atclang abgeschlossen (AD-019, Phase 1). Siehe DECISIONS_REGISTER AD-018/AD-020.
