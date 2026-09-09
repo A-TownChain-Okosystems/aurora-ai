@@ -2,7 +2,7 @@
 
 > **Erstellt:** 2026-08-08 | **Agent:** Aurora
 
-### 1. `src/agent_runtime.atc`
+## 1. `src/agent_runtime.atc`
 
 **Beschreibung:** Session, task, lifecycle
 
@@ -18,7 +18,7 @@
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
 
-### 2. `src/tool_executor.atc`
+## 2. `src/tool_executor.atc`
 
 **Beschreibung:** Tool registration & execution
 
@@ -34,7 +34,7 @@
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
 
-### 3. `src/sandbox.atc`
+## 3. `src/sandbox.atc`
 
 **Beschreibung:** Sandboxed execution
 
@@ -50,7 +50,7 @@
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
 
-### 4. `src/task_scheduler.atc`
+## 4. `src/task_scheduler.atc`
 
 **Beschreibung:** Task queue
 
@@ -66,7 +66,7 @@
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
 
-### 5. `src/result_collector.atc`
+## 5. `src/result_collector.atc`
 
 **Beschreibung:** Result aggregation
 

@@ -4,7 +4,7 @@
 
 ## Architektur-Baum
 
-```
+```text
 atc-aurora-runtime/
 ├── README.md
 ├── ARCHITECTURE.md
@@ -19,7 +19,7 @@ atc-aurora-runtime/
     ├── sandbox.atc    0 lines    Sandboxed execution
     ├── task_scheduler.atc    0 lines    Task queue
     └── result_collector.atc    0 lines    Result aggregation
-```
+```text
 
 ## Statistik
 

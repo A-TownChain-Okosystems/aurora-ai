@@ -42,7 +42,7 @@
     │   └── __init__.py
     └── memory/
         └── __init__.py
-```
+```text
 
 ## Module Descriptions
 - **src/core/**: Core AI orchestrator, model hub dispatcher, prompt manager, and LLM inference engine.

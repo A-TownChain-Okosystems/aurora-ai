@@ -15,7 +15,7 @@
 
 ## Komponenten (17 total)
 
-### 1. `core/aurora_core.atc`
+## 1. `core/aurora_core.atc`
 
 **Beschreibung:** Zentrale AI-Initialisierung
 
@@ -31,7 +31,7 @@
 
 ---
 
-### 2. `core/agent_registry.atc`
+## 2. `core/agent_registry.atc`
 
 **Beschreibung:** Agent-Typ-Registrierung (12 Rollen)
 
@@ -47,7 +47,7 @@
 
 ---
 
-### 3. `core/model_hub.atc`
+## 3. `core/model_hub.atc`
 
 **Beschreibung:** LLM-Modell-Registrierung und -Routing
 
@@ -63,7 +63,7 @@
 
 ---
 
-### 4. `runtime/llm_router.atc`
+## 4. `runtime/llm_router.atc`
 
 **Beschreibung:** LLM-Request-Routing
 
@@ -79,7 +79,7 @@
 
 ---
 
-### 5. `runtime/agent_runtime.atc`
+## 5. `runtime/agent_runtime.atc`
 
 **Beschreibung:** Agenten-Ausführungsumgebung
 
@@ -95,7 +95,7 @@
 
 ---
 
-### 6. `runtime/tool_executor.atc`
+## 6. `runtime/tool_executor.atc`
 
 **Beschreibung:** Sichere Tool-Ausführung
 
@@ -111,7 +111,7 @@
 
 ---
 
-### 7. `agents/knowledge_agent.atc`
+## 7. `agents/knowledge_agent.atc`
 
 **Beschreibung:** Knowledge Agent (Wissen)
 
@@ -127,7 +127,7 @@
 
 ---
 
-### 8. `agents/architect_agent.atc`
+## 8. `agents/architect_agent.atc`
 
 **Beschreibung:** Architect Agent (Architektur)
 
@@ -143,7 +143,7 @@
 
 ---
 
-### 9. `agents/coding_agent.atc`
+## 9. `agents/coding_agent.atc`
 
 **Beschreibung:** Coding Agent (ATCLang)
 
@@ -159,7 +159,7 @@
 
 ---
 
-### 10. `agents/research_agent.atc`
+## 10. `agents/research_agent.atc`
 
 **Beschreibung:** Research Agent (Recherche)
 
@@ -175,7 +175,7 @@
 
 ---
 
-### 11. `agents/security_agent.atc`
+## 11. `agents/security_agent.atc`
 
 **Beschreibung:** Security Agent (Audit)
 
@@ -191,7 +191,7 @@
 
 ---
 
-### 12. `agents/orchestrator_agent.atc`
+## 12. `agents/orchestrator_agent.atc`
 
 **Beschreibung:** Orchestrator Agent (Koordination)
 
@@ -207,7 +207,7 @@
 
 ---
 
-### 13. `memory/agent_memory.atc`
+## 13. `memory/agent_memory.atc`
 
 **Beschreibung:** Agenten-Gedächtnis (On-chain)
 
@@ -223,7 +223,7 @@
 
 ---
 
-### 14. `memory/context_window.atc`
+## 14. `memory/context_window.atc`
 
 **Beschreibung:** Kontext-Fenster-Manager
 
@@ -239,7 +239,7 @@
 
 ---
 
-### 15. `orchestration/workflow_engine.atc`
+## 15. `orchestration/workflow_engine.atc`
 
 **Beschreibung:** Workflow-Engine
 
@@ -255,7 +255,7 @@
 
 ---
 
-### 16. `orchestration/sync_orchestrator.atc`
+## 16. `orchestration/sync_orchestrator.atc`
 
 **Beschreibung:** Daily Sync (16 Dienste)
 
@@ -271,7 +271,7 @@
 
 ---
 
-### 17. `orchestration/decision_handler.atc`
+## 17. `orchestration/decision_handler.atc`
 
 **Beschreibung:** Decision-Verwaltung (AD-001-007)
 

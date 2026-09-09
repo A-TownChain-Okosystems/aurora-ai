@@ -2,7 +2,7 @@
 
 > **Erstellt:** 2026-08-08 | **Agent:** Aurora
 
-### 1. `src/aurora_core.atc`
+## 1. `src/aurora_core.atc`
 
 **Beschreibung:** Init, status, shutdown
 
@@ -18,7 +18,7 @@
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
 
-### 2. `src/model_hub.atc`
+## 2. `src/model_hub.atc`
 
 **Beschreibung:** Model registration & routing
 
@@ -34,7 +34,7 @@
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
 
-### 3. `src/llm_router.atc`
+## 3. `src/llm_router.atc`
 
 **Beschreibung:** Request routing, fallback, load balancing
 
@@ -50,7 +50,7 @@
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
 
-### 4. `src/agent_registry.atc`
+## 4. `src/agent_registry.atc`
 
 **Beschreibung:** 12 agent types
 
@@ -66,7 +66,7 @@
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
 
-### 5. `src/config_manager.atc`
+## 5. `src/config_manager.atc`
 
 **Beschreibung:** Config & persistence
 

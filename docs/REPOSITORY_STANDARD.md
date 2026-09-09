@@ -18,7 +18,7 @@ Dieses Repository folgt den ATC-Repository-Standards (kanonisch im
 
 ## Struktur
 
-```
+```text
 aurora-ai/
 ├── .atc/            Metadaten (repository/ownership/lifecycle/compliance.yaml)
 ├── .github/         CI (governance-ci.yml; Produkt-Pipelines je Meilenstein)
@@ -27,7 +27,7 @@ aurora-ai/
 ├── modules|src|specs|docs/  je Repo-Typ (AI)
 ├── README.md        mit ATC-COMPLIANCE-Anhang
 ├── SECURITY.md · CHANGELOG.md · CODEOWNERS · LICENSE
-```
+```text
 
 ## Regeln
 

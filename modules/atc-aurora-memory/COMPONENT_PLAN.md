@@ -2,7 +2,7 @@
 
 > **Erstellt:** 2026-08-08 | **Agent:** Aurora
 
-### 1. `src/knowledge_base.atc`
+## 1. `src/knowledge_base.atc`
 
 **Beschreibung:** Structured knowledge
 
@@ -18,7 +18,7 @@
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
 
-### 2. `src/vector_store.atc`
+## 2. `src/vector_store.atc`
 
 **Beschreibung:** Embeddings & search
 
@@ -34,7 +34,7 @@
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
 
-### 3. `src/memory_index.atc`
+## 3. `src/memory_index.atc`
 
 **Beschreibung:** Index & retrieval
 
@@ -50,7 +50,7 @@
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
 
-### 4. `src/learning_pipeline.atc`
+## 4. `src/learning_pipeline.atc`
 
 **Beschreibung:** Federated learning
 
@@ -66,7 +66,7 @@
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
 
-### 5. `src/context_window.atc`
+## 5. `src/context_window.atc`
 
 **Beschreibung:** Context management
 

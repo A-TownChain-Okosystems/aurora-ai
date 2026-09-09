@@ -284,7 +284,7 @@
     └── src/
         └── components/
             └── GovernanceView.tsx
-```
+```text
 
 ## Module Descriptions
 - **src/**: TypeScript application source containing AI model visual editor components, canvas workflows, node orchestration, and UI views.

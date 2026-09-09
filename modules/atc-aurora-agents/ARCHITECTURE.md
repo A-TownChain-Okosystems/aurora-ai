@@ -4,7 +4,7 @@
 
 ## Architektur-Baum
 
-```
+```text
 atc-aurora-agents/
 ├── README.md
 ├── ARCHITECTURE.md
@@ -26,7 +26,7 @@ atc-aurora-agents/
     ├── roadmap_agent.atc    0 lines    Roadmap Agent
     ├── product_agent.atc    0 lines    Product Agent
     └── governance_agent.atc    0 lines    Governance Agent
-```
+```text
 
 ## Statistik
 

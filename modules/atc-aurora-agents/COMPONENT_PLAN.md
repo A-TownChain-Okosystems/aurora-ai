@@ -2,7 +2,7 @@
 
 > **Erstellt:** 2026-08-08 | **Agent:** Aurora
 
-### 1. `src/knowledge_agent.atc`
+## 1. `src/knowledge_agent.atc`
 
 **Beschreibung:** Knowledge Agent
 
@@ -18,7 +18,7 @@
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
 
-### 2. `src/architect_agent.atc`
+## 2. `src/architect_agent.atc`
 
 **Beschreibung:** Architect Agent
 
@@ -34,7 +34,7 @@
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
 
-### 3. `src/coding_agent.atc`
+## 3. `src/coding_agent.atc`
 
 **Beschreibung:** Coding Agent
 
@@ -50,7 +50,7 @@
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
 
-### 4. `src/research_agent.atc`
+## 4. `src/research_agent.atc`
 
 **Beschreibung:** Research Agent
 
@@ -66,7 +66,7 @@
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
 
-### 5. `src/security_agent.atc`
+## 5. `src/security_agent.atc`
 
 **Beschreibung:** Security Agent
 
@@ -82,7 +82,7 @@
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
 
-### 6. `src/qa_agent.atc`
+## 6. `src/qa_agent.atc`
 
 **Beschreibung:** QA Agent
 
@@ -98,7 +98,7 @@
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
 
-### 7. `src/documentation_agent.atc`
+## 7. `src/documentation_agent.atc`
 
 **Beschreibung:** Documentation Agent
 
@@ -114,7 +114,7 @@
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
 
-### 8. `src/repository_agent.atc`
+## 8. `src/repository_agent.atc`
 
 **Beschreibung:** Repository Agent
 
@@ -130,7 +130,7 @@
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
 
-### 9. `src/standards_agent.atc`
+## 9. `src/standards_agent.atc`
 
 **Beschreibung:** Standards Agent
 
@@ -146,7 +146,7 @@
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
 
-### 10. `src/roadmap_agent.atc`
+## 10. `src/roadmap_agent.atc`
 
 **Beschreibung:** Roadmap Agent
 
@@ -162,7 +162,7 @@
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
 
-### 11. `src/product_agent.atc`
+## 11. `src/product_agent.atc`
 
 **Beschreibung:** Product Agent
 
@@ -178,7 +178,7 @@
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
 
-### 12. `src/governance_agent.atc`
+## 12. `src/governance_agent.atc`
 
 **Beschreibung:** Governance Agent
 

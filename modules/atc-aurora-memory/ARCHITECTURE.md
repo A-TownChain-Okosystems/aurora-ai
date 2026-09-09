@@ -4,7 +4,7 @@
 
 ## Architektur-Baum
 
-```
+```text
 atc-aurora-memory/
 ├── README.md
 ├── ARCHITECTURE.md
@@ -19,7 +19,7 @@ atc-aurora-memory/
     ├── memory_index.atc    0 lines    Index & retrieval
     ├── learning_pipeline.atc    0 lines    Federated learning
     └── context_window.atc    0 lines    Context management
-```
+```text
 
 ## Statistik
 

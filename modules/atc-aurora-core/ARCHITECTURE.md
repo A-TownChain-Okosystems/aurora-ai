@@ -4,7 +4,7 @@
 
 ## Architektur-Baum
 
-```
+```text
 atc-aurora-core/
 ├── README.md
 ├── ARCHITECTURE.md
@@ -19,7 +19,7 @@ atc-aurora-core/
     ├── llm_router.atc    0 lines    Request routing, fallback, load balancing
     ├── agent_registry.atc    0 lines    12 agent types
     └── config_manager.atc    0 lines    Config & persistence
-```
+```text
 
 ## Statistik
 
