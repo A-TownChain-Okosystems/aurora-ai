@@ -1,6 +1,6 @@
 // Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 import React, { useState, useEffect } from 'react';
-import { Package, Search, UploadCloud, Activity, Link, Unlink, Network, Box, Puzzle, RefreshCw, Zap, Cpu, Github, Download } from 'lucide-react';
+import { Package, Search, UploadCloud, Activity, Link, Unlink, Network, Box, Puzzle, RefreshCw, Zap, Cpu, GitFork, Download } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 type Plugin = {
@@ -233,7 +233,7 @@ export function ModulesPluginView() {
                    onClick={() => { setRegistryTab('github'); setSearch(''); }}
                    className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-1.5 ${registryTab === 'github' ? 'bg-white/10 text-white border border-white/20' : 'text-slate-400 hover:text-white'}`}
                  >
-                    <Github className="w-3.5 h-3.5" /> GitHub
+                    <GitFork className="w-3.5 h-3.5" /> GitHub
                  </button>
               </div>
               <div className="relative">
@@ -285,7 +285,7 @@ export function ModulesPluginView() {
                         </div>
                      </div>
                      <div className="flex items-center gap-2 text-[10px] text-slate-500 font-mono">
-                        <span className="flex items-center gap-1">{registryTab === 'github' ? <Github className="w-3 h-3"/> : null} {plugin.author}</span>
+                        <span className="flex items-center gap-1">{registryTab === 'github' ? <GitFork className="w-3 h-3"/> : null} {plugin.author}</span>
                         <span>{plugin.version}</span>
                      </div>
                    </motion.div>

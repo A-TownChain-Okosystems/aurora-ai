@@ -16,7 +16,7 @@ import {
   HardDrive,
   Wifi,
   Zap,
-  Github,
+  GitFork,
   GitCommit,
   GitPullRequest,
   Terminal,
@@ -1322,7 +1322,7 @@ Build successful (Exit 0)`;
             <div className="bg-[#090b14]/80 backdrop-blur-md border border-atc-border/80 rounded-2xl p-6 shadow-2xl col-span-1 md:col-span-2 lg:col-span-2 relative overflow-hidden group">
               <div className="flex items-center justify-between mb-4 relative z-10">
                 <div className="flex items-center gap-2 text-slate-300">
-                  <Github className="w-5 h-5 text-slate-400" />
+                  <GitFork className="w-5 h-5 text-slate-400" />
                   <span className="text-sm font-bold uppercase tracking-wider font-mono">
                     Live Commit Sync
                   </span>

@@ -15,7 +15,7 @@ import {
   Fingerprint,
   Palette,
   GitPullRequest,
-  Github,
+  GitFork,
   FileText,
   History,
   ArrowDown,
@@ -1587,7 +1587,7 @@ export function SettingsView({
                   <div className="p-4 bg-[#090b14] border border-white/5 rounded-lg flex items-center justify-between hover:border-indigo-500/30 transition-colors cursor-pointer">
                     <div className="flex items-center gap-4">
                       <div className="p-2 bg-indigo-500/10 rounded">
-                        <Github className="w-5 h-5 text-indigo-400" />
+                        <GitFork className="w-5 h-5 text-indigo-400" />
                       </div>
                       <div>
                         <h4 className="text-sm font-bold text-white">GitHub Enterprise Setup</h4>
@@ -1628,7 +1628,7 @@ export function SettingsView({
                 <div className="space-y-3">
                   <div className="p-3 bg-black/40 border border-white/5 rounded-lg flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                       <Github className="w-4 h-4 text-indigo-400" />
+                       <GitFork className="w-4 h-4 text-indigo-400" />
                        <div className="flex flex-col">
                          <span className="text-xs font-bold text-slate-200">Push Commits to `atc-os-core`</span>
                          <span className="text-[10px] text-slate-500 font-mono">Waiting for network stability...</span>
@@ -1747,7 +1747,7 @@ export function SettingsView({
                           <div className="border border-white/10 hover:border-indigo-500/50 p-4 rounded-lg bg-white/5 transition-colors">
                             <div className="flex items-center justify-between mb-2">
                               <div className="flex items-center gap-2 text-indigo-400">
-                                <Github className="w-4 h-4" />
+                                <GitFork className="w-4 h-4" />
                                 <span className="font-medium text-sm">
                                   Remote (GitHub)
                                 </span>
@@ -2080,7 +2080,7 @@ export function SettingsView({
                               <td className="p-3">
                                 <div className="flex items-center gap-2">
                                   {sh.target === "GitHub" ? (
-                                    <Github className="w-4 h-4 text-slate-400" />
+                                    <GitFork className="w-4 h-4 text-slate-400" />
                                   ) : (
                                     <FileText className="w-4 h-4 text-slate-400" />
                                   )}
@@ -2191,7 +2191,7 @@ export function SettingsView({
                           <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                         </td>
                         <td className="py-3 px-4 font-bold text-slate-300 flex items-center gap-2">
-                          <Github className="w-4 h-4" /> GitHub
+                          <GitFork className="w-4 h-4" /> GitHub
                         </td>
                         <td className="py-3 px-4 text-slate-400 font-mono text-xs">2026-06-11 08:34:58</td>
                         <td className="py-3 px-4 text-slate-400">Pushed 3 commits to `main`. Triggered CI/CD workflow.</td>
@@ -2201,7 +2201,7 @@ export function SettingsView({
                           <XCircle className="w-4 h-4 text-rose-400" />
                         </td>
                         <td className="py-3 px-4 font-bold text-slate-300 flex items-center gap-2">
-                          <Github className="w-4 h-4" /> GitHub
+                          <GitFork className="w-4 h-4" /> GitHub
                         </td>
                         <td className="py-3 px-4 text-slate-400 font-mono text-xs">2026-06-11 08:30:12</td>
                         <td className="py-3 px-4 text-rose-400/80">Push rejected: Build failed. Exit 1 in esbuild. JSX Error.</td>

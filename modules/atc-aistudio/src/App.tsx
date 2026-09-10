@@ -45,7 +45,7 @@ import {
   ChevronLeft,
   Bookmark,
   RefreshCw,
-  Github,
+  GitFork,
   Mic,
   Bell,
   Wifi,
@@ -965,7 +965,7 @@ transforming...
                     <div className="flex items-center justify-between w-full relative z-10">
                       <div className="flex items-center gap-2">
                         <div className="relative group/badge">
-                          <Github
+                          <GitFork
                             className={`w-4 h-4 transition-colors ${isSyncing ? "text-indigo-400 animate-pulse" : "text-slate-500 group-hover:text-white"}`}
                           />
                           <span
@@ -3056,7 +3056,7 @@ export function RoadmapView({
         <div className="hidden md:flex flex-col items-end gap-1">
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-2 mr-2 bg-[#090b14] border border-atc-border/50 rounded-xl p-1 shadow-[0_0_15px_rgba(0,0,0,0.5)]">
-              <Github className="w-4 h-4 text-slate-400 ml-2" />
+              <GitFork className="w-4 h-4 text-slate-400 ml-2" />
               <input
                 type="text"
                 value={githubRepo}
@@ -3574,7 +3574,7 @@ export function RoadmapView({
                       }}
                     >
                       <div className="flex items-center gap-2 text-atc-cyan mb-2">
-                        <Github className="w-4 h-4" />
+                        <GitFork className="w-4 h-4" />
                         <span className="font-medium text-sm">Keep GitHub</span>
                       </div>
                       <div className="text-xs text-slate-400">
@@ -3735,7 +3735,7 @@ export function RoadmapView({
                                   <div className="border border-white/10 bg-black/40 rounded-lg p-3 flex flex-col justify-between hover:border-atc-cyan/50 transition-colors">
                                     <div>
                                       <div className="flex items-center gap-2 text-atc-cyan mb-2">
-                                        <Github className="w-4 h-4" />
+                                        <GitFork className="w-4 h-4" />
                                         <span className="font-semibold text-xs">
                                           GitHub Version
                                         </span>

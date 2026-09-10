@@ -31,7 +31,7 @@ export const fetchGithubAuditMetrics = async (repo: string): Promise<GithubAudit
       fail: openIssuesCount
     };
   } catch (err) {
-    console.error("Github sync failed:", err);
+    console.error("GitFork sync failed:", err);
     return null;
   }
 };

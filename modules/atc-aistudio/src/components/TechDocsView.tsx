@@ -1,6 +1,6 @@
 // Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 import React, { useState } from 'react';
-import { Book, Code, Terminal, Key, Shield, Database, Webhook, Zap, FileJson, Brain, Network, Play, CheckCircle, Github, Activity } from 'lucide-react';
+import { Book, Code, Terminal, Key, Shield, Database, Webhook, Zap, FileJson, Brain, Network, Play, CheckCircle, GitFork, Activity } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { JsExampleRunner } from './JsExampleRunner';
 
@@ -199,7 +199,7 @@ const DOCS_DATA = [
   {
     id: 'ci-cd-pipeline',
     title: 'CI/CD Pipeline & Build Tools',
-    icon: Github,
+    icon: GitFork,
     sections: [
       {
         title: 'Automated Build Checks',

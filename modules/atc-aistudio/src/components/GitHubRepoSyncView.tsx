@@ -1,6 +1,6 @@
 // Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 import React, { useState, useEffect } from 'react';
-import { Github, RefreshCw, Clock, Settings2, CheckCircle2, AlertCircle, Database, Server, Code2, Cpu, GitMerge, ChevronDown, BarChart2, Search, FileText, Trash2, Wifi, WifiOff } from 'lucide-react';
+import { GitFork, RefreshCw, Clock, Settings2, CheckCircle2, AlertCircle, Database, Server, Code2, Cpu, GitMerge, ChevronDown, BarChart2, Search, FileText, Trash2, Wifi, WifiOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { GitGraphVisualization } from './GitGraphVisualization';
 import { CommitHeatmap } from './CommitHeatmap';
@@ -581,7 +581,7 @@ export function GitHubRepoSyncView({ language = 'DE' }: { language?: 'DE' | 'EN'
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-8">
         <div>
           <h1 className="text-2xl font-mono text-white flex items-center gap-3 tracking-tight">
-            <Github className="w-7 h-7 text-atc-cyan" />
+            <GitFork className="w-7 h-7 text-atc-cyan" />
             {t.title}
           </h1>
           <p className="text-slate-400 mt-2 text-sm max-w-2xl">

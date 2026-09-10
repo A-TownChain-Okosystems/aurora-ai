@@ -8,7 +8,7 @@ import {
   HardDrive,
   Wifi,
   Zap,
-  Github,
+  GitFork,
   GitCommit,
   GitPullRequest,
   Terminal,

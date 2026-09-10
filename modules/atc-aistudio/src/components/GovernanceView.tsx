@@ -13,7 +13,7 @@ import {
   Cpu,
   Network,
   Server,
-  Github,
+  GitFork,
   GitCommit,
   CheckCircle,
   AlertOctagon
@@ -238,7 +238,7 @@ function GitOpsAutoAudit() {
     <div className="bg-[#090b14]/60 border border-atc-border/50 rounded-2xl overflow-hidden mt-6">
       <div className="px-6 py-5 border-b border-atc-border/50 bg-[#060a16] flex items-center justify-between">
         <h3 className="text-lg font-medium text-white flex items-center gap-2">
-          <Github className="w-5 h-5 text-slate-500" /> GitOps Auto-Audit
+          <GitFork className="w-5 h-5 text-slate-500" /> GitOps Auto-Audit
         </h3>
         <button
           onClick={runAudit}

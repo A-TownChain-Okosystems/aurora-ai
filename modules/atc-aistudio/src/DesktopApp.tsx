@@ -59,7 +59,7 @@ import {
   Box,
   Zap,
   ShieldAlert,
-  Github,
+  GitFork,
   Table,
   Presentation,
   Palette,
@@ -268,7 +268,7 @@ export const WINDOWS_MAP: Record<
   },
   ecosystem_designer: {
     label: "Ecosystem Builder",
-    icon: Github,
+    icon: GitFork,
     component: EcosystemVisualizerView,
     category: "system",
   },
@@ -310,7 +310,7 @@ export const WINDOWS_MAP: Record<
   },
   github_status: {
     label: "AT-Explorer CI/CD",
-    icon: Github,
+    icon: GitFork,
     component: GitHubStatusDashboard,
     category: "system",
   },
@@ -382,7 +382,7 @@ export const WINDOWS_MAP: Record<
   },
   github_sync: {
     label: "GITHUB REPOS",
-    icon: Github,
+    icon: GitFork,
     component: GitHubRepoSyncView,
     category: "system",
   },

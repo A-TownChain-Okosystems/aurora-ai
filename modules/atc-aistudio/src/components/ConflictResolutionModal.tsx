@@ -1,7 +1,7 @@
 // Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Check, ArrowRight, Github, FileText, FileJson, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { X, Check, ArrowRight, GitFork, FileText, FileJson, AlertTriangle, ShieldCheck } from 'lucide-react';
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
 import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
 import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
@@ -183,7 +183,7 @@ export function ConflictResolutionModal({ isOpen, onClose, onResolve }: Conflict
                   onClick={() => handleSelectSource(conflict.id, 'github')}
                 >
                   <div className="flex items-center gap-2 mb-3 text-slate-300">
-                    <Github className="w-4 h-4" />
+                    <GitFork className="w-4 h-4" />
                     <span className="font-semibold text-sm">GitHub Repository</span>
                   </div>
                   <div className="text-xs font-mono rounded-md overflow-hidden bg-[#282c34] border border-white/5 flex-1">

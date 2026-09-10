@@ -1,7 +1,7 @@
 // Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Github, FileText, CheckCircle, AlertCircle, Clock, GitMerge, ChevronDown, ChevronUp } from 'lucide-react';
+import { X, GitFork, FileText, CheckCircle, AlertCircle, Clock, GitMerge, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface SyncLog {
   id: string;
@@ -132,7 +132,7 @@ export function SyncHistoryModal({ isOpen, onClose }: SyncHistoryModalProps) {
                 onClick={() => setFilter('GitHub')}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${filter === 'GitHub' ? 'bg-slate-700 text-white border border-slate-500' : 'bg-white/5 text-slate-400 border border-transparent hover:bg-white/10'}`}
               >
-                <Github className="w-4 h-4" />
+                <GitFork className="w-4 h-4" />
                 GitHub
               </button>
               <button
@@ -163,7 +163,7 @@ export function SyncHistoryModal({ isOpen, onClose }: SyncHistoryModalProps) {
                     >
                       <div className="flex items-center gap-4">
                         <div className={`p-2 rounded-lg ${log.source === 'GitHub' ? 'bg-slate-800' : 'bg-orange-500/10'}`}>
-                          {log.source === 'GitHub' ? <Github className="w-4 h-4 text-slate-300" /> : <FileText className="w-4 h-4 text-orange-400" />}
+                          {log.source === 'GitHub' ? <GitFork className="w-4 h-4 text-slate-300" /> : <FileText className="w-4 h-4 text-orange-400" />}
                         </div>
                         <div>
                           <p className="text-sm font-medium text-slate-200">{log.action}</p>
@@ -203,7 +203,7 @@ export function SyncHistoryModal({ isOpen, onClose }: SyncHistoryModalProps) {
                           <div className="grid grid-cols-2 gap-4 mt-3">
                             <div className="bg-slate-900/50 rounded-lg p-3 border border-slate-700/50">
                               <div className="flex items-center gap-2 mb-2 pb-2 border-b border-white/5 text-xs text-slate-300 font-bold">
-                                <Github className="w-3 h-3" /> GitHub Version
+                                <GitFork className="w-3 h-3" /> GitHub Version
                               </div>
                               <div className="font-mono text-xs text-red-400 space-y-1">
                                 {log.diff.githubLines.map((line, idx) => (
