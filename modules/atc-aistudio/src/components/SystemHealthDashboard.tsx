@@ -13,3 +13,9 @@ export function SystemHealthDashboard(_props: any) {
     </div>
   );
 }
+
+export const SystemHealthDashboardWidget = (_props: any) => (
+  <div className="flex flex-col items-center justify-center h-full text-slate-400 gap-2 p-8">
+    <span className="text-sm">NICHT IMPLEMENTIERT — SystemHealthDashboardWidget (siehe REALITY_STATUS.md).</span>
+  </div>
+);
