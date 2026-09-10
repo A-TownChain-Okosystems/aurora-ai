@@ -6,7 +6,7 @@
 **Organization:** A-TownChain-Okosystems
 **Status:** `development`
 **Version:** `0.1.0`
-**License:** `Proprietary — A-TownChain-Okosystems`
+**License:** `Apache-2.0` (SPDX, Org-weite Einheitslizenz per AD-F-046)
 
 | ATC COMPLIANCE | ![Status](https://img.shields.io/badge/ATC--201%2F202%2F203-R3_COMPLIANT-00c853) R3 · Repository Governance (ATC-STD-201/202/203) |
 |---|---|
@@ -189,7 +189,7 @@ Beiträge sind willkommen. Bitte lesen Sie vorab [CONTRIBUTING.md](CONTRIBUTING.
 
 ## License
 
-Proprietary — All Rights Reserved, Michael Wroblewski / ShivaCore / A-TownChain-Okosystems (siehe [LICENSE](LICENSE)).
+Apache-2.0 — Copyright Michael Wroblewski / A-TownChain-Okosystems (siehe [LICENSE](LICENSE)). Lizenz-Divergenz README-vs.-LICENSE behoben gem. Owner-Entscheidung F-046 (SCR-0036).
 
 ## Maintainers
 
