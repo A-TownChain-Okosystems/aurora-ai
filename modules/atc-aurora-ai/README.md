@@ -15,4 +15,4 @@ Aurora AI — der persönliche KI-Agent des A-TownChain-Ökosystems.
 - Automations: GitHub + Notion + Wiki Sync (6-12h Zyklus)
 
 ## Copyright
-Copyright © Michael Wroblewski / A-TownChain-Okosystems. All Rights Reserved.
+Copyright © Michael Wroblewski / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE

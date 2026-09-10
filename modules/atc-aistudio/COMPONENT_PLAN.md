@@ -256,7 +256,7 @@
 **Datei:** `aaa_asset_core.atc`
 **Zeilen:** 97
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct AAAAssetManager, init_asset_manager, update, shutdown
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -268,7 +268,7 @@
 **Datei:** `ai_assets.atc`
 **Zeilen:** 143
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct AIAsset, struct LLMPrompt, struct NPCPersonality, load_ai_asset, create_npc_personality, load_voice_model, load_embeddings, hot_swap_model (+2 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -280,7 +280,7 @@
 **Datei:** `ai_studio_ad49.atc`
 **Zeilen:** 310
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct AIAgent, struct AgentPerformance, struct AgentKnowledge, struct Task, struct TaskOutput, struct Artifact, struct StudioSession, struct SessionBudget (+18 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -292,7 +292,7 @@
 **Datei:** `animation.atc`
 **Zeilen:** 170
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct Animation, struct SpriteSheet, struct SpineData, struct RiveData, load_sprite_sheet, play_animation, update_animation, stop_animation (+7 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -304,7 +304,7 @@
 **Datei:** `asset_bundle.atc`
 **Zeilen:** 121
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct AssetBundle, struct AssetRef, create_bundle, add_asset, load_bundle, unload_bundle, verify_bundle, init_standard_bundles
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -316,7 +316,7 @@
 **Datei:** `asset_genome_ad66.atc`
 **Zeilen:** 171
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct AssetGenome, struct AssetDescriptor, struct AssetDNA, struct AssetMetadata, struct AssetVariant, struct AssetDependency, struct CompatEntry, struct QualityTier (+6 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -328,7 +328,7 @@
 **Datei:** `check_dups2.js`
 **Zeilen:** 12
 **Typ:** .js
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🔄 STUB
@@ -340,7 +340,7 @@
 **Datei:** `check_dups_all.js`
 **Zeilen:** 23
 **Typ:** .js
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🔄 STUB
@@ -352,7 +352,7 @@
 **Datei:** `check_dups_desktop.js`
 **Zeilen:** 15
 **Typ:** .js
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🔄 STUB
@@ -364,7 +364,7 @@
 **Datei:** `check_dups_windows_map.js`
 **Zeilen:** 14
 **Typ:** .js
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🔄 STUB
@@ -376,7 +376,7 @@
 **Datei:** `civilization_engine_ad60.atc`
 **Zeilen:** 236
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct Civilization, struct Government, struct GovBranch, struct Policy, struct LegalSystem, struct Law, struct Court, struct Religion (+12 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -388,7 +388,7 @@
 **Datei:** `cloud_assets.atc`
 **Zeilen:** 161
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct CloudAsset, struct CDNConfig, download_cloud_asset, download_background, download_bundle_background, fetch_manifest, check_cloud_updates, auto_update_cloud (+3 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -400,7 +400,7 @@
 **Datei:** `cross_franchise_ad46.atc`
 **Zeilen:** 223
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct UniversalAccount, struct FranchiseLink, struct UniversalInventory, struct CrossItem, struct UniversalAchievement, struct CrossoverEvent, struct CrossReward, struct UniversalFriendsList (+17 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -412,7 +412,7 @@
 **Datei:** `data_lake_ad51.atc`
 **Zeilen:** 237
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct DataLake, struct DataZone, struct DataSchema, struct SchemaField, struct IngestionPipeline, struct DataSource, struct RetentionPolicy, struct QueryResult (+17 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -424,7 +424,7 @@
 **Datei:** `digital_twin_ad50.atc`
 **Zeilen:** 303
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct DigitalTwin, struct TwinModel, struct TwinNode, struct TwinConnection, struct Scenario, struct ScenarioResult, struct Prediction, struct TwinBaseline (+17 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -436,7 +436,7 @@
 **Datei:** `ecosystem_ai_mesh_ad62.atc`
 **Zeilen:** 245
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct AIMesh, struct MeshAgent, struct MeshConnection, struct MeshTask, struct MeshMemory, struct LearnedPattern, struct KnowledgeEntry, struct DecisionRecord (+8 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -448,7 +448,7 @@
 **Datei:** `encryption.atc`
 **Zeilen:** 183
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct AssetSignature, struct EncryptionKey, encrypt_asset, decrypt_asset, compute_asset_hash, verify_asset_integrity, sign_asset, verify_signature (+4 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -460,7 +460,7 @@
 **Datei:** `evolution_engine_ad69.atc`
 **Zeilen:** 251
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct EvolutionEngine, struct ProjectEvolution, struct ProjectMetrics, struct Trend, struct ProjectHealth, struct AnalysisConfig, struct Recommendation, struct EvolutionExperiment (+5 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -472,7 +472,7 @@
 **Datei:** `experience_orchestrator_ad68.atc`
 **Zeilen:** 200
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct ExperienceOrchestrator, struct PlayerProfile, struct Adjustment, struct FlowModel, struct ContentRotation, struct ABTest, struct ABVariant, struct PersonalizationConfig (+5 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -484,7 +484,7 @@
 **Datei:** `federated_learning.atc`
 **Zeilen:** 178
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct FLModel, struct FLRound, init, register_model, start_round, submit_update, aggregate, update_accuracy (+3 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -496,7 +496,7 @@
 **Datei:** `fetch.js`
 **Zeilen:** 36
 **Typ:** .js
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🔄 STUB
@@ -508,7 +508,7 @@
 **Datei:** `fix.js`
 **Zeilen:** 26
 **Typ:** .js
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🔄 STUB
@@ -520,7 +520,7 @@
 **Datei:** `fix2.js`
 **Zeilen:** 27
 **Typ:** .js
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🔄 STUB
@@ -532,7 +532,7 @@
 **Datei:** `fix_wiki.js`
 **Zeilen:** 5
 **Typ:** .js
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🔄 STUB
@@ -544,7 +544,7 @@
 **Datei:** `gcp_core_ad70.atc`
 **Zeilen:** 169
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct GCPCore, struct GCPModule, struct CrossCuttingLayer, struct GCPPipeline, struct ResourceManager, struct GCPMonitoring, struct Alert, struct GCPConfig (+6 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -556,7 +556,7 @@
 **Datei:** `global_simulation_core_ad64.atc`
 **Zeilen:** 198
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct GlobalSimCore, struct SimSubsystem, struct SystemInteraction, struct GlobalState, struct ClimateState, struct ResourceState, struct TradeState, struct MigrationState (+8 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -568,7 +568,7 @@
 **Datei:** `hot_reload.atc`
 **Zeilen:** 156
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct FileWatch, struct HotReloadConfig, create_file_watcher, check_all_watches, reload_asset, add_watch, remove_watch, pause_reloading (+2 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -580,7 +580,7 @@
 **Datei:** `identity_layer_ad65.atc`
 **Zeilen:** 190
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct IdentityLayer, struct Identity, struct LinkedAccount, struct Organization, struct OrgMember, struct Team, struct Role, struct Permission (+7 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -592,7 +592,7 @@
 **Datei:** `ip_evolution_ad45.atc`
 **Zeilen:** 241
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct IPAsset, struct EvolutionPlan, struct SpinOff, struct Crossover, struct BrandStrategy, struct AudienceAnalysis, create_evolution_plan, plan_spinoff (+16 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -604,7 +604,7 @@
 **Datei:** `knowledge_graph_ad47.atc`
 **Zeilen:** 289
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct KGNode, struct KGEdge, struct GraphQuery, struct GraphResult, struct GraphPath, struct ConsistencyCheck, add_node, add_edge (+21 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -616,7 +616,7 @@
 **Datei:** `mark_completed.ts`
 **Zeilen:** 15
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🔄 STUB
@@ -628,7 +628,7 @@
 **Datei:** `mark_completed_src.ts`
 **Zeilen:** 33
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🔄 STUB
@@ -640,7 +640,7 @@
 **Datei:** `memory_cleanup.atc`
 **Zeilen:** 151
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct MemoryEntry, struct CleanupConfig, create_cleanup_config, run_cleanup_loop, emergency_cleanup, touch_asset, release_asset, get_memory_stats
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -652,7 +652,7 @@
 **Datei:** `mod_system.atc`
 **Zeilen:** 172
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct Mod, scan_mods_directory, parse_mod_manifest, load_mod, enable_mod, disable_mod, resolve_conflicts, export_mod
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -664,7 +664,7 @@
 **Datei:** `model3d.atc`
 **Zeilen:** 198
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct Model3D, struct Mesh3D, struct Material3D, struct Skeleton, struct Bone, struct Animation3D, struct AnimChannel, load_gltf (+4 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -676,7 +676,7 @@
 **Datei:** `move_back.js`
 **Zeilen:** 11
 **Typ:** .js
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🔄 STUB
@@ -688,7 +688,7 @@
 **Datei:** `persistent_world_engine_ad61.atc`
 **Zeilen:** 199
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct PersistentWorld, struct WorldShard, struct GlobalEvent, struct SeasonalCycle, struct ScheduledEvent, struct PersistenceConfig, struct SyncConfig, pw_create (+6 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -700,7 +700,7 @@
 **Datei:** `priority_loading.atc`
 **Zeilen:** 99
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct PriorityQueue, create_priority_queue, enqueue, process_queue, is_idle, benchmark_load_time
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -712,7 +712,7 @@
 **Datei:** `proc_universe_generator_ad63.atc`
 **Zeilen:** 204
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct ProcGenerator, struct ProcConfig, struct SubGenerator, struct ProcOutput, struct QualityFilter, proc_create, proc_generate, gen_planet (+3 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -724,7 +724,7 @@
 **Datei:** `production_pipeline_ad67.atc`
 **Zeilen:** 151
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct ProductionPipeline, struct PipelineStage, struct PipelineConfig, struct PipelineRun, pipeline_create, pipeline_run, struct PipelineResult
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -736,7 +736,7 @@
 **Datei:** `render_pipeline.atc`
 **Zeilen:** 192
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct RenderPipeline, struct RenderStage, create_pipeline, execute_pipeline, is_stage_enabled, enable_stage, disable_stage, record_timing (+3 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -748,7 +748,7 @@
 **Datei:** `replace.js`
 **Zeilen:** 36
 **Typ:** .js
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🔄 STUB
@@ -760,7 +760,7 @@
 **Datei:** `script.js`
 **Zeilen:** 12
 **Typ:** .js
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🔄 STUB
@@ -772,7 +772,7 @@
 **Datei:** `server.ts`
 **Zeilen:** 866
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -784,7 +784,7 @@
 **Datei:** `shader_system.atc`
 **Zeilen:** 167
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct Shader, struct UniformDef, struct ShaderPreset, get_preset_shaders, compile_shader, apply_shader_to_asset, set_uniform, hot_reload_shader (+1 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -796,7 +796,7 @@
 **Datei:** `simulation_factory_ad48.atc`
 **Zeilen:** 374
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct Simulation, struct SimState, struct EconomyState, struct EcologyState, struct PoliticalState, struct WeatherState, struct MilitaryState, struct TradeState (+28 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -832,7 +832,7 @@
 **Datei:** `src/atcLangRoadmapData.ts`
 **Zeilen:** 201
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -844,7 +844,7 @@
 **Datei:** `src/atcLangWikiData.ts`
 **Zeilen:** 227
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -856,7 +856,7 @@
 **Datei:** `src/auditData.ts`
 **Zeilen:** 76
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -868,7 +868,7 @@
 **Datei:** `src/backend/p2p/network.ts`
 **Zeilen:** 77
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -2464,7 +2464,7 @@
 **Datei:** `src/data.ts`
 **Zeilen:** 411
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -2476,7 +2476,7 @@
 **Datei:** `src/db/drizzle.config.ts`
 **Zeilen:** 29
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🔄 STUB
@@ -2488,7 +2488,7 @@
 **Datei:** `src/db/index.ts`
 **Zeilen:** 24
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🔄 STUB
@@ -2500,7 +2500,7 @@
 **Datei:** `src/db/schema.ts`
 **Zeilen:** 11
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🔄 STUB
@@ -2512,7 +2512,7 @@
 **Datei:** `src/ecosystemData.ts`
 **Zeilen:** 291
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -2524,7 +2524,7 @@
 **Datei:** `src/hooks/useGoogleSheetsSync.ts`
 **Zeilen:** 220
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -2536,7 +2536,7 @@
 **Datei:** `src/hooks/useKeyboardShortcut.ts`
 **Zeilen:** 30
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🔄 STUB
@@ -2548,7 +2548,7 @@
 **Datei:** `src/lib/CryptoEngine.ts`
 **Zeilen:** 42
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🔄 STUB
@@ -2560,7 +2560,7 @@
 **Datei:** `src/lib/firebase-admin.ts`
 **Zeilen:** 15
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🔄 STUB
@@ -2572,7 +2572,7 @@
 **Datei:** `src/lib/firebase.ts`
 **Zeilen:** 64
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -2584,7 +2584,7 @@
 **Datei:** `src/lib/indexedDb.ts`
 **Zeilen:** 88
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -2596,7 +2596,7 @@
 **Datei:** `src/lib/syncLogic.test.ts`
 **Zeilen:** 82
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -2608,7 +2608,7 @@
 **Datei:** `src/lib/syncLogic.ts`
 **Zeilen:** 68
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -2632,7 +2632,7 @@
 **Datei:** `src/marketplaceApps.ts`
 **Zeilen:** 273
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -2644,7 +2644,7 @@
 **Datei:** `src/middleware/auth.ts`
 **Zeilen:** 30
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🔄 STUB
@@ -2656,7 +2656,7 @@
 **Datei:** `src/requirementsData.ts`
 **Zeilen:** 58
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -2668,7 +2668,7 @@
 **Datei:** `src/roadmapData.ts`
 **Zeilen:** 312
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -2680,7 +2680,7 @@
 **Datei:** `src/routes/notion.ts`
 **Zeilen:** 146
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -2692,7 +2692,7 @@
 **Datei:** `src/services/SyncService.ts`
 **Zeilen:** 106
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -2704,7 +2704,7 @@
 **Datei:** `src/services/githubSync.ts`
 **Zeilen:** 37
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🔄 STUB
@@ -2716,7 +2716,7 @@
 **Datei:** `src/standardsData.ts`
 **Zeilen:** 83
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -2728,7 +2728,7 @@
 **Datei:** `src/tierData.ts`
 **Zeilen:** 317
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -2740,7 +2740,7 @@
 **Datei:** `src/types.ts`
 **Zeilen:** 10
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🔄 STUB
@@ -2764,7 +2764,7 @@
 **Datei:** `src/utils/auditUtils.test.ts`
 **Zeilen:** 56
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -2776,7 +2776,7 @@
 **Datei:** `src/utils/auditUtils.ts`
 **Zeilen:** 27
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🔄 STUB
@@ -2788,7 +2788,7 @@
 **Datei:** `src/utils/crypto.ts`
 **Zeilen:** 73
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -2800,7 +2800,7 @@
 **Datei:** `src/wikiData.ts`
 **Zeilen:** 943
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -2812,7 +2812,7 @@
 **Datei:** `streaming.atc`
 **Zeilen:** 116
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct StreamZone, struct StreamConfig, create_zone, enter_zone, leave_zone, schedule_unload, preload_adjacent_zones, enforce_memory_limit
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -2824,7 +2824,7 @@
 **Datei:** `telemetry.atc`
 **Zeilen:** 166
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct AssetTelemetry, struct TelemetrySession, struct TypeStats, start_telemetry_session, record_asset_load, generate_report, format_type_stats, check_thresholds (+1 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -2836,7 +2836,7 @@
 **Datei:** `testChat.js`
 **Zeilen:** 10
 **Typ:** .js
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🔄 STUB
@@ -2860,7 +2860,7 @@
 **Datei:** `tests/audit_compliance.test.ts`
 **Zeilen:** 78
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -2872,7 +2872,7 @@
 **Datei:** `universe_factory_ad44.atc`
 **Zeilen:** 343
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct Universe, struct Galaxy, struct Planet, struct Dimension, struct Timeline, struct WorldRules, struct PhysicsConstants, create_universe (+21 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -2884,7 +2884,7 @@
 **Datei:** `update_wiki_categories.ts`
 **Zeilen:** 23
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🔄 STUB
@@ -2896,7 +2896,7 @@
 **Datei:** `versioning.atc`
 **Zeilen:** 151
 **Typ:** .atc
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** struct AssetVersion, struct DeltaPatch, create_version, bump_version, create_delta_patch, apply_delta, get_latest_version, check_for_updates (+2 weitere)
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -2908,7 +2908,7 @@
 **Datei:** `workspace/move.js`
 **Zeilen:** 13
 **Typ:** .js
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🔄 STUB
@@ -2920,7 +2920,7 @@
 **Datei:** `workspace/rename.js`
 **Zeilen:** 42
 **Typ:** .js
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🔄 STUB
@@ -2932,7 +2932,7 @@
 **Datei:** `workspace/replace.js`
 **Zeilen:** 40
 **Typ:** .js
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🔄 STUB
@@ -2944,7 +2944,7 @@
 **Datei:** `workspace/replaceEnterprise.js`
 **Zeilen:** 102
 **Typ:** .js
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🟢 IMPLEMENTIERT
@@ -2956,7 +2956,7 @@
 **Datei:** `workspace/replaceGoals.ts`
 **Zeilen:** 14
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🔄 STUB
@@ -2968,7 +2968,7 @@
 **Datei:** `workspace/replaceGoals2.ts`
 **Zeilen:** 18
 **Typ:** .ts
-**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
+**Beschreibung:** Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 **Funktionen/Structs:** —
 
 **Status:** 🔄 STUB
