@@ -34,7 +34,7 @@
     "esbuild": "^0.25.0",
     "express": "^5.2.1",
     "firebase": "^12.19.0",
-    "firebase-admin": "^14.0.0",
+    "firebase-admin": "^14.4.0",
     "html2canvas": "^1.4.1",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.8",
