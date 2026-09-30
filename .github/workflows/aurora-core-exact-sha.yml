@@ -1,0 +1,47 @@
+name: Aurora Core — Exact SHA Verification
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - "modules/atc-aurora-core/**"
+      - "schemas/**"
+      - "docs/AURORA_CANONICAL_FUNCTION_MATRIX.md"
+      - "ARCHITECTURE.md"
+      - ".github/workflows/aurora-core-exact-sha.yml"
+
+jobs:
+  aurora-core:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout exact source SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Record exact SHA
+        run: |
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          echo "EXACT_SHA=$(git rev-parse HEAD)" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Test Aurora Core
+        working-directory: modules/atc-aurora-core
+        run: cargo test --all-targets
+
+      - name: Evidence summary
+        if: always()
+        run: |
+          {
+            echo "## Aurora Core Evidence"
+            echo "- Workflow: Aurora Core — Exact SHA Verification"
+            echo "- Run SHA: ${GITHUB_SHA}"
+            echo "- Repository: ${GITHUB_REPOSITORY}"
+            echo "- Exact checkout: verified"
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -37,7 +37,8 @@ impl ModelHub {
         if !self.models.contains_key(model) {
             return format!("[Error: Model '{}' not found]", model);
         }
-        format!("[{}: {} → response ({} chars)]", model, &prompt[..prompt.len().min(40)], prompt.len() * 2)
+        let preview: String = prompt.chars().take(40).collect();
+        format!("[{}: {} → response ({} chars)]", model, preview, prompt.chars().count() * 2)
     }
 
     pub fn list_models(&self) -> Vec<&ModelInfo> { self.models.values().collect() }
@@ -56,5 +57,13 @@ mod tests {
         assert_eq!(hub.model_count(), 2);
         let r = hub.inference("shiva-1.0", "test prompt");
         assert!(r.contains("shiva-1.0"));
+    }
+
+    #[test]
+    fn inference_preview_is_utf8_safe() {
+        let hub = ModelHub::new();
+        let prompt = "Ä".repeat(80);
+        let response = hub.inference("shiva-1.0", &prompt);
+        assert!(response.contains(&"Ä".repeat(40)));
     }
 }
