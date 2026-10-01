@@ -171,7 +171,9 @@ repository:
 ownership:
   organization: A-TownChain-Okosystems
 technology:
-  primary_language: Rust/Python
+  primary_language: Rust
+  secondary_language: Python
+  secondary_scope: model_research, non_tcb_tooling, automation
 governance:
   criticality: HIGH
 -->
