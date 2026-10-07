@@ -34,7 +34,7 @@
     "esbuild": "^0.25.0",
     "express": "^5.2.1",
     "firebase": "^12.19.0",
-    "firebase-admin": "^14.0.0",
+    "firebase-admin": "^14.4.0",
     "html2canvas": "^1.4.1",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.8",
@@ -56,18 +56,18 @@
     "@testing-library/react": "^16.3.3",
     "@types/d3": "^7.4.3",
     "@types/express": "^5.0.6",
-    "@types/node": "^22.14.0",
+    "@types/node": "^26.6.1",
     "@types/pg": "^8.20.0",
     "@types/react-syntax-highlighter": "^15.5.13",
     "@types/three": "^0.184.1",
-    "autoprefixer": "^10.4.21",
+    "autoprefixer": "^10.6.1",
     "drizzle-kit": "^0.31.10",
     "jsdom": "^29.1.1",
     "tailwindcss": "^4.1.14",
     "tsx": "^4.21.0",
     "typescript": "~5.8.2",
     "vite": "^6.2.3",
-    "vitest": "^4.1.9"
+    "vitest": "^5.0.1"
   },
   "overrides": {
     "uuid": "^11.1.1"
