@@ -16,136 +16,118 @@ standard: ATC-STD-MD-001
 **Status:** ARCHITECTURE_ONLY  
 **Normative authority:** atc-standards
 
-## System Role
+# Canonical System Role — GlobusOS AI Control Plane
 
-Aurora is the intelligent system of the ecosystem. It is not the ShivaCore TCB, not blockchain consensus authority, and not canonical blockchain state authority.
+Aurora AI is the **AI Control / Intelligence Plane of GlobusOS**.
+
+The canonical system boundary is:
+
+```text
+AURORA AI
+    │
+    │ Intelligence / Planning / Agent Execution
+    ▼
+GLOBUS OS
+    │
+    │ OS Services / IPC / Resource Management
+    ▼
+SHIVACORE
+    │
+    │ Kernel / TCB / Capabilities / Isolation
+    ▼
+HARDWARE
+```
+
+Aurora is **not** the operating-system kernel and does not own blockchain consensus authority. GlobusOS remains the operating-system integration and service layer; ShivaCore remains the trusted kernel / TCB / capability boundary.
+
+## Aurora Responsibilities
+
+The Aurora platform provides the AI-side capabilities for:
+
+- ModelHub and model/provider integration
+- Agent runtime and lifecycle
+- Planning and context processing
+- Skills and tools
+- Memory, RAG and knowledge services
+- Multimodal processing
+- Dialogue AI, Quest AI, World AI, Character AI, Creature AI, Faction AI and Security AI
+- AI-based system analysis
+- Authorized automation
+- Evaluation, telemetry, provenance and evidence
+- Authorized integration with Genesis, A-TownChain and external services
+
+These are architectural responsibilities. Their implementation status is determined exclusively by **AURORA-001 evidence**.
 
 ## Canonical Layering
 
-```
+```text
 AURORA AI
-    |
-    v
+    │
+    ▼
 Aurora Authority Plane
-    |
-    v
+    │
+    ▼
 Aurora Runtime
-    |
-    v
+    │
+    ▼
 ATC AI Runtime
-    |
+    │
     +---- CPU Backend
     +---- GPU Backend
     +---- NPU Backend
-    |
-    v
+    │
+    ▼
 GlobusOS AI Services
-    |
-    v
+    │
+    ▼
 ShivaCore IPC / Capability Boundary
 ```
 
-## Aurora Authority Plane
+## Authority Boundary
 
-Responsibilities:
+Aurora follows this authority chain:
 
-- capability evaluation
-- policy evaluation
-- approval requirements
-- identity binding
-- tool authorization
-- audit and trust records
-- explicit denial of unauthorized operations
-
-Aurora has no implicit hardware or kernel authority.
-
-## Aurora Runtime
-
-Responsibilities:
-
-- agent execution
-- scheduling
-- context management
-- model lifecycle
-- inference orchestration
-- execution routing
-- multimodal orchestration
-
-The runtime executes only requests admitted by the applicable authority and policy contracts.
-
-## ATC AI Runtime
-
-Responsibilities:
-
-- ATC Model ABI
-- model loading and verification
-- graph representation
-- tensor execution
-- compilation/planning
-- quantization
-- backend selection
-- CPU/GPU/NPU execution
-
-The ATC AI Runtime is owned by the ATC/Aurora architecture and is not delegated to an external platform AI runtime.
-
-## Hardware Backends
-
-```
-Aurora Runtime
-      |
-      +---- CPU Backend
-      +---- GPU Backend
-      +---- NPU Backend
+```text
+MODEL
+  │ proposes
+  ▼
+AGENT
+  │ requests
+  ▼
+CAPABILITY
+  │ checked by
+  ▼
+POLICY
+  │ may require
+  ▼
+APPROVAL
+  │ authorizes
+  ▼
+TOOL
+  │ executes
+  ▼
+GLOBUS OS
+  │ capability + IPC
+  ▼
+SHIVACORE
 ```
 
-Backends expose capability contracts rather than vendor-specific semantics to Aurora.
+The following invariants are mandatory:
 
-## Canonical Execution Path
+- AI models have no implicit execution authority.
+- Agents cannot bypass capability checks.
+- Capabilities are subject to policy evaluation.
+- Approval may be required for sensitive operations.
+- Tools execute only through authorized interfaces.
+- Aurora has no direct kernel authority.
+- Aurora has no direct blockchain consensus authority.
+- All privileged execution must be auditable.
 
-```
-Aurora Agent
-  -> Capability Request
-  -> Aurora Authority Plane
-  -> ATC Model ABI
-  -> Model Verification
-  -> ATC AI Runtime
-  -> Execution Planner
-  -> CPU/GPU/NPU
-  -> Verified Execution
-  -> Result Validation
-  -> Aurora
-```
+## Hardware Target & Backends
 
-## Security Boundary
+The canonical hardware target is ATC AI Compute Platform (ATC-AICP):
 
-```
-Hardware Root of Trust
-  -> Secure Boot
-  -> Measured Boot
-  -> ShivaCore
-  -> GlobusOS
-  -> Aurora Runtime
-  -> Model Verification
-  -> Capability / Policy
-  -> AI Execution
-```
-
-Aurora does not directly access:
-
-- kernel memory
-- physical memory
-- device registers
-- unrestricted DMA
-- TPM private key material
-- firmware replacement interfaces
-
-All privileged operations cross explicit IPC/capability boundaries.
-
-## Hardware Target
-
-The canonical hardware target is ATC AI Compute Platform:
-
-```
+```text
 ATC-AICP
 ├── CPU
 ├── GPU
@@ -162,31 +144,61 @@ ATC-AICP
 └── FIRMWARE
 ```
 
-Hardware capability discovery is not implementation or security evidence.
-
-## Existing Aurora Components
-
-1. Rust Core Engine (modules/atc-aurora-core) — scheduling, IPC and security-sensitive runtime primitives.
-2. Agent Framework (modules/atc-aurora-agents) — agent lifecycle and role management.
-3. Memory Layer (modules/atc-aurora-memory) — memory/context services.
-4. Runtime Layer (modules/atc-aurora-runtime) — runtime and integration services.
-5. AI Services (modules/atc-aurora-ai) — model/AI services.
-6. AI Studio (modules/atc-aistudio) — development tooling.
-
-These components do not individually become the system authority merely by existing.
-
-## Status Semantics
-
-Architecture, implementation, testing, CI verification, integration and E2E verification remain independent states:
-
+```text
+Aurora Runtime
+      │
+      +---- CPU Backend
+      +---- GPU Backend
+      +---- NPU Backend
 ```
+
+Backends expose capability contracts rather than vendor-specific semantics to Aurora.
+
+## Security Boundary
+
+Aurora communicates with the kernel only through authorized GlobusOS interfaces:
+
+```text
+Aurora
+   │
+   ▼
+Authorized GlobusOS Interface
+   │
+   ▼
+IPC / Capability Boundary
+   │
+   ▼
+ShivaCore
+```
+
+Aurora does not directly access kernel memory, physical memory, device registers, unrestricted DMA, TPM private key material, or firmware replacement interfaces.
+
+## Completeness and Authority Gate
+
+Every Aurora capability is subject to **AURORA-001 — Platform Completeness & Authority Gate**.
+
+Evidence progression:
+
+```text
 ARCHITECTURE_ONLY
-  -> SPECIFIED
-  -> IMPLEMENTED
-  -> TESTED
-  -> CI_VERIFIED
-  -> INTEGRATED
-  -> E2E_VERIFIED
+        ↓
+SPECIFIED
+        ↓
+IMPLEMENTED
+        ↓
+TESTED
+        ↓
+CI_VERIFIED
+        ↓
+INTEGRATED
+        ↓
+E2E_VERIFIED
 ```
 
-**No Evidence, No Trust.**
+Exceptional states are:
+
+```text
+MISSING / BLOCKED / DUPLICATE / DISCONNECTED
+```
+
+A file, documentation entry or module directory alone is not implementation evidence. CI evidence is valid only when tied to the exact source commit being assessed.
