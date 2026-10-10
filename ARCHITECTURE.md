@@ -1,37 +1,20 @@
 ---
 document_id: ATC-DOC-AI-003
 title: Aurora AI Architecture
-version: 1.0.0
+version: 2.0.0
 status: active
 owner: A-TownChain-Okosystems
 created: 2026-09-09
-updated: 2026-09-09
+updated: 2026-09-28
 standard: ATC-STD-MD-001
 ---
 
 # Aurora AI Architecture
 
-> Technische Architektur der KI-Services und Agenten-Infrastruktur.
+> Canonical architecture of Aurora AI as the ecosystem intelligence platform.
 
-## Systemübersicht
-
-Aurora AI ist als hybrid strukturierte Dual-Engine aufgebaut:
-
-1. **Rust Core Engine (`modules/atc-aurora-core`):** Performantes Scheduling, IPC, HAL und Sicherheitsprüfungen.
-2. **Agent Framework (`modules/atc-aurora-agents`):** Agent-Lifecycle-Steuerung und Rollenverteilung.
-3. **Memory Layer (`modules/atc-aurora-memory`):** Vektorspeicher und temporärer/persistenter Kontext.
-4. **Runtime Layer (`modules/atc-aurora-runtime`):** Laufzeit-Umgebung mit Event-Bridge zum Kernel.
-5. **Python AI Services (`modules/atc-aurora-ai`):** DefenderGPT, MinerWatcherGPT und KAI-Anbindung.
-6. **AI Studio (`modules/atc-aistudio`):** Entwickler-Suite und Asset-Management.
-
-## Datenfluss
-
-```text
-Kernel Event Bridge -> Rust Core IPC -> Agent Runtime -> Python AI Stack (DefenderGPT/MinerWatcherGPT) -> Memory
-```
-
-
----
+**Status:** ARCHITECTURE_ONLY  
+**Normative authority:** atc-standards
 
 # Canonical System Role — GlobusOS AI Control Plane
 
@@ -75,6 +58,31 @@ The Aurora platform provides the AI-side capabilities for:
 
 These are architectural responsibilities. Their implementation status is determined exclusively by **AURORA-001 evidence**.
 
+## Canonical Layering
+
+```text
+AURORA AI
+    │
+    ▼
+Aurora Authority Plane
+    │
+    ▼
+Aurora Runtime
+    │
+    ▼
+ATC AI Runtime
+    │
+    +---- CPU Backend
+    +---- GPU Backend
+    +---- NPU Backend
+    │
+    ▼
+GlobusOS AI Services
+    │
+    ▼
+ShivaCore IPC / Capability Boundary
+```
+
 ## Authority Boundary
 
 Aurora follows this authority chain:
@@ -115,26 +123,36 @@ The following invariants are mandatory:
 - Aurora has no direct blockchain consensus authority.
 - All privileged execution must be auditable.
 
-## A-TownChain Boundary
+## Hardware Target & Backends
 
-Aurora may request blockchain operations only through the canonical interface:
+The canonical hardware target is ATC AI Compute Platform (ATC-AICP):
 
 ```text
-AURORA
-   │ request
-   ▼
-A-TownChain Interface
-   ▼
-Node
-   ▼
-Consensus
-   ▼
-ATC-VM
-   ▼
-State
+ATC-AICP
+├── CPU
+├── GPU
+├── NPU
+├── MEMORY
+├── STORAGE
+├── SECURITY
+│   ├── TPM
+│   ├── SECURE_PROCESSOR
+│   └── TEE
+├── BOOT
+│   ├── SECURE_BOOT
+│   └── MEASURED_BOOT
+└── FIRMWARE
 ```
 
-Aurora may propose, plan and request operations. Deterministic chain components retain authority over consensus, VM execution and authoritative state transitions.
+```text
+Aurora Runtime
+      │
+      +---- CPU Backend
+      +---- GPU Backend
+      +---- NPU Backend
+```
+
+Backends expose capability contracts rather than vendor-specific semantics to Aurora.
 
 ## Security Boundary
 
@@ -153,7 +171,7 @@ IPC / Capability Boundary
 ShivaCore
 ```
 
-No Aurora model, agent or tool may directly bypass this boundary.
+Aurora does not directly access kernel memory, physical memory, device registers, unrestricted DMA, TPM private key material, or firmware replacement interfaces.
 
 ## Completeness and Authority Gate
 
