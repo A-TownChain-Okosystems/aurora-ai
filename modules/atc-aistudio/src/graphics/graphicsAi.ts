@@ -60,7 +60,7 @@ const KEYWORDS: ReadonlyArray<[GraphicsDomain, RegExp]> = [
   ["texture", /texture|textur|pbr|albedo|normal map|roughness/i],
   ["material", /material|metall|glas|holz|stein/i],
   ["mesh", /mesh|polygon|retopology|topologie/i],
-  ["model3d", /3d[- ]?modell|3d model|objekt|asset/i],
+  ["model3d", /3d|objekt|asset/i],
   ["scene", /szene|scene|level|umgebung|environment/i],
   ["lighting", /licht|lighting|beleuchtung|shadow|schatten|illumination/i],
   ["shader", /shader|glsl|hlsl|wgsl|material graph/i],
