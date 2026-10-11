@@ -118,8 +118,7 @@ mod tests {
         assert_eq!(grant.approver_id(), "human:owner");
         assert_eq!(engine.pending_count(), 0);
         let replay =
-            VerifiedApproval::from_authenticated_host("request:approval-1", "human:owner")
-                .unwrap();
+            VerifiedApproval::from_authenticated_host("request:approval-1", "human:owner").unwrap();
         assert_eq!(
             engine.approve(replay),
             Err(ApprovalError::RequestNotPending)
