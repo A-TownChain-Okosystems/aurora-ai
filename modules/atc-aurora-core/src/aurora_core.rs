@@ -36,8 +36,11 @@ impl AuroraCore {
 
     pub fn process_request(&self, agent_id: &str, prompt: &str) -> Result<String, String> {
         if !self.active { return Err("AuroraCore not active".into()); }
-        self.agent_registry.get_agent(agent_id)
+        let agent = self.agent_registry.get_agent(agent_id)
             .ok_or_else(|| format!("Agent {} not registered", agent_id))?;
+        if !agent.is_active {
+            return Err(format!("Agent {} is inactive", agent_id));
+        }
         let model = self.llm_router.route(prompt);
         let response = self.model_hub.inference(&model, prompt);
         Ok(response)
@@ -65,5 +68,22 @@ mod tests {
     fn test_process_request_inactive() {
         let core = AuroraCore::new();
         assert!(core.process_request("test", "hello").is_err());
+    }
+
+    #[test]
+    fn test_process_request_rejects_inactive_agent() {
+        let mut core = AuroraCore::new();
+        core.start().unwrap();
+        core.agent_registry.register("disabled", "Disabled Agent", "test", vec![]);
+        core.agent_registry.set_active("disabled", false);
+        assert!(core.process_request("disabled", "hello").unwrap_err().contains("inactive"));
+    }
+
+    #[test]
+    fn test_process_request_accepts_active_agent() {
+        let mut core = AuroraCore::new();
+        core.start().unwrap();
+        core.agent_registry.register("active", "Active Agent", "test", vec![]);
+        assert!(core.process_request("active", "hello").is_ok());
     }
 }
