@@ -60,7 +60,12 @@ impl AuroraCore {
         let Some(agent) = self.agent_registry.get_agent(agent_id) else {
             return PolicyDecision::Deny;
         };
-        if !agent.is_active || !agent.capabilities.iter().any(|cap| cap == &request.capability) {
+        if !agent.is_active
+            || !agent
+                .capabilities
+                .iter()
+                .any(|cap| cap == &request.capability)
+        {
             return PolicyDecision::Deny;
         }
 
