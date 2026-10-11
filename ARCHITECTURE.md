@@ -5,102 +5,233 @@ version: 2.0.0
 status: active
 owner: A-TownChain-Okosystems
 created: 2026-09-09
-updated: 2026-09-30
+updated: 2026-09-28
 standard: ATC-STD-MD-001
 ---
 
 # Aurora AI Architecture
 
-Aurora AI is the intelligence/control-plane userspace of the A-TownChain ecosystem. It is not part of the ShivaCore TCB and has no implicit kernel, governance or blockchain authority.
+> Canonical architecture of Aurora AI as the ecosystem intelligence platform.
 
-## Canonical boundary
+**Status:** ARCHITECTURE_ONLY  
+**Normative authority:** atc-standards
 
+# Canonical System Role — GlobusOS AI Control Plane
+
+Aurora AI is the **AI Control / Intelligence Plane of GlobusOS**.
+
+The canonical system boundary is:
+
+```text
+AURORA AI
+    │
+    │ Intelligence / Planning / Agent Execution
+    ▼
+GLOBUS OS
+    │
+    │ OS Services / IPC / Resource Management
+    ▼
+SHIVACORE
+    │
+    │ Kernel / TCB / Capabilities / Isolation
+    ▼
+HARDWARE
 ```
-Hardware / Firmware
-        ↓
-ShivaCore — TCB / capability enforcement
-        ↓
-GlobusOS — OS services / IPC / resources
-        ↓
-Aurora AI — models / agents / memory / tools / intelligence
-        ↓
-Genesis / Applications / A-TownChain interfaces
+
+Aurora is **not** the operating-system kernel and does not own blockchain consensus authority. GlobusOS remains the operating-system integration and service layer; ShivaCore remains the trusted kernel / TCB / capability boundary.
+
+## Aurora Responsibilities
+
+The Aurora platform provides the AI-side capabilities for:
+
+- ModelHub and model/provider integration
+- Agent runtime and lifecycle
+- Planning and context processing
+- Skills and tools
+- Memory, RAG and knowledge services
+- Multimodal processing
+- Dialogue AI, Quest AI, World AI, Character AI, Creature AI, Faction AI and Security AI
+- AI-based system analysis
+- Authorized automation
+- Evaluation, telemetry, provenance and evidence
+- Authorized integration with Genesis, A-TownChain and external services
+
+These are architectural responsibilities. Their implementation status is determined exclusively by **AURORA-001 evidence**.
+
+## Canonical Layering
+
+```text
+AURORA AI
+    │
+    ▼
+Aurora Authority Plane
+    │
+    ▼
+Aurora Runtime
+    │
+    ▼
+ATC AI Runtime
+    │
+    +---- CPU Backend
+    +---- GPU Backend
+    +---- NPU Backend
+    │
+    ▼
+GlobusOS AI Services
+    │
+    ▼
+ShivaCore IPC / Capability Boundary
 ```
 
-Aurora can propose actions. Authoritative state changes remain owned by the target deterministic domain.
+## Authority Boundary
 
-## Canonical AI architecture
+Aurora follows this authority chain:
 
-1. **Vision & Governance** — lifecycle, risk, oversight, policy and audit.
-2. **Identity & Access** — user, service, model and agent identity; AuthN/AuthZ; sessions and secrets.
-3. **Model Layer** — model metadata, versions, providers and lifecycle.
-4. **ModelHub** — registry, discovery, routing, selection, health and compatibility.
-5. **AI Runtime** — inference, context, scheduling, resources and isolation.
-6. **Agent System** — lifecycle, planning, decomposition, tools, state and termination.
-7. **Capability / Policy** — explicit capabilities, scopes, policy evaluation, approval and revocation.
-8. **Tool & Action Layer** — typed tool registry, input/output validation and domain adapters.
-9. **Memory** — working, conversation, semantic, episodic and long-term memory.
-10. **RAG / Knowledge** — ingestion, parsing, chunking, embeddings, retrieval, ranking and source attribution.
-11. **Data Layer** — contracts, lineage, classification, quality and versioning.
-12. **AI Safety & Security** — injection defense, exfiltration prevention, sandboxing, fail-closed enforcement and emergency stop.
-13. **Evaluation** — correctness, groundedness, robustness, safety and regression evaluation.
-14. **Prompt / Context** — system/developer/user context, templates, versioning and injection controls.
-15. **Multimodal AI** — text, image, audio, video, STT/TTS, vision and document understanding.
-16. **OS Integration** — IPC, process, filesystem, network, devices, GPU/NPU and quotas.
-17. **Blockchain Integration** — RPC, state queries, transaction construction and signing requests behind authorization.
-18. **Developer Platform** — SDKs, APIs, CLI and extension contracts.
-19. **Observability** — inference, agent, tool, resource, policy and security telemetry.
-20. **Operations** — deployment, health, scaling, failover, rollback and updates.
-21. **Supply Chain** — provenance, signatures, SBOM, pinning and reproducibility.
-22. **Testing & Verification** — unit, integration, security, policy, RAG, regression, E2E and exact-SHA evidence.
-23. **Evidence & Governance** — provenance, evidence separation, verification and residual tracking.
-
-The implementation decomposition and evidence state are maintained in `docs/AURORA_CANONICAL_FUNCTION_MATRIX.md`.
-
-## Authority chain
-
+```text
+MODEL
+  │ proposes
+  ▼
+AGENT
+  │ requests
+  ▼
+CAPABILITY
+  │ checked by
+  ▼
+POLICY
+  │ may require
+  ▼
+APPROVAL
+  │ authorizes
+  ▼
+TOOL
+  │ executes
+  ▼
+GLOBUS OS
+  │ capability + IPC
+  ▼
+SHIVACORE
 ```
-Model
-  ↓
-Agent
-  ↓
-Capability
-  ↓
-Policy
-  ↓
-Approval
-  ↓
-Tool
-  ↓
-GlobusOS
-  ↓
+
+The following invariants are mandatory:
+
+- AI models have no implicit execution authority.
+- Agents cannot bypass capability checks.
+- Capabilities are subject to policy evaluation.
+- Approval may be required for sensitive operations.
+- Tools execute only through authorized interfaces.
+- Aurora has no direct kernel authority.
+- Aurora has no direct blockchain consensus authority.
+- All privileged execution must be auditable.
+
+## Hardware Target & Backends
+
+The canonical hardware target is ATC AI Compute Platform (ATC-AICP):
+
+```text
+ATC-AICP
+├── CPU
+├── GPU
+├── NPU
+├── MEMORY
+├── STORAGE
+├── SECURITY
+│   ├── TPM
+│   ├── SECURE_PROCESSOR
+│   └── TEE
+├── BOOT
+│   ├── SECURE_BOOT
+│   └── MEASURED_BOOT
+└── FIRMWARE
+```
+
+```text
+Aurora Runtime
+      │
+      +---- CPU Backend
+      +---- GPU Backend
+      +---- NPU Backend
+```
+
+Backends expose capability contracts rather than vendor-specific semantics to Aurora.
+
+## Security Boundary
+
+Aurora communicates with the kernel only through authorized GlobusOS interfaces:
+
+```text
+Aurora
+   │
+   ▼
+Authorized GlobusOS Interface
+   │
+   ▼
+IPC / Capability Boundary
+   │
+   ▼
 ShivaCore
 ```
 
-For blockchain operations the target domain additionally validates the transaction and protocol rules before any canonical state transition.
+Aurora does not directly access kernel memory, physical memory, device registers, unrestricted DMA, TPM private key material, or firmware replacement interfaces.
 
-**Invariant:** model output MUST NOT itself authorize an action.
+## Completeness and Authority Gate
 
-## Current runtime enforcement
+Every Aurora capability is subject to **AURORA-001 — Platform Completeness & Authority Gate**.
 
-The Rust core exposes `CapabilityPolicyEngine` with fail-closed semantics:
+Evidence progression:
 
-- exact principal/capability/action/scope matching;
-- explicit approval when required;
-- unknown authorization context → DENY;
-- unit tests for approval, unknown capability and scope mismatch.
-
-ModelHub prompt previews are UTF-8 safe.
-
-## Evidence semantics
-
+```text
+ARCHITECTURE_ONLY
+        ↓
+SPECIFIED
+        ↓
+IMPLEMENTED
+        ↓
+TESTED
+        ↓
+CI_VERIFIED
+        ↓
+INTEGRATED
+        ↓
+E2E_VERIFIED
 ```
+
+Exceptional states are:
+
+```text
+MISSING / BLOCKED / DUPLICATE / DISCONNECTED
+```
+
+A file, documentation entry or module directory alone is not implementation evidence. CI evidence is valid only when tied to the exact source commit being assessed.
+
+---
+
+## Canonical Architecture Extension — Implementation Boundary (2026-10-12)
+
+This extension preserves the existing architecture contract above while linking it to the canonical implementation and evidence matrix. It does not supersede existing hardware, GlobusOS, ShivaCore, or authority-boundary requirements.
+
+### Canonical implementation matrix
+
+See `docs/AURORA_CANONICAL_FUNCTION_MATRIX.md` for the 23-domain Vision → Component → Function → Evidence matrix. Architectural presence does not imply implementation or verification.
+
+### Runtime authorization contract
+
+The existing Rust core uses `AgentRegistry` plus `CapabilityPolicyEngine` to perform an in-process, fail-closed pre-check. The check denies when the core is inactive, the request principal does not match the agent ID, the agent is absent/inactive, or the agent registry does not grant the requested capability. Policy evaluation occurs only after these checks.
+
+This pre-check is not kernel authorization. The target GlobusOS service and ShivaCore capability/TCB boundary must independently enforce operations. Aurora must not directly access kernel memory, physical memory, device registers, unrestricted DMA, TPM private key material, or firmware replacement interfaces.
+
+### Approval and request integrity
+
+The external action-request envelope carries request identity, principal, capability, action, and scope. A caller-supplied approval boolean is not an authorization grant. Approval must be represented by a trusted, request-scoped grant issued only after the host has authenticated the approver. Deny is terminal; a denied request cannot be converted into an approval-required request.
+
+### Evidence status
+
+```text
 Architecture ≠ Implementation ≠ Test ≠ CI Evidence ≠ Verification
-Error Evidence ≠ Finding Evidence ≠ Verification Evidence
 ```
 
-Exact-SHA CI evidence remains mandatory for VERIFIED status.
+Exact-SHA CI evidence is required before marking a capability VERIFIED. The current CI result is tied to the exact candidate commit and is not proof of end-to-end OS/kernel enforcement.
 
-## Residual boundary
+### Explicit residuals
 
-The canonical architecture is broader than the current runtime. Provider-specific production inference, full production RAG, multimodal providers, complete agent planning/execution, blockchain signing execution, deployment automation and end-to-end exact-SHA verification remain separate implementation gates until source and CI evidence exists.
+Full capability-token enforcement remains a separate gate: expiry, nonce/replay protection, audience validation, revocation, identity authentication, and enforcement at the GlobusOS/ShivaCore boundary must be implemented and evidenced. Production model-provider inference, full RAG, multimodal providers, complete agent planning/execution, blockchain signing execution, deployment automation, and end-to-end verification remain unverified until supported by source and exact-SHA evidence.
+
