@@ -30,9 +30,10 @@ pub struct ApprovalGrant {
 }
 
 impl ApprovalGrant {
-    /// Internal constructor: call only after the approval subsystem has authenticated and
-    /// validated a human approval. It is crate-private so external callers cannot mint grants.
-    pub(crate) fn verified_for(request: &ActionRequest) -> Self {
+    /// Test fixture only. Production grant issuance remains blocked until a trusted approval
+    /// engine authenticates the human decision and becomes the sole grant issuer.
+    #[cfg(test)]
+    fn verified_for(request: &ActionRequest) -> Self {
         Self {
             request_id: request.request_id.clone(),
             principal: request.principal.clone(),
