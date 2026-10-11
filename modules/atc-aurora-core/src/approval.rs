@@ -25,10 +25,7 @@ impl ApprovalEngine {
         Self::default()
     }
 
-    pub fn request_approval(
-        &mut self,
-        request: ActionRequest,
-    ) -> Result<(), ApprovalError> {
+    pub fn request_approval(&mut self, request: ActionRequest) -> Result<(), ApprovalError> {
         if request.request_id.is_empty() {
             return Err(ApprovalError::EmptyRequestId);
         }
