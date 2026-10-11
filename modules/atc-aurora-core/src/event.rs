@@ -44,7 +44,11 @@ impl EventBus {
         if event.request_id.is_empty() {
             return Err(EventBusError::EmptyRequestId);
         }
-        if self.events.iter().any(|existing| existing.event_id == event.event_id) {
+        if self
+            .events
+            .iter()
+            .any(|existing| existing.event_id == event.event_id)
+        {
             return Err(EventBusError::DuplicateEventId);
         }
         self.events.push(event);
