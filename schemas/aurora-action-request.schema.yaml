@@ -4,12 +4,15 @@ title: Aurora Action Request
 type: object
 additionalProperties: false
 required:
+  - request_id
   - principal
   - capability
   - action
   - scope
-  - approval
 properties:
+  request_id:
+    type: string
+    minLength: 1
   principal:
     type: string
     minLength: 1
@@ -22,8 +25,10 @@ properties:
   scope:
     type: string
     minLength: 1
-  approval:
-    type: boolean
 description: >
-  Authorization request contract. Model output is never an authorization
-  source. Unknown or mismatched authorization context MUST fail closed.
+  Untrusted action-request envelope. It carries no approval boolean or approval
+  grant: only the trusted approval subsystem may mint a request-scoped grant.
+  Model output is never an authorization source. Unknown or mismatched context
+  MUST fail closed. This envelope does not replace ATC-AI-CAP-001 capability
+  tokens, revocation, expiry, nonce/replay checks, audience validation, or
+  ShivaCore enforcement.
