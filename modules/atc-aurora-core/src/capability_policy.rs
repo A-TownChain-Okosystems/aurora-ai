@@ -171,7 +171,10 @@ mod tests {
 
     #[test]
     fn missing_approval_pauses_instead_of_denies_or_allows() {
-        assert_eq!(policy(true).evaluate(&request()), PolicyDecision::ApprovalRequired);
+        assert_eq!(
+            policy(true).evaluate(&request()),
+            PolicyDecision::ApprovalRequired
+        );
     }
 
     #[test]
@@ -217,7 +220,10 @@ mod tests {
 
     #[test]
     fn unknown_policy_fails_closed() {
-        assert_eq!(CapabilityPolicyEngine::new().evaluate(&request()), PolicyDecision::Deny);
+        assert_eq!(
+            CapabilityPolicyEngine::new().evaluate(&request()),
+            PolicyDecision::Deny
+        );
     }
 
     #[test]
