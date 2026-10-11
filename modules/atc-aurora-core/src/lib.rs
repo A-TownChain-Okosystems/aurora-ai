@@ -14,5 +14,5 @@ pub use llm_router::LlmRouter;
 pub use agent_registry::AgentRegistry;
 pub use config_manager::ConfigManager;
 pub use capability_policy::{
-    ActionRequest, CapabilityPolicy, CapabilityPolicyEngine, PolicyDecision,
+    ActionRequest, ApprovalGrant, CapabilityPolicy, CapabilityPolicyEngine, PolicyDecision,
 };
