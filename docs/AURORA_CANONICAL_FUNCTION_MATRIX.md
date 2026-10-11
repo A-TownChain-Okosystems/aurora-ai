@@ -64,7 +64,7 @@ Model output MUST NOT directly grant capability, authorization, OS privilege, si
 | AI-04 | ModelHub | registry, discovery, routing, selection, health, compatibility | atc-aurora-core |
 | AI-05 | AI Runtime | inference, context, scheduling, CPU/GPU/NPU, quotas, isolation | atc-aurora-runtime |
 | AI-06 | Agent System | lifecycle, planning, decomposition, tool selection, state, termination | atc-aurora-agents |
-| AI-07 | Capability / Policy | capabilities, scopes, policy evaluation, approval, revocation | capability_policy + GlobusOS |
+| AI-07 | Capability / Policy | capabilities, scopes, policy evaluation, approval, revocation | capability_policy + approval + GlobusOS |
 | AI-08 | Tool & Action | registry, schemas, validation, OS/network/filesystem/chain adapters | runtime / integration |
 | AI-09 | Memory | working, conversational, semantic, episodic, long-term, retention | atc-aurora-memory |
 | AI-10 | RAG / Knowledge | ingestion, parsing, chunking, embeddings, retrieval, ranking, attribution | atc-aurora-memory |
@@ -112,17 +112,20 @@ CI Verified ≠ E2E Verified
 
 - `CapabilityPolicyEngine`: fail-closed exact-match capability, principal, action and scope authorization.
 - `PolicyDecision` distinguishes `Allow`, `Deny` and `ApprovalRequired`; missing approval does not silently become permission.
-- `ApprovalGrant` is bound to one request and the exact principal/capability/action/scope tuple; mismatched/replayed grants fail closed. Its constructor is crate-private and must only be called by trusted approval code.
-- Duplicate matching policies fail closed rather than relying on registration order.
-- `StateMachine` validates execution transitions, requires verification before completion, blocks skipping the approval wait, and prevents transitions out of terminal states.
-- Unit tests cover approval-required, request replay, unknown capability/policy, scope mismatch, duplicate policies and invalid/terminal state transitions.
-- ModelHub inference preview is UTF-8 safe.
-- The 23-domain matrix remains the decomposition contract, not a claim that all 23 domains are implemented.
+- `ApprovalGrant` is bound to one request and its exact principal/capability/action/scope tuple and records the approver identity.
+- `ApprovalEngine`: in-memory pending approval tracking, one-shot approval consumption and rejection. The approval issuance method is crate-private and is intended only for a trusted adapter that has authenticated the human decision.
+- Duplicate matching policies, unknown capabilities, mismatched scopes and replayed grants fail closed.
+- `StateMachine`: deterministic execution transitions; verification is required before completion, approval waits cannot be skipped, and terminal states cannot be reopened.
+- `EventBus`: deterministic in-memory event ordering, request filtering and duplicate event-ID rejection.
+- `AuditLogger`: append-only in-memory records, request filtering and duplicate event-ID rejection.
+- Existing core modules are rustfmt-formatted and provide `Default` implementations.
+- Unit tests cover policy, approval, event, audit and state-machine invariants.
 
 ## Explicit residuals
 
-- A complete trusted approval engine must authenticate human approvals and be the only production caller of the crate-private grant constructor.
-- The new core-specific CI workflow must produce successful exact-SHA `cargo fmt`, `cargo test` and `cargo clippy` evidence; the existing SDK workflow tests `sdk/Cargo.toml`, not the core module.
-- Full integration of the state machine into the agent/tool runtime, audit persistence, production-grade RAG, provider backends, multimodal backends, full agent planning, blockchain signing execution and deployment automation remain separate implementation/evidence gates.
+- The production host must authenticate the human approver before invoking the crate-private approval method; the in-memory engine is not itself an identity provider or cryptographic attestation mechanism.
+- Event and audit stores are in-memory only. Durable, tamper-evident audit export requires an authorized runtime adapter and a separately verified persistence boundary.
+- The state machine and authorization primitives are not yet wired through every agent/tool execution path; runtime integration remains a separate gate.
+- Provider-specific inference, production-grade RAG, multimodal backends, full agent planning, blockchain signing execution, deployment automation and complete end-to-end verification remain separate implementation/evidence gates.
 
 No item in this document is a production-readiness claim.
