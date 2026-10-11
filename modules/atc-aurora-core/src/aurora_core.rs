@@ -1,7 +1,7 @@
 // Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 // Central engine coordinator
+use crate::{AgentRegistry, ConfigManager, LlmRouter, ModelHub};
 use std::collections::HashMap;
-use crate::{ModelHub, LlmRouter, AgentRegistry, ConfigManager};
 
 pub struct AuroraCore {
     pub model_hub: ModelHub,
@@ -23,27 +23,36 @@ impl AuroraCore {
     }
 
     pub fn start(&mut self) -> Result<(), String> {
-        if self.active { return Err("AuroraCore already running".into()); }
+        if self.active {
+            return Err("AuroraCore already running".into());
+        }
         self.active = true;
         Ok(())
     }
 
     pub fn stop(&mut self) -> Result<(), String> {
-        if !self.active { return Err("AuroraCore not running".into()); }
+        if !self.active {
+            return Err("AuroraCore not running".into());
+        }
         self.active = false;
         Ok(())
     }
 
     pub fn process_request(&self, agent_id: &str, prompt: &str) -> Result<String, String> {
-        if !self.active { return Err("AuroraCore not active".into()); }
-        self.agent_registry.get_agent(agent_id)
+        if !self.active {
+            return Err("AuroraCore not active".into());
+        }
+        self.agent_registry
+            .get_agent(agent_id)
             .ok_or_else(|| format!("Agent {} not registered", agent_id))?;
         let model = self.llm_router.route(prompt);
         let response = self.model_hub.inference(&model, prompt);
         Ok(response)
     }
 
-    pub fn is_active(&self) -> bool { self.active }
+    pub fn is_active(&self) -> bool {
+        self.active
+    }
 }
 
 #[cfg(test)]
