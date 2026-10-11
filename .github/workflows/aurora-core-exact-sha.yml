@@ -2,7 +2,13 @@ name: Aurora Core — Exact SHA Verification
 
 on:
   push:
-    branches: [main]
+    branches: [main, "impl/**"]
+    paths:
+      - "modules/atc-aurora-core/**"
+      - "schemas/**"
+      - "docs/AURORA_CANONICAL_FUNCTION_MATRIX.md"
+      - "ARCHITECTURE.md"
+      - ".github/workflows/aurora-core-exact-sha.yml"
   pull_request:
     paths:
       - "modules/atc-aurora-core/**"
@@ -30,10 +36,20 @@ jobs:
 
       - name: Rust toolchain
         uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Format check
+        working-directory: modules/atc-aurora-core
+        run: cargo fmt --all -- --check
 
       - name: Test Aurora Core
         working-directory: modules/atc-aurora-core
         run: cargo test --all-targets
+
+      - name: Clippy
+        working-directory: modules/atc-aurora-core
+        run: cargo clippy --all-targets -- -D warnings
 
       - name: Evidence summary
         if: always()
