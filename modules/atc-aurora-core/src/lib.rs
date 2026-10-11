@@ -7,6 +7,7 @@ pub mod llm_router;
 pub mod agent_registry;
 pub mod config_manager;
 pub mod capability_policy;
+pub mod state;
 
 pub use aurora_core::AuroraCore;
 pub use model_hub::ModelHub;
@@ -16,3 +17,4 @@ pub use config_manager::ConfigManager;
 pub use capability_policy::{
     ActionRequest, ApprovalGrant, CapabilityPolicy, CapabilityPolicyEngine, PolicyDecision,
 };
+pub use state::{ExecutionState, StateMachine, StateTransitionError};
