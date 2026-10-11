@@ -13,7 +13,7 @@ pub mod model_hub;
 pub mod state;
 
 pub use agent_registry::AgentRegistry;
-pub use approval::{ApprovalEngine, ApprovalError};
+pub use approval::{ApprovalEngine, ApprovalError, VerifiedApproval};
 pub use audit::{AuditError, AuditLogger, AuditRecord};
 pub use aurora_core::AuroraCore;
 pub use capability_policy::{
