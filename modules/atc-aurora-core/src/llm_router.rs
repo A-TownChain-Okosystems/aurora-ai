@@ -10,6 +10,12 @@ pub struct RouterRule {
     pub priority: u8,
 }
 
+impl Default for LlmRouter {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl LlmRouter {
     pub fn new() -> Self {
         Self {
