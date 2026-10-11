@@ -14,15 +14,31 @@ impl LlmRouter {
     pub fn new() -> Self {
         Self {
             rules: vec![
-                RouterRule { pattern: "code".into(), model: "shiva-1.0".into(), priority: 1 },
-                RouterRule { pattern: "translate".into(), model: "shiva-1.0".into(), priority: 2 },
-                RouterRule { pattern: "summarize".into(), model: "shiva-1.0".into(), priority: 3 },
+                RouterRule {
+                    pattern: "code".into(),
+                    model: "shiva-1.0".into(),
+                    priority: 1,
+                },
+                RouterRule {
+                    pattern: "translate".into(),
+                    model: "shiva-1.0".into(),
+                    priority: 2,
+                },
+                RouterRule {
+                    pattern: "summarize".into(),
+                    model: "shiva-1.0".into(),
+                    priority: 3,
+                },
             ],
         }
     }
 
     pub fn add_rule(&mut self, pattern: &str, model: &str, priority: u8) {
-        self.rules.push(RouterRule { pattern: pattern.into(), model: model.into(), priority });
+        self.rules.push(RouterRule {
+            pattern: pattern.into(),
+            model: model.into(),
+            priority,
+        });
         self.rules.sort_by_key(|r| r.priority);
     }
 
