@@ -58,10 +58,14 @@ impl ExecutionState {
                     | SecurityViolation
             ),
             WaitingApproval => matches!(next, Queued | Denied | Cancelled | Timeout),
-            WaitingResource => matches!(next, Queued | Running | Cancelled | Timeout | ResourceExhausted),
+            WaitingResource => matches!(
+                next,
+                Queued | Running | Cancelled | Timeout | ResourceExhausted
+            ),
             Paused => matches!(next, Queued | Cancelled | Timeout),
             Verifying => matches!(next, Completed | Failed | SecurityViolation),
-            Completed | Failed | Cancelled | Denied | Timeout | ResourceExhausted | SecurityViolation => false,
+            Completed | Failed | Cancelled | Denied | Timeout | ResourceExhausted
+            | SecurityViolation => false,
         }
     }
 }
@@ -155,7 +159,9 @@ mod tests {
         let mut machine = StateMachine::new();
         machine.transition(ExecutionState::Queued).unwrap();
         machine.transition(ExecutionState::Running).unwrap();
-        machine.transition(ExecutionState::SecurityViolation).unwrap();
+        machine
+            .transition(ExecutionState::SecurityViolation)
+            .unwrap();
         assert!(machine.transition(ExecutionState::Queued).is_err());
     }
 }
