@@ -27,28 +27,34 @@ pub struct ApprovalGrant {
     capability: String,
     action: String,
     scope: String,
+    approver_id: String,
 }
 
 impl ApprovalGrant {
-    /// Test fixture only. Production grant issuance remains blocked until a trusted approval
-    /// engine authenticates the human decision and becomes the sole grant issuer.
-    #[cfg(test)]
-    fn verified_for(request: &ActionRequest) -> Self {
+    /// Internal constructor used by the trusted approval subsystem after it authenticates
+    /// and validates a human approval. It is not available to external callers.
+    pub(crate) fn verified_for(request: &ActionRequest, approver_id: &str) -> Self {
         Self {
             request_id: request.request_id.clone(),
             principal: request.principal.clone(),
             capability: request.capability.clone(),
             action: request.action.clone(),
             scope: request.scope.clone(),
+            approver_id: approver_id.into(),
         }
     }
 
     fn matches(&self, request: &ActionRequest) -> bool {
-        self.request_id == request.request_id
+        !self.approver_id.is_empty()
+            && self.request_id == request.request_id
             && self.principal == request.principal
             && self.capability == request.capability
             && self.action == request.action
             && self.scope == request.scope
+    }
+
+    pub fn approver_id(&self) -> &str {
+        &self.approver_id
     }
 }
 
@@ -181,14 +187,17 @@ mod tests {
     #[test]
     fn request_scoped_verified_approval_allows() {
         let mut request = request();
-        request.approval = Some(ApprovalGrant::verified_for(&request));
+        request.approval = Some(ApprovalGrant::verified_for(&request, "human:reviewer"));
         assert_eq!(policy(true).evaluate(&request), PolicyDecision::Allow);
     }
 
     #[test]
     fn approval_for_another_request_is_terminal_deny() {
         let mut approved_request = request();
-        approved_request.approval = Some(ApprovalGrant::verified_for(&approved_request));
+        approved_request.approval = Some(ApprovalGrant::verified_for(
+            &approved_request,
+            "human:reviewer",
+        ));
 
         let mut replay = request();
         replay.request_id = "request:002".into();
