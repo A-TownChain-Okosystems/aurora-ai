@@ -6,9 +6,21 @@ pub mod model_hub;
 pub mod llm_router;
 pub mod agent_registry;
 pub mod config_manager;
+pub mod approval;
+pub mod audit;
+pub mod capability_policy;
+pub mod event;
+pub mod state;
 
 pub use aurora_core::AuroraCore;
 pub use model_hub::ModelHub;
 pub use llm_router::LlmRouter;
 pub use agent_registry::AgentRegistry;
 pub use config_manager::ConfigManager;
+pub use approval::{ApprovalEngine, ApprovalError, VerifiedApproval};
+pub use audit::{AuditError, AuditLogger, AuditRecord};
+pub use capability_policy::{
+    ActionRequest, ApprovalGrant, CapabilityPolicy, CapabilityPolicyEngine, PolicyDecision,
+};
+pub use event::{AuroraEvent, EventBus, EventBusError, EventKind};
+pub use state::{ExecutionState, StateMachine, StateTransitionError};
