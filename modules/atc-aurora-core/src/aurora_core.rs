@@ -1,7 +1,6 @@
 // Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 // Central engine coordinator
 use crate::{AgentRegistry, ConfigManager, LlmRouter, ModelHub};
-use std::collections::HashMap;
 
 pub struct AuroraCore {
     pub model_hub: ModelHub,
@@ -9,6 +8,12 @@ pub struct AuroraCore {
     pub agent_registry: AgentRegistry,
     pub config: ConfigManager,
     pub active: bool,
+}
+
+impl Default for AuroraCore {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl AuroraCore {
