@@ -113,7 +113,7 @@ CI Verified ≠ E2E Verified
 - `CapabilityPolicyEngine`: fail-closed exact-match capability, principal, action and scope authorization.
 - `PolicyDecision` distinguishes `Allow`, `Deny` and `ApprovalRequired`; missing approval does not silently become permission.
 - `ApprovalGrant` is bound to one request and its exact principal/capability/action/scope tuple and records the approver identity.
-- `ApprovalEngine`: in-memory pending approval tracking, one-shot approval consumption and rejection. The approval issuance method is crate-private and is intended only for a trusted adapter that has authenticated the human decision.
+- `ApprovalEngine`: in-memory pending approval tracking, one-shot approval consumption and rejection. The engine consumes a sealed `VerifiedApproval` token. Its constructor is crate-private and intentionally unused in production until an authenticated host adapter is integrated.
 - Duplicate matching policies, unknown capabilities, mismatched scopes and replayed grants fail closed.
 - `StateMachine`: deterministic execution transitions; verification is required before completion, approval waits cannot be skipped, and terminal states cannot be reopened.
 - `EventBus`: deterministic in-memory event ordering, request filtering and duplicate event-ID rejection.
@@ -123,7 +123,7 @@ CI Verified ≠ E2E Verified
 
 ## Explicit residuals
 
-- The production host must authenticate the human approver before invoking the crate-private approval method; the in-memory engine is not itself an identity provider or cryptographic attestation mechanism.
+- The production host must authenticate the human approver before the crate constructs a `VerifiedApproval` token; the token constructor is crate-private and intentionally remains unused in production until that host adapter exists. The in-memory engine is not itself an identity provider or cryptographic attestation mechanism.
 - Event and audit stores are in-memory only. Durable, tamper-evident audit export requires an authorized runtime adapter and a separately verified persistence boundary.
 - The state machine and authorization primitives are not yet wired through every agent/tool execution path; runtime integration remains a separate gate.
 - Provider-specific inference, production-grade RAG, multimodal backends, full agent planning, blockchain signing execution, deployment automation and complete end-to-end verification remain separate implementation/evidence gates.
