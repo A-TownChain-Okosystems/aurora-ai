@@ -4,7 +4,7 @@ title: Aurora AI — Canonical Vision → Components → Functions → Evidence 
 version: 1.0.0
 status: active
 owner: A-TownChain-Okosystems
-updated: 2026-09-30
+updated: 2026-10-12
 ---
 
 # Aurora AI — Canonical Function Matrix
@@ -108,16 +108,21 @@ Tested ≠ CI Verified
 CI Verified ≠ E2E Verified
 ```
 
-## Current concrete implementation in this change
+## Implemented in this change
 
-- `CapabilityPolicyEngine`: fail-closed capability/scope/action authorization.
-- Approval is enforced when a policy requires it.
-- Unknown capability/principal/action/scope returns DENY.
+- `CapabilityPolicyEngine`: fail-closed exact-match capability, principal, action and scope authorization.
+- `PolicyDecision` distinguishes `Allow`, `Deny` and `ApprovalRequired`; missing approval does not silently become permission.
+- `ApprovalGrant` is bound to one request and the exact principal/capability/action/scope tuple; mismatched/replayed grants fail closed. Its constructor is crate-private and must only be called by trusted approval code.
+- Duplicate matching policies fail closed rather than relying on registration order.
+- `StateMachine` validates execution transitions, requires verification before completion, blocks skipping the approval wait, and prevents transitions out of terminal states.
+- Unit tests cover approval-required, request replay, unknown capability/policy, scope mismatch, duplicate policies and invalid/terminal state transitions.
 - ModelHub inference preview is UTF-8 safe.
-- The complete 23-domain matrix is now the canonical implementation decomposition.
+- The 23-domain matrix remains the decomposition contract, not a claim that all 23 domains are implemented.
 
 ## Explicit residuals
 
-The matrix is broader than the currently implemented runtime. Provider-specific inference, production-grade RAG, multimodal backends, full agent planning, blockchain signing execution, deployment automation and complete exact-SHA verification remain separate implementation/evidence gates until corresponding source and CI evidence exists.
+- A complete trusted approval engine must authenticate human approvals and be the only production caller of the crate-private grant constructor.
+- The new core-specific CI workflow must produce successful exact-SHA `cargo fmt`, `cargo test` and `cargo clippy` evidence; the existing SDK workflow tests `sdk/Cargo.toml`, not the core module.
+- Full integration of the state machine into the agent/tool runtime, audit persistence, production-grade RAG, provider backends, multimodal backends, full agent planning, blockchain signing execution and deployment automation remain separate implementation/evidence gates.
 
 No item in this document is a production-readiness claim.
