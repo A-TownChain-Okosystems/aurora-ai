@@ -112,8 +112,7 @@ mod tests {
         engine.request_approval(request()).unwrap();
 
         let confirmation =
-            VerifiedApproval::from_authenticated_host("request:approval-1", "human:owner")
-                .unwrap();
+            VerifiedApproval::from_authenticated_host("request:approval-1", "human:owner").unwrap();
         let grant = engine.approve(confirmation).unwrap();
 
         assert_eq!(grant.approver_id(), "human:owner");
