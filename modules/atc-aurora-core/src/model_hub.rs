@@ -15,6 +15,12 @@ pub struct ModelHub {
     default_model: String,
 }
 
+impl Default for ModelHub {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ModelHub {
     pub fn new() -> Self {
         let mut hub = Self {
