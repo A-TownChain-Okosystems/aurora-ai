@@ -1,6 +1,6 @@
 // Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
-// In-memory approval reference implementation. The caller of approve_verified must be a
-// trusted adapter that has authenticated the human decision; this module does not perform I/O.
+// In-memory approval reference implementation. It does not perform I/O or authenticate users.
+// Only an authorized host adapter may mint VerifiedApproval after authenticating the human.
 
 use std::collections::HashMap;
 
@@ -13,6 +13,33 @@ pub enum ApprovalError {
     RequestAlreadyPending,
     RequestNotPending,
     RequestAlreadyCarriesApproval,
+}
+
+#[derive(Debug)]
+pub struct VerifiedApproval {
+    request_id: String,
+    approver_id: String,
+}
+
+impl VerifiedApproval {
+    /// Seal created only inside the crate by the future authenticated host adapter.
+    /// This constructor remains unused in production until that adapter is integrated.
+    #[allow(dead_code)]
+    pub(crate) fn from_authenticated_host(
+        request_id: &str,
+        approver_id: &str,
+    ) -> Result<Self, ApprovalError> {
+        if request_id.is_empty() {
+            return Err(ApprovalError::EmptyRequestId);
+        }
+        if approver_id.is_empty() {
+            return Err(ApprovalError::EmptyApprover);
+        }
+        Ok(Self {
+            request_id: request_id.into(),
+            approver_id: approver_id.into(),
+        })
+    }
 }
 
 #[derive(Debug, Default)]
@@ -40,22 +67,19 @@ impl ApprovalEngine {
         Ok(())
     }
 
-    /// Records an approval already authenticated by the trusted UI/identity boundary.
-    /// This method is crate-private so untrusted external callers cannot mint grants.
-    pub(crate) fn approve_verified(
+    /// Consumes a sealed approval token. External code cannot construct this token directly.
+    pub fn approve(
         &mut self,
-        request_id: &str,
-        approver_id: &str,
+        confirmation: VerifiedApproval,
     ) -> Result<ApprovalGrant, ApprovalError> {
-        if approver_id.is_empty() {
-            return Err(ApprovalError::EmptyApprover);
-        }
-
         let request = self
             .pending
-            .remove(request_id)
+            .remove(&confirmation.request_id)
             .ok_or(ApprovalError::RequestNotPending)?;
-        Ok(ApprovalGrant::verified_for(&request, approver_id))
+        Ok(ApprovalGrant::verified_for(
+            &request,
+            &confirmation.approver_id,
+        ))
     }
 
     pub fn reject(&mut self, request_id: &str) -> bool {
@@ -87,14 +111,18 @@ mod tests {
         let mut engine = ApprovalEngine::new();
         engine.request_approval(request()).unwrap();
 
-        let grant = engine
-            .approve_verified("request:approval-1", "human:owner")
-            .unwrap();
+        let confirmation =
+            VerifiedApproval::from_authenticated_host("request:approval-1", "human:owner")
+                .unwrap();
+        let grant = engine.approve(confirmation).unwrap();
 
         assert_eq!(grant.approver_id(), "human:owner");
         assert_eq!(engine.pending_count(), 0);
+        let replay =
+            VerifiedApproval::from_authenticated_host("request:approval-1", "human:owner")
+                .unwrap();
         assert_eq!(
-            engine.approve_verified("request:approval-1", "human:owner"),
+            engine.approve(replay),
             Err(ApprovalError::RequestNotPending)
         );
     }
