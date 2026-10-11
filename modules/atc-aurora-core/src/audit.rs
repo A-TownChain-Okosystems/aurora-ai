@@ -95,7 +95,10 @@ mod tests {
     fn duplicate_audit_event_is_rejected() {
         let mut audit = AuditLogger::new();
         audit.append(record("event:1")).unwrap();
-        assert_eq!(audit.append(record("event:1")), Err(AuditError::DuplicateEventId));
+        assert_eq!(
+            audit.append(record("event:1")),
+            Err(AuditError::DuplicateEventId)
+        );
         assert_eq!(audit.len(), 1);
     }
 }
