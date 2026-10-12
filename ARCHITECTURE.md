@@ -202,3 +202,36 @@ MISSING / BLOCKED / DUPLICATE / DISCONNECTED
 ```
 
 A file, documentation entry or module directory alone is not implementation evidence. CI evidence is valid only when tied to the exact source commit being assessed.
+
+---
+
+## Canonical Architecture Extension — Implementation Boundary (2026-10-12)
+
+This extension preserves the existing architecture contract above while linking it to the canonical implementation and evidence matrix. It does not supersede existing hardware, GlobusOS, ShivaCore, or authority-boundary requirements.
+
+### Canonical implementation matrix
+
+See `docs/AURORA_CANONICAL_FUNCTION_MATRIX.md` for the 23-domain Vision → Component → Function → Evidence matrix. Architectural presence does not imply implementation or verification.
+
+### Runtime authorization contract
+
+The existing Rust core uses `AgentRegistry` plus `CapabilityPolicyEngine` to perform an in-process, fail-closed pre-check. The check denies when the core is inactive, the request principal does not match the agent ID, the agent is absent/inactive, or the agent registry does not grant the requested capability. Policy evaluation occurs only after these checks.
+
+This pre-check is not kernel authorization. The target GlobusOS service and ShivaCore capability/TCB boundary must independently enforce operations. Aurora must not directly access kernel memory, physical memory, device registers, unrestricted DMA, TPM private key material, or firmware replacement interfaces.
+
+### Approval and request integrity
+
+The external action-request envelope carries request identity, principal, capability, action, and scope. A caller-supplied approval boolean is not an authorization grant. Approval must be represented by a trusted, request-scoped grant issued only after the host has authenticated the approver. Deny is terminal; a denied request cannot be converted into an approval-required request.
+
+### Evidence status
+
+```text
+Architecture ≠ Implementation ≠ Test ≠ CI Evidence ≠ Verification
+```
+
+Exact-SHA CI evidence is required before marking a capability VERIFIED. CI success for the core does not prove end-to-end OS/kernel enforcement.
+
+### Explicit residuals
+
+Full capability-token enforcement remains a separate gate: expiry, nonce/replay protection, audience validation, revocation, identity authentication, and enforcement at the GlobusOS/ShivaCore boundary must be implemented and evidenced. Production model-provider inference, full RAG, multimodal providers, complete agent planning/execution, blockchain signing execution, deployment automation, and end-to-end verification remain unverified until supported by source and exact-SHA evidence.
+
