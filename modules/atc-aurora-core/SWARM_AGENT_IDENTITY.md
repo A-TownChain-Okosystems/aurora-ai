@@ -19,6 +19,7 @@
 3. Use `TaskScheduler::schedule_for_agent` for assigned work. It rejects unknown or revoked agents and snapshots role/capabilities into the task record.
 4. Use `dispatch_ready_authorized` for assigned work. It rechecks current registry status before dispatch and fails closed if the agent is no longer active.
 5. Read the task's `run_id` after dispatch and attach that value to the result passed to `ResultCollector::submit`.
+6. Populate structured identity fields on `AuditRecord` and `AuroraEvent` for attributable audit/security/execution events.
 
 ## Invariants
 
@@ -28,7 +29,8 @@
 - Assigned tasks dispatched without the registry-aware dispatch API fail closed.
 - Results without `task_id`, `agent_id`, `run_id` or a non-empty payload are rejected.
 - Result aggregation is deterministic by `task_id`, `agent_id`, then `run_id`.
+- Audit records and events can be queried by `agent_id` and retain `swarm_id`, `task_id`, and `run_id` as structured fields.
 
 ## Operational boundary
 
-This change provides an in-process registry, explicit JSON snapshot persistence and deterministic orchestration primitives. It does not automatically wire a production daemon to load/save the registry, create OS-level agent processes, provide distributed locking across multiple service instances, or guarantee tamper-proof audit storage. Production deployment must configure access-controlled durable storage and ensure every scheduler integration uses the registry-aware methods. The Rust unit tests and exact-SHA CI remain the verification gate.
+This change provides an in-process registry, explicit JSON snapshot persistence, structured audit/event attribution and deterministic orchestration primitives. It does not automatically wire a production daemon to load/save the registry, create OS-level agent processes, provide distributed locking across multiple service instances, guarantee tamper-proof audit storage, or connect these records to a metrics backend. Production deployment must configure access-controlled durable storage, populate identity fields in every emitted record, integrate metric labels, and ensure every scheduler integration uses the registry-aware methods. The Rust unit tests and exact-SHA CI remain the verification gate.
