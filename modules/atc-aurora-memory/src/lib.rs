@@ -6,6 +6,7 @@ pub mod memory_index;
 pub mod learning_pipeline;
 pub mod context_window;
 pub mod memory_engine;
+pub mod persistence;
 
 pub use knowledge_base::KnowledgeBase;
 pub use vector_store::VectorStore;
