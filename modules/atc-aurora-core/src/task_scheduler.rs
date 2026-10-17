@@ -120,7 +120,11 @@ impl TaskScheduler {
         let blocked: Vec<String> = self.tasks.values()
             .filter(|task| task.state == TaskState::Queued && task.dependencies.iter().any(|id|
                 self.tasks.get(id).is_some_and(|dep|
-                    matches!(dep.state, TaskState::Failed | TaskState::Cancelled | TaskState::TimedOut))))
+                    matches!(
+                        dep.state,
+                        TaskState::Failed | TaskState::Cancelled | TaskState::TimedOut
+                    )
+                ))
             .map(|task| task.id.clone()).collect();
         for id in blocked {
             if let Some(task) = self.tasks.get_mut(&id) {
@@ -180,7 +184,9 @@ impl TaskScheduler {
         let mut expired = Vec::new();
         for task in self.tasks.values_mut() {
             if task.state == TaskState::Running
-                && task.started_at_ms.is_some_and(|start| now_ms.saturating_sub(start) >= task.timeout_ms)
+                && task.started_at_ms.is_some_and(|start| {
+                    now_ms.saturating_sub(start) >= task.timeout_ms
+                })
             {
                 task.state = TaskState::TimedOut;
                 expired.push(task.id.clone());
