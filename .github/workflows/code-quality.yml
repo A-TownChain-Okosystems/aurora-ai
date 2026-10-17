@@ -7,14 +7,16 @@ on:
 permissions: read-all
 jobs:
   rust:
-    if: ${{ hashFiles('modules/**/Cargo.toml') != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        if: ${{ hashFiles('modules/**/Cargo.toml') != '' }}
       - uses: dtolnay/rust-toolchain@stable
+        if: ${{ hashFiles('modules/**/Cargo.toml') != '' }}
         with:
           components: rustfmt, clippy
       - name: Validate Rust modules
+        if: ${{ hashFiles('modules/**/Cargo.toml') != '' }}
         shell: bash
         run: |
           set -e
@@ -24,23 +26,28 @@ jobs:
             cargo clippy --manifest-path "$manifest" --all-targets -- -D warnings
           done < <(find modules -name Cargo.toml -not -path '*/target/*' -print)
   python:
-    if: ${{ hashFiles('modules/**/pyproject.toml', 'modules/**/requirements*.txt') != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        if: ${{ hashFiles('modules/**/pyproject.toml', 'modules/**/requirements*.txt') != '' }}
       - uses: actions/setup-python@v5
+        if: ${{ hashFiles('modules/**/pyproject.toml', 'modules/**/requirements*.txt') != '' }}
         with:
           python-version: '3.11'
-      - run: python -m compileall -q modules/atc-aurora-ai
+      - name: Compile Python modules
+        if: ${{ hashFiles('modules/**/pyproject.toml', 'modules/**/requirements*.txt') != '' }}
+        run: python -m compileall -q modules/atc-aurora-ai
   node:
-    if: ${{ hashFiles('modules/**/package.json') != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        if: ${{ hashFiles('modules/**/package.json') != '' }}
       - uses: actions/setup-node@v4
+        if: ${{ hashFiles('modules/**/package.json') != '' }}
         with:
           node-version: '20'
       - name: Validate Node module
+        if: ${{ hashFiles('modules/**/package.json') != '' }}
         shell: bash
         run: |
           if [ -f modules/atc-aistudio/package-lock.json ]; then
