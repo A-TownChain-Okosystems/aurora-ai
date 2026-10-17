@@ -454,9 +454,7 @@ mod tests {
             )
             .unwrap();
         registry.revoke(&agent_id).unwrap();
-        assert!(scheduler
-            .dispatch_ready_authorized(1, &registry)
-            .is_empty());
+        assert!(scheduler.dispatch_ready_authorized(1, &registry).is_empty());
         assert_eq!(scheduler.get("task:1").unwrap().state, TaskState::Failed);
         assert_eq!(
             scheduler.schedule_for_agent(
