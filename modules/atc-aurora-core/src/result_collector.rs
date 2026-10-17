@@ -42,7 +42,7 @@ impl ResultCollector {
         if task_id.is_empty() {
             return Err(CollectorError::EmptyTaskId);
         }
-        if self.expected.get(task_id).is_some() {
+        if self.expected.keys().any(|existing| existing == task_id) {
             return Err(CollectorError::DuplicateExpectation(task_id.into()));
         }
         let mut agents = BTreeSet::new();
@@ -84,7 +84,7 @@ impl ResultCollector {
                 agent_id: result.agent_id,
             });
         }
-        if self.results.get(&key).is_some() {
+        if self.results.keys().any(|existing| existing == &key) {
             return Err(CollectorError::DuplicateResult {
                 task_id: key.0,
                 agent_id: key.1,
