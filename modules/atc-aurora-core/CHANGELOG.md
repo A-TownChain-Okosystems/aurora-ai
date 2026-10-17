@@ -12,9 +12,8 @@
 - Tests for duplicate identities, concurrent registration, persistence/reload, revocation and run-aware result aggregation.
 
 ### Verification status
-- Changes are on a feature branch and are not yet verified.
-- Cargo build/test passed on the earlier head, before the latest audit/event attribution edits; checks must pass again on the final PR head SHA.
-- Formatting checks and remaining required CI must pass on the exact PR head SHA before this is marked verified.
+- SDK Build and Test, Dependency Review and Repository Governance passed on the previously inspected head; final-head checks are still required after the last edits.
+- The code-quality gate now format-checks changed Rust files, runs Cargo tests, and runs Clippy with warnings denied.
 - Registry persistence is opt-in through save_json/load_json; deployment code must call these methods and protect the storage path.
 - Metrics-backend integration is not included.
 
