@@ -16,6 +16,10 @@ pub enum EventKind {
 pub struct AuroraEvent {
     pub event_id: String,
     pub request_id: String,
+    pub agent_id: Option<String>,
+    pub swarm_id: Option<String>,
+    pub task_id: Option<String>,
+    pub run_id: Option<String>,
     pub kind: EventKind,
     pub detail: String,
 }
@@ -66,6 +70,13 @@ impl EventBus {
             .collect()
     }
 
+    pub fn events_for_agent(&self, agent_id: &str) -> Vec<&AuroraEvent> {
+        self.events
+            .iter()
+            .filter(|event| event.agent_id.as_deref() == Some(agent_id))
+            .collect()
+    }
+
     pub fn len(&self) -> usize {
         self.events.len()
     }
@@ -79,30 +90,35 @@ impl EventBus {
 mod tests {
     use super::*;
 
-    fn event(event_id: &str, request_id: &str) -> AuroraEvent {
+    fn event(event_id: &str, request_id: &str, agent_id: Option<&str>) -> AuroraEvent {
         AuroraEvent {
             event_id: event_id.into(),
             request_id: request_id.into(),
+            agent_id: agent_id.map(str::to_owned),
+            swarm_id: Some("swarm:1".into()),
+            task_id: Some("task:1".into()),
+            run_id: Some("run:1".into()),
             kind: EventKind::RequestCreated,
             detail: "created".into(),
         }
     }
 
     #[test]
-    fn publishes_in_order_and_filters_by_request() {
+    fn publishes_in_order_and_filters_by_request_and_agent() {
         let mut bus = EventBus::new();
-        bus.publish(event("event:1", "request:1")).unwrap();
-        bus.publish(event("event:2", "request:2")).unwrap();
+        bus.publish(event("event:1", "request:1", Some("agent:one"))).unwrap();
+        bus.publish(event("event:2", "request:2", Some("agent:two"))).unwrap();
         assert_eq!(bus.len(), 2);
         assert_eq!(bus.events_for_request("request:1").len(), 1);
+        assert_eq!(bus.events_for_agent("agent:one").len(), 1);
     }
 
     #[test]
     fn duplicate_event_id_fails_closed() {
         let mut bus = EventBus::new();
-        bus.publish(event("event:1", "request:1")).unwrap();
+        bus.publish(event("event:1", "request:1", Some("agent:one"))).unwrap();
         assert_eq!(
-            bus.publish(event("event:1", "request:2")),
+            bus.publish(event("event:1", "request:2", Some("agent:two"))),
             Err(EventBusError::DuplicateEventId)
         );
         assert_eq!(bus.len(), 1);
