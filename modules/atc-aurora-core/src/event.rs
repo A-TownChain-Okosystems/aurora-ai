@@ -106,8 +106,10 @@ mod tests {
     #[test]
     fn publishes_in_order_and_filters_by_request_and_agent() {
         let mut bus = EventBus::new();
-        bus.publish(event("event:1", "request:1", Some("agent:one"))).unwrap();
-        bus.publish(event("event:2", "request:2", Some("agent:two"))).unwrap();
+        bus.publish(event("event:1", "request:1", Some("agent:one")))
+            .unwrap();
+        bus.publish(event("event:2", "request:2", Some("agent:two")))
+            .unwrap();
         assert_eq!(bus.len(), 2);
         assert_eq!(bus.events_for_request("request:1").len(), 1);
         assert_eq!(bus.events_for_agent("agent:one").len(), 1);
@@ -116,7 +118,8 @@ mod tests {
     #[test]
     fn duplicate_event_id_fails_closed() {
         let mut bus = EventBus::new();
-        bus.publish(event("event:1", "request:1", Some("agent:one"))).unwrap();
+        bus.publish(event("event:1", "request:1", Some("agent:one")))
+            .unwrap();
         assert_eq!(
             bus.publish(event("event:1", "request:2", Some("agent:two"))),
             Err(EventBusError::DuplicateEventId)
