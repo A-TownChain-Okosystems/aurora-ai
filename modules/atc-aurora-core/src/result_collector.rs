@@ -35,7 +35,7 @@ impl ResultCollector {
     where I: IntoIterator<Item = S>, S: Into<String> {
         let task_id = task_id.trim();
         if task_id.is_empty() { return Err(CollectorError::EmptyTaskId); }
-        if self.expected.contains_key(task_id) {
+        if self.expected.get(task_id).is_some() {
             return Err(CollectorError::DuplicateExpectation(task_id.into()));
         }
         let mut agents = BTreeSet::new();
@@ -64,7 +64,7 @@ impl ResultCollector {
                 task_id: result.task_id, agent_id: result.agent_id,
             });
         }
-        if self.results.contains_key(&key) {
+        if self.results.get(&key).is_some() {
             return Err(CollectorError::DuplicateResult {
                 task_id: key.0, agent_id: key.1,
             });
