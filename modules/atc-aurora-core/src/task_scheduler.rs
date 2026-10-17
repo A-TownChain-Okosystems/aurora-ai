@@ -17,7 +17,10 @@ pub enum TaskState {
 
 impl TaskState {
     pub fn is_terminal(self) -> bool {
-        matches!(self, Self::Completed | Self::Failed | Self::Cancelled | Self::TimedOut)
+        matches!(
+            self,
+            Self::Completed | Self::Failed | Self::Cancelled | Self::TimedOut
+        )
     }
 }
 
@@ -80,7 +83,17 @@ impl TaskScheduler {
         now_ms: u64,
         timeout_ms: u64,
     ) -> Result<(), SchedulerError> {
-        self.schedule_inner(id, name, None, None, None, Vec::new(), dependencies, now_ms, timeout_ms)
+        self.schedule_inner(
+            id,
+            name,
+            None,
+            None,
+            None,
+            Vec::new(),
+            dependencies,
+            now_ms,
+            timeout_ms,
+        )
     }
 
     pub fn schedule_for_agent(
@@ -191,11 +204,7 @@ impl TaskScheduler {
         self.dispatch_inner(now_ms, Some(registry))
     }
 
-    fn dispatch_inner(
-        &mut self,
-        now_ms: u64,
-        registry: Option<&AgentRegistry>,
-    ) -> Vec<String> {
+    fn dispatch_inner(&mut self, now_ms: u64, registry: Option<&AgentRegistry>) -> Vec<String> {
         self.expire(now_ms);
         let blocked: Vec<String> = self
             .tasks
@@ -282,9 +291,9 @@ impl TaskScheduler {
         let mut expired = Vec::new();
         for task in self.tasks.values_mut() {
             if task.state == TaskState::Running
-                && task.started_at_ms.is_some_and(|start| {
-                    now_ms.saturating_sub(start) >= task.timeout_ms
-                })
+                && task
+                    .started_at_ms
+                    .is_some_and(|start| now_ms.saturating_sub(start) >= task.timeout_ms)
             {
                 task.state = TaskState::TimedOut;
                 expired.push(task.id.clone());
@@ -313,9 +322,15 @@ impl TaskScheduler {
     }
 
     fn transition_running(&mut self, id: &str, target: TaskState) -> Result<(), SchedulerError> {
-        let task = self.tasks.get_mut(id).ok_or_else(|| SchedulerError::TaskNotFound(id.into()))?;
+        let task = self
+            .tasks
+            .get_mut(id)
+            .ok_or_else(|| SchedulerError::TaskNotFound(id.into()))?;
         if task.state != TaskState::Running {
-            return Err(SchedulerError::InvalidTransition { id: id.into(), state: task.state });
+            return Err(SchedulerError::InvalidTransition {
+                id: id.into(),
+                state: task.state,
+            });
         }
         task.state = target;
         Ok(())
@@ -331,29 +346,52 @@ mod tests {
     fn dependencies_gate_execution_and_parallelism_is_bounded() {
         let mut scheduler = TaskScheduler::new(1).unwrap();
         scheduler.schedule("task:a", "A", vec![], 0, 100).unwrap();
-        scheduler.schedule("task:b", "B", vec!["task:a".into()], 0, 100).unwrap();
+        scheduler
+            .schedule("task:b", "B", vec!["task:a".into()], 0, 100)
+            .unwrap();
         assert_eq!(scheduler.dispatch_ready(1), vec!["task:a"]);
         assert!(scheduler.dispatch_ready(2).is_empty());
         scheduler.complete("task:a").unwrap();
         assert_eq!(scheduler.dispatch_ready(3), vec!["task:b"]);
-        assert!(scheduler.get("task:a").unwrap().run_id.as_ref().unwrap().starts_with("run:"));
-        assert_ne!(scheduler.get("task:a").unwrap().run_id, scheduler.get("task:b").unwrap().run_id);
+        assert!(scheduler
+            .get("task:a")
+            .unwrap()
+            .run_id
+            .as_ref()
+            .unwrap()
+            .starts_with("run:"));
+        assert_ne!(
+            scheduler.get("task:a").unwrap().run_id,
+            scheduler.get("task:b").unwrap().run_id
+        );
     }
 
     #[test]
     fn timeout_and_cancel_are_terminal() {
         let mut scheduler = TaskScheduler::new(2).unwrap();
-        scheduler.schedule("task:slow", "slow", vec![], 0, 10).unwrap();
-        scheduler.schedule("task:cancel", "cancel", vec![], 0, 10).unwrap();
+        scheduler
+            .schedule("task:slow", "slow", vec![], 0, 10)
+            .unwrap();
+        scheduler
+            .schedule("task:cancel", "cancel", vec![], 0, 10)
+            .unwrap();
         scheduler.dispatch_ready(5);
         assert_eq!(scheduler.expire(15), vec!["task:cancel", "task:slow"]);
-        assert_eq!(scheduler.get("task:slow").unwrap().state, TaskState::TimedOut);
+        assert_eq!(
+            scheduler.get("task:slow").unwrap().state,
+            TaskState::TimedOut
+        );
         assert!(scheduler.cancel("task:slow").is_err());
 
         let mut cancellable = TaskScheduler::new(1).unwrap();
-        cancellable.schedule("task:cancel", "cancel", vec![], 0, 10).unwrap();
+        cancellable
+            .schedule("task:cancel", "cancel", vec![], 0, 10)
+            .unwrap();
         assert_eq!(cancellable.cancel("task:cancel"), Ok(()));
-        assert_eq!(cancellable.get("task:cancel").unwrap().state, TaskState::Cancelled);
+        assert_eq!(
+            cancellable.get("task:cancel").unwrap().state,
+            TaskState::Cancelled
+        );
         assert!(cancellable.cancel("task:cancel").is_err());
     }
 
@@ -387,7 +425,9 @@ mod tests {
     fn already_queued_dependents_fail_if_prerequisite_fails() {
         let mut scheduler = TaskScheduler::new(1).unwrap();
         scheduler.schedule("task:a", "A", vec![], 0, 10).unwrap();
-        scheduler.schedule("task:b", "B", vec!["task:a".into()], 0, 10).unwrap();
+        scheduler
+            .schedule("task:b", "B", vec!["task:a".into()], 0, 10)
+            .unwrap();
         scheduler.dispatch_ready(0);
         scheduler.fail("task:a").unwrap();
         assert!(scheduler.dispatch_ready(1).is_empty());
@@ -397,14 +437,38 @@ mod tests {
     #[test]
     fn revoked_agents_cannot_receive_or_dispatch_new_tasks() {
         let mut registry = AgentRegistry::new();
-        let agent_id = registry.register_generated("worker", "research", vec!["read".into()]).unwrap();
+        let agent_id = registry
+            .register_generated("worker", "research", vec!["read".into()])
+            .unwrap();
         let mut scheduler = TaskScheduler::new(1).unwrap();
-        scheduler.schedule_for_agent("task:1", "task", "swarm:1", &agent_id, vec![], 0, 100, &registry).unwrap();
+        scheduler
+            .schedule_for_agent(
+                "task:1",
+                "task",
+                "swarm:1",
+                &agent_id,
+                vec![],
+                0,
+                100,
+                &registry,
+            )
+            .unwrap();
         registry.revoke(&agent_id).unwrap();
-        assert!(scheduler.dispatch_ready_authorized(1, &registry).is_empty());
+        assert!(scheduler
+            .dispatch_ready_authorized(1, &registry)
+            .is_empty());
         assert_eq!(scheduler.get("task:1").unwrap().state, TaskState::Failed);
         assert_eq!(
-            scheduler.schedule_for_agent("task:2", "task", "swarm:1", &agent_id, vec![], 2, 100, &registry),
+            scheduler.schedule_for_agent(
+                "task:2",
+                "task",
+                "swarm:1",
+                &agent_id,
+                vec![],
+                2,
+                100,
+                &registry
+            ),
             Err(SchedulerError::AgentNotAuthorized(agent_id))
         );
     }
@@ -412,10 +476,26 @@ mod tests {
     #[test]
     fn assignment_carries_distinct_swarm_agent_role_capabilities_and_run_ids() {
         let mut registry = AgentRegistry::new();
-        let agent_id = registry.register_generated("worker", "research", vec!["read".into()]).unwrap();
+        let agent_id = registry
+            .register_generated("worker", "research", vec!["read".into()])
+            .unwrap();
         let mut scheduler = TaskScheduler::new(1).unwrap();
-        scheduler.schedule_for_agent("task:1", "task", "swarm:1", &agent_id, vec![], 0, 100, &registry).unwrap();
-        assert_eq!(scheduler.dispatch_ready_authorized(1, &registry), vec!["task:1"]);
+        scheduler
+            .schedule_for_agent(
+                "task:1",
+                "task",
+                "swarm:1",
+                &agent_id,
+                vec![],
+                0,
+                100,
+                &registry,
+            )
+            .unwrap();
+        assert_eq!(
+            scheduler.dispatch_ready_authorized(1, &registry),
+            vec!["task:1"]
+        );
         let task = scheduler.get("task:1").unwrap();
         assert_eq!(task.swarm_id.as_deref(), Some("swarm:1"));
         assert_eq!(task.agent_id.as_deref(), Some(agent_id.as_str()));
