@@ -4,6 +4,7 @@
 
 ### Hinzugefügt
 - UUIDv4 generation for agent IDs and execution run IDs.
+- Agent ID syntax validation and retired identity tombstones prevent accidental identity reuse.
 - JSON registry snapshots that preserve agent identity and revocation state across process restarts.
 - Agent-bound task assignment with distinct swarm_id, task_id, agent_id, agent_role, capabilities and run_id.
 - Fail-closed dispatch for assigned tasks when the agent is missing or revoked.
