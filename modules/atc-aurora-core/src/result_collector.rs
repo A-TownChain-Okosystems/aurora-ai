@@ -1,5 +1,5 @@
 // Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
-// Validates task/agent result attribution and provides deterministic aggregation.
+// Validates task/agent/run attribution and provides deterministic aggregation.
 
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -7,6 +7,7 @@ use std::collections::{BTreeMap, BTreeSet};
 pub struct AgentResult {
     pub task_id: String,
     pub agent_id: String,
+    pub run_id: String,
     pub payload: String,
 }
 
@@ -14,18 +15,19 @@ pub struct AgentResult {
 pub enum CollectorError {
     EmptyTaskId,
     EmptyAgentId,
+    EmptyRunId,
     EmptyPayload,
     EmptyExpectedAgents,
     DuplicateExpectedAgent(String),
     DuplicateExpectation(String),
     UnexpectedResult { task_id: String, agent_id: String },
-    DuplicateResult { task_id: String, agent_id: String },
+    DuplicateResult { task_id: String, agent_id: String, run_id: String },
 }
 
 #[derive(Debug, Default)]
 pub struct ResultCollector {
     expected: BTreeMap<String, BTreeSet<String>>,
-    results: BTreeMap<(String, String), AgentResult>,
+    results: BTreeMap<(String, String, String), AgentResult>,
 }
 
 impl ResultCollector {
@@ -42,7 +44,7 @@ impl ResultCollector {
         if task_id.is_empty() {
             return Err(CollectorError::EmptyTaskId);
         }
-        if self.expected.keys().any(|existing| existing == task_id) {
+        if self.expected.contains_key(task_id) {
             return Err(CollectorError::DuplicateExpectation(task_id.into()));
         }
         let mut agents = BTreeSet::new();
@@ -70,10 +72,13 @@ impl ResultCollector {
         if result.agent_id.trim().is_empty() {
             return Err(CollectorError::EmptyAgentId);
         }
+        if result.run_id.trim().is_empty() {
+            return Err(CollectorError::EmptyRunId);
+        }
         if result.payload.trim().is_empty() {
             return Err(CollectorError::EmptyPayload);
         }
-        let key = (result.task_id.clone(), result.agent_id.clone());
+        let key = (result.task_id.clone(), result.agent_id.clone(), result.run_id.clone());
         let allowed = self
             .expected
             .get(&result.task_id)
@@ -84,17 +89,18 @@ impl ResultCollector {
                 agent_id: result.agent_id,
             });
         }
-        if self.results.keys().any(|existing| existing == &key) {
+        if self.results.contains_key(&key) {
             return Err(CollectorError::DuplicateResult {
                 task_id: key.0,
                 agent_id: key.1,
+                run_id: key.2,
             });
         }
         self.results.insert(key, result);
         Ok(())
     }
 
-    /// Results are ordered lexically by task ID, then agent ID, independent of arrival order.
+    /// Results are ordered lexically by task ID, agent ID, then run ID.
     pub fn aggregate(&self) -> Vec<AgentResult> {
         self.results.values().cloned().collect()
     }
@@ -109,7 +115,11 @@ impl ResultCollector {
         };
         expected
             .iter()
-            .filter(|agent| !self.results.contains_key(&(task_id.into(), (*agent).clone())))
+            .filter(|agent| {
+                !self.results.keys().any(|(task, result_agent, _)| {
+                    task == task_id && result_agent == *agent
+                })
+            })
             .cloned()
             .collect()
     }
@@ -119,10 +129,11 @@ impl ResultCollector {
 mod tests {
     use super::*;
 
-    fn result(task: &str, agent: &str, payload: &str) -> AgentResult {
+    fn result(task: &str, agent: &str, run: &str, payload: &str) -> AgentResult {
         AgentResult {
             task_id: task.into(),
             agent_id: agent.into(),
+            run_id: run.into(),
             payload: payload.into(),
         }
     }
@@ -131,16 +142,17 @@ mod tests {
     fn validates_attribution_and_rejects_duplicate_results() {
         let mut collector = ResultCollector::new();
         collector.expect_agents("task:1", ["agent:a", "agent:b"]).unwrap();
-        collector.submit(result("task:1", "agent:b", "B")).unwrap();
+        collector.submit(result("task:1", "agent:b", "run:1", "B")).unwrap();
         assert_eq!(
-            collector.submit(result("task:1", "agent:b", "again")),
+            collector.submit(result("task:1", "agent:b", "run:1", "again")),
             Err(CollectorError::DuplicateResult {
                 task_id: "task:1".into(),
-                agent_id: "agent:b".into()
+                agent_id: "agent:b".into(),
+                run_id: "run:1".into(),
             })
         );
         assert_eq!(
-            collector.submit(result("task:1", "agent:unknown", "X")),
+            collector.submit(result("task:1", "agent:unknown", "run:2", "X")),
             Err(CollectorError::UnexpectedResult {
                 task_id: "task:1".into(),
                 agent_id: "agent:unknown".into()
@@ -150,33 +162,39 @@ mod tests {
     }
 
     #[test]
-    fn aggregation_is_deterministic_not_arrival_order() {
+    fn aggregation_is_deterministic_and_distinguishes_runs() {
         let mut collector = ResultCollector::new();
         collector.expect_agents("task:b", ["agent:z"]).unwrap();
         collector.expect_agents("task:a", ["agent:y", "agent:x"]).unwrap();
-        collector.submit(result("task:b", "agent:z", "B")).unwrap();
-        collector.submit(result("task:a", "agent:y", "Y")).unwrap();
-        collector.submit(result("task:a", "agent:x", "X")).unwrap();
+        collector.submit(result("task:b", "agent:z", "run:2", "B")).unwrap();
+        collector.submit(result("task:a", "agent:y", "run:1", "Y")).unwrap();
+        collector.submit(result("task:a", "agent:x", "run:3", "X")).unwrap();
+        collector.submit(result("task:a", "agent:x", "run:4", "X retry")).unwrap();
         let aggregate = collector.aggregate();
         assert_eq!(
             aggregate
                 .iter()
-                .map(|r| (r.task_id.as_str(), r.agent_id.as_str()))
+                .map(|r| (r.task_id.as_str(), r.agent_id.as_str(), r.run_id.as_str()))
                 .collect::<Vec<_>>(),
             vec![
-                ("task:a", "agent:x"),
-                ("task:a", "agent:y"),
-                ("task:b", "agent:z")
+                ("task:a", "agent:x", "run:3"),
+                ("task:a", "agent:x", "run:4"),
+                ("task:a", "agent:y", "run:1"),
+                ("task:b", "agent:z", "run:2")
             ]
         );
     }
 
     #[test]
-    fn empty_payload_is_rejected() {
+    fn empty_payload_and_run_id_are_rejected() {
         let mut collector = ResultCollector::new();
         collector.expect_agents("task:1", ["agent:a"]).unwrap();
         assert_eq!(
-            collector.submit(result("task:1", "agent:a", " ")),
+            collector.submit(result("task:1", "agent:a", " ", "payload")),
+            Err(CollectorError::EmptyRunId)
+        );
+        assert_eq!(
+            collector.submit(result("task:1", "agent:a", "run:1", " ")),
             Err(CollectorError::EmptyPayload)
         );
     }
