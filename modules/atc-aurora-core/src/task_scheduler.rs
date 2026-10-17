@@ -94,6 +94,17 @@ impl TaskScheduler {
     /// A task's timeout clock starts when it begins running.
     pub fn dispatch_ready(&mut self, now_ms: u64) -> Vec<String> {
         self.expire(now_ms);
+        // A dependent task must not remain queued forever if a prerequisite failed later.
+        let blocked: Vec<String> = self.tasks.values()
+            .filter(|task| task.state == TaskState::Queued && task.dependencies.iter().any(|id|
+                self.tasks.get(id).is_some_and(|dep|
+                    matches!(dep.state, TaskState::Failed | TaskState::Cancelled | TaskState::TimedOut))))
+            .map(|task| task.id.clone()).collect();
+        for id in blocked {
+            if let Some(task) = self.tasks.get_mut(&id) {
+                task.state = TaskState::Failed;
+            }
+        }
         let running = self.tasks.values().filter(|task| task.state == TaskState::Running).count();
         let slots = self.max_parallel.saturating_sub(running);
         let ready: Vec<String> = self.tasks.values()
@@ -180,6 +191,12 @@ mod tests {
         assert_eq!(scheduler.expire(15), vec!["task:cancel", "task:slow"]);
         assert_eq!(scheduler.get("task:slow").unwrap().state, TaskState::TimedOut);
         assert!(scheduler.cancel("task:slow").is_err());
+
+        let mut cancellable = TaskScheduler::new(1).unwrap();
+        cancellable.schedule("task:cancel", "cancel", vec![], 0, 10).unwrap();
+        assert_eq!(cancellable.cancel("task:cancel"), Ok(()));
+        assert_eq!(cancellable.get("task:cancel").unwrap().state, TaskState::Cancelled);
+        assert!(cancellable.cancel("task:cancel").is_err());
     }
 
     #[test]
@@ -200,5 +217,16 @@ mod tests {
         scheduler.fail("task:a").unwrap();
         assert_eq!(scheduler.schedule("task:b", "B", vec!["task:a".into()], 1, 10),
             Err(SchedulerError::DependencyFailed("task:a".into())));
+    }
+
+    #[test]
+    fn already_queued_dependents_fail_if_prerequisite_fails() {
+        let mut scheduler = TaskScheduler::new(1).unwrap();
+        scheduler.schedule("task:a", "A", vec![], 0, 10).unwrap();
+        scheduler.schedule("task:b", "B", vec!["task:a".into()], 0, 10).unwrap();
+        scheduler.dispatch_ready(0);
+        scheduler.fail("task:a").unwrap();
+        assert!(scheduler.dispatch_ready(1).is_empty());
+        assert_eq!(scheduler.get("task:b").unwrap().state, TaskState::Failed);
     }
 }
