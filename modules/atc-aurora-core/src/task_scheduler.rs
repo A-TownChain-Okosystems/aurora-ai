@@ -78,7 +78,7 @@ impl TaskScheduler {
         if timeout_ms == 0 {
             return Err(SchedulerError::ZeroTimeout);
         }
-        if self.tasks.get(id).is_some() {
+        if self.tasks.keys().any(|existing| existing == id) {
             return Err(SchedulerError::DuplicateTask(id.into()));
         }
         let mut seen = std::collections::HashSet::new();
@@ -181,7 +181,10 @@ impl TaskScheduler {
             .get_mut(id)
             .ok_or_else(|| SchedulerError::TaskNotFound(id.into()))?;
         if !matches!(task.state, TaskState::Queued | TaskState::Running) {
-            return Err(SchedulerError::InvalidTransition { id: id.into(), state: task.state });
+            return Err(SchedulerError::InvalidTransition {
+                id: id.into(),
+                state: task.state,
+            });
         }
         task.state = TaskState::Cancelled;
         Ok(())
