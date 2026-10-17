@@ -23,7 +23,8 @@
 
 ## Invariants
 
-- Duplicate `agent_id` registration is rejected without overwriting the existing record.
+- IDs must start with an ASCII alphanumeric and may contain only ASCII alphanumerics, colon, underscore, hyphen or dot.
+- Duplicate `agent_id` registration is rejected without overwriting the existing record; unregister/revoke preserves an inactive tombstone so the ID cannot be reused.
 - UUIDv4 is used for generated agent IDs and each execution run ID. Generated IDs are not regenerated automatically after restart.
 - A new execution attempt gets a new `run_id`; it does not imply a new logical `agent_id`.
 - Assigned tasks dispatched without the registry-aware dispatch API fail closed.
