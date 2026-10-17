@@ -1,9 +1,13 @@
 // Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
-// Agent Registry — validates identities and capability metadata before registration.
+// Agent Registry — stable identities, duplicate protection and durable registry snapshots.
 
+use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
+use std::fs;
+use std::path::Path;
+use uuid::Uuid;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct CapabilityMetadata {
     pub name: String,
     pub description: String,
@@ -21,7 +25,7 @@ impl CapabilityMetadata {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AgentInfo {
     pub id: String,
     pub name: String,
@@ -41,9 +45,10 @@ pub enum RegistryError {
     DuplicateCapability(String),
     InvalidCapabilityMetadata(String),
     AgentNotFound(String),
+    Persistence(String),
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 pub struct AgentRegistry {
     agents: HashMap<String, AgentInfo>,
 }
@@ -53,8 +58,20 @@ impl AgentRegistry {
         Self::default()
     }
 
-    /// Register an agent with explicit, stable identity and capability names.
-    /// IDs are caller-assigned and never silently overwritten.
+    /// Generates a collision-resistant UUIDv4 once. Callers must persist the returned ID
+    /// and reuse it after restart; a new process/run must not silently mint a replacement.
+    pub fn register_generated(
+        &mut self,
+        name: &str,
+        role: &str,
+        caps: Vec<String>,
+    ) -> Result<String, RegistryError> {
+        let id = format!("agent:{}", Uuid::new_v4());
+        self.register(&id, name, role, caps)?;
+        Ok(id)
+    }
+
+    /// Register an agent with an explicit stable ID. IDs are never silently overwritten.
     pub fn register(
         &mut self,
         id: &str,
@@ -88,7 +105,7 @@ impl AgentRegistry {
         if role.is_empty() {
             return Err(RegistryError::EmptyRole);
         }
-        if self.agents.keys().any(|existing| existing == id) {
+        if self.agents.contains_key(id) {
             return Err(RegistryError::DuplicateId(id.into()));
         }
 
@@ -124,6 +141,11 @@ impl AgentRegistry {
         Ok(())
     }
 
+    /// Mark an agent inactive without deleting its identity or audit attribution.
+    pub fn revoke(&mut self, id: &str) -> Result<(), RegistryError> {
+        self.set_active(id, false)
+    }
+
     pub fn unregister(&mut self, id: &str) -> Result<AgentInfo, RegistryError> {
         self.agents
             .remove(id)
@@ -132,6 +154,10 @@ impl AgentRegistry {
 
     pub fn get_agent(&self, id: &str) -> Option<&AgentInfo> {
         self.agents.get(id)
+    }
+
+    pub fn is_active(&self, id: &str) -> bool {
+        self.agents.get(id).is_some_and(|agent| agent.is_active)
     }
 
     pub fn list_active(&self) -> Vec<&AgentInfo> {
@@ -152,11 +178,34 @@ impl AgentRegistry {
         agent.is_active = active;
         Ok(())
     }
+
+    /// Persist IDs and revocation state. The caller controls the path, permissions and
+    /// backup policy; production deployments should use an access-controlled durable store.
+    pub fn save_json<P: AsRef<Path>>(&self, path: P) -> Result<(), RegistryError> {
+        let path = path.as_ref();
+        let bytes = serde_json::to_vec_pretty(self)
+            .map_err(|error| RegistryError::Persistence(error.to_string()))?;
+        let temp_path = path.with_extension(format!("tmp-{}", Uuid::new_v4()));
+        fs::write(&temp_path, bytes)
+            .map_err(|error| RegistryError::Persistence(error.to_string()))?;
+        fs::rename(&temp_path, path).map_err(|error| {
+            let _ = fs::remove_file(&temp_path);
+            RegistryError::Persistence(error.to_string())
+        })
+    }
+
+    pub fn load_json<P: AsRef<Path>>(path: P) -> Result<Self, RegistryError> {
+        let bytes = fs::read(path).map_err(|error| RegistryError::Persistence(error.to_string()))?;
+        serde_json::from_slice(&bytes)
+            .map_err(|error| RegistryError::Persistence(error.to_string()))
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::sync::{Arc, Mutex};
+    use std::thread;
 
     #[test]
     fn registers_capabilities_and_metadata() {
@@ -191,6 +240,52 @@ mod tests {
     }
 
     #[test]
+    fn generated_ids_are_unique_and_have_agent_namespace() {
+        let mut registry = AgentRegistry::new();
+        let first = registry.register_generated("First", "research", vec![]).unwrap();
+        let second = registry.register_generated("Second", "coding", vec![]).unwrap();
+        assert!(first.starts_with("agent:"));
+        assert!(second.starts_with("agent:"));
+        assert_ne!(first, second);
+        assert!(registry.is_active(&first));
+        assert!(registry.is_active(&second));
+    }
+
+    #[test]
+    fn concurrent_registration_produces_distinct_ids() {
+        let registry = Arc::new(Mutex::new(AgentRegistry::new()));
+        let workers: Vec<_> = (0..16)
+            .map(|index| {
+                let registry = Arc::clone(&registry);
+                thread::spawn(move || {
+                    registry
+                        .lock()
+                        .unwrap()
+                        .register_generated(&format!("agent-{index}"), "worker", vec![])
+                        .unwrap()
+                })
+            })
+            .collect();
+        let ids: HashSet<_> = workers.into_iter().map(|worker| worker.join().unwrap()).collect();
+        assert_eq!(ids.len(), 16);
+    }
+
+    #[test]
+    fn persistence_preserves_identity_and_revocation_across_reload() {
+        let path = std::env::temp_dir().join(format!("aurora-agent-registry-{}.json", Uuid::new_v4()));
+        let mut registry = AgentRegistry::new();
+        let id = registry.register_generated("Persistent", "worker", vec![]).unwrap();
+        registry.revoke(&id).unwrap();
+        registry.save_json(&path).unwrap();
+
+        let restored = AgentRegistry::load_json(&path).unwrap();
+        let _ = fs::remove_file(&path);
+        assert_eq!(restored.get_agent(&id).unwrap().id, id);
+        assert!(!restored.is_active(&id));
+        assert_eq!(restored.count(), 1);
+    }
+
+    #[test]
     fn invalid_identity_and_duplicate_capabilities_are_rejected() {
         let mut registry = AgentRegistry::new();
         assert_eq!(
@@ -214,8 +309,9 @@ mod tests {
         let mut registry = AgentRegistry::new();
         registry.register("agent:z", "Z", "role", vec![]).unwrap();
         registry.register("agent:a", "A", "role", vec![]).unwrap();
-        registry.set_active("agent:z", false).unwrap();
+        registry.revoke("agent:z").unwrap();
         assert_eq!(registry.list_active()[0].id, "agent:a");
+        assert!(!registry.is_active("agent:z"));
         assert_eq!(
             registry.set_active("missing", true),
             Err(RegistryError::AgentNotFound("missing".into()))
