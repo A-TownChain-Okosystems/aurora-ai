@@ -10,7 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-        if: ${{ hashFiles('modules/**/Cargo.toml') != '' }}
       - uses: dtolnay/rust-toolchain@stable
         if: ${{ hashFiles('modules/**/Cargo.toml') != '' }}
         with:
@@ -29,25 +28,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-        if: ${{ hashFiles('modules/**/pyproject.toml', 'modules/**/requirements*.txt') != '' }}
       - uses: actions/setup-python@v5
-        if: ${{ hashFiles('modules/**/pyproject.toml', 'modules/**/requirements*.txt') != '' }}
+        if: ${{ hashFiles('modules/atc-aurora-ai/pyproject.toml', 'modules/atc-aurora-ai/requirements*.txt') != '' }}
         with:
           python-version: '3.11'
       - name: Compile Python modules
-        if: ${{ hashFiles('modules/**/pyproject.toml', 'modules/**/requirements*.txt') != '' }}
+        if: ${{ hashFiles('modules/atc-aurora-ai/pyproject.toml', 'modules/atc-aurora-ai/requirements*.txt') != '' }}
         run: python -m compileall -q modules/atc-aurora-ai
   node:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-        if: ${{ hashFiles('modules/**/package.json') != '' }}
       - uses: actions/setup-node@v4
-        if: ${{ hashFiles('modules/**/package.json') != '' }}
+        if: ${{ hashFiles('modules/atc-aistudio/package.json') != '' }}
         with:
           node-version: '20'
       - name: Validate Node module
-        if: ${{ hashFiles('modules/**/package.json') != '' }}
+        if: ${{ hashFiles('modules/atc-aistudio/package.json') != '' }}
         shell: bash
         run: |
           if [ -f modules/atc-aistudio/package-lock.json ]; then
