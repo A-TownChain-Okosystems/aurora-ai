@@ -195,7 +195,8 @@ impl AgentRegistry {
     }
 
     pub fn load_json<P: AsRef<Path>>(path: P) -> Result<Self, RegistryError> {
-        let bytes = fs::read(path).map_err(|error| RegistryError::Persistence(error.to_string()))?;
+        let bytes =
+            fs::read(path).map_err(|error| RegistryError::Persistence(error.to_string()))?;
         serde_json::from_slice(&bytes)
             .map_err(|error| RegistryError::Persistence(error.to_string()))
     }
@@ -230,7 +231,9 @@ mod tests {
     #[test]
     fn duplicate_id_is_rejected_without_overwrite() {
         let mut registry = AgentRegistry::new();
-        registry.register("agent:one", "First", "research", vec![]).unwrap();
+        registry
+            .register("agent:one", "First", "research", vec![])
+            .unwrap();
         assert_eq!(
             registry.register("agent:one", "Second", "coding", vec![]),
             Err(RegistryError::DuplicateId("agent:one".into()))
@@ -242,8 +245,12 @@ mod tests {
     #[test]
     fn generated_ids_are_unique_and_have_agent_namespace() {
         let mut registry = AgentRegistry::new();
-        let first = registry.register_generated("First", "research", vec![]).unwrap();
-        let second = registry.register_generated("Second", "coding", vec![]).unwrap();
+        let first = registry
+            .register_generated("First", "research", vec![])
+            .unwrap();
+        let second = registry
+            .register_generated("Second", "coding", vec![])
+            .unwrap();
         assert!(first.starts_with("agent:"));
         assert!(second.starts_with("agent:"));
         assert_ne!(first, second);
@@ -266,15 +273,21 @@ mod tests {
                 })
             })
             .collect();
-        let ids: HashSet<_> = workers.into_iter().map(|worker| worker.join().unwrap()).collect();
+        let ids: HashSet<_> = workers
+            .into_iter()
+            .map(|worker| worker.join().unwrap())
+            .collect();
         assert_eq!(ids.len(), 16);
     }
 
     #[test]
     fn persistence_preserves_identity_and_revocation_across_reload() {
-        let path = std::env::temp_dir().join(format!("aurora-agent-registry-{}.json", Uuid::new_v4()));
+        let path =
+            std::env::temp_dir().join(format!("aurora-agent-registry-{}.json", Uuid::new_v4()));
         let mut registry = AgentRegistry::new();
-        let id = registry.register_generated("Persistent", "worker", vec![]).unwrap();
+        let id = registry
+            .register_generated("Persistent", "worker", vec![])
+            .unwrap();
         registry.revoke(&id).unwrap();
         registry.save_json(&path).unwrap();
 
