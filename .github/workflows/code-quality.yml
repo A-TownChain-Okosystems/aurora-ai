@@ -7,7 +7,6 @@ on:
 permissions: read-all
 jobs:
   rust:
-    if: ${{ hashFiles('modules/**/Cargo.toml') != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -18,29 +17,38 @@ jobs:
         shell: bash
         run: |
           set -e
+          manifests="$(find modules -name Cargo.toml -not -path '*/target/*' -print)"
+          if [ -z "$manifests" ]; then
+            echo "No Rust manifests found; skipping Rust validation."
+            exit 0
+          fi
           while IFS= read -r manifest; do
+            [ -n "$manifest" ] || continue
             cargo fmt --manifest-path "$manifest" -- --check
             cargo test --manifest-path "$manifest"
             cargo clippy --manifest-path "$manifest" --all-targets -- -D warnings
-          done < <(find modules -name Cargo.toml -not -path '*/target/*' -print)
+          done <<< "$manifests"
   python:
-    if: ${{ hashFiles('modules/**/pyproject.toml', 'modules/**/requirements*.txt') != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v5
+        if: ${{ hashFiles('modules/**/pyproject.toml', 'modules/**/requirements*.txt') != '' }}
         with:
           python-version: '3.11'
-      - run: python -m compileall -q modules/atc-aurora-ai
+      - name: Compile Python modules
+        if: ${{ hashFiles('modules/**/pyproject.toml', 'modules/**/requirements*.txt') != '' }}
+        run: python -m compileall -q modules/atc-aurora-ai
   node:
-    if: ${{ hashFiles('modules/**/package.json') != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
+        if: ${{ hashFiles('modules/**/package.json') != '' }}
         with:
           node-version: '20'
       - name: Validate Node module
+        if: ${{ hashFiles('modules/**/package.json') != '' }}
         shell: bash
         run: |
           if [ -f modules/atc-aistudio/package-lock.json ]; then
