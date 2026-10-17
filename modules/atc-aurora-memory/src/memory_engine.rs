@@ -4,6 +4,8 @@
 // adapter responsibilities and are NOT implemented by this module.
 
 use std::collections::{HashMap, VecDeque};
+use std::path::Path;
+use crate::persistence::{DurableMemoryStore, DurableRecord, StoreError, StorePrincipal};
 
 const ALLOWED_ROLES: &[&str] = &["user", "assistant", "tool", "system"];
 
@@ -104,6 +106,7 @@ pub enum MemoryError {
     AccessDenied,
     NotFound,
     DerivedArtifactCleanupFailed,
+    PersistenceFailure,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -152,6 +155,7 @@ pub struct MemoryManager {
     next_id: u64,
     max_short_term_messages: usize,
     max_entry_chars: usize,
+    persistent_store: Option<DurableMemoryStore>,
 }
 
 impl MemoryManager {
@@ -162,7 +166,28 @@ impl MemoryManager {
             next_id: 1,
             max_short_term_messages: max_short_term_messages.max(1),
             max_entry_chars: max_entry_chars.max(1),
+            persistent_store: None,
         }
+    }
+
+    /// Opens the canonical manager backed by the durable journal and restores all
+    /// persisted long-term entries. Short-term session messages remain ephemeral.
+    pub fn open_persistent(
+        path: impl AsRef<Path>,
+        max_short_term_messages: usize,
+        max_entry_chars: usize,
+    ) -> Result<Self, MemoryError> {
+        let store = DurableMemoryStore::open(path).map_err(|_| MemoryError::PersistenceFailure)?;
+        let mut manager = Self::new(max_short_term_messages, max_entry_chars);
+        let mut max_id = 0u64;
+        for record in store.records_for_recovery() {
+            let entry = decode_entry(record).ok_or(MemoryError::PersistenceFailure)?;
+            max_id = max_id.max(entry.id);
+            manager.long_term.insert(entry.id, entry);
+        }
+        manager.next_id = max_id.checked_add(1).ok_or(MemoryError::PersistenceFailure)?;
+        manager.persistent_store = Some(store);
+        Ok(manager)
     }
 
     /// Adds a session-scoped message. Short-term state is isolated by tenant, user,
@@ -238,9 +263,9 @@ impl MemoryManager {
         }
 
         let id = self.next_id;
-        self.next_id = self.next_id.checked_add(1)
+        let next_id = self.next_id.checked_add(1)
             .ok_or(MemoryError::InvalidInput("memory ID space exhausted"))?;
-        self.long_term.insert(id, MemoryEntry {
+        let entry = MemoryEntry {
             id,
             tenant_id: principal.tenant_id.clone(),
             owner_user_id: principal.user_id.clone(),
@@ -252,7 +277,12 @@ impl MemoryManager {
             approved_by_user: draft.approved_by_user,
             created_at: now,
             expires_at: draft.expires_at,
-        });
+        };
+        if let Some(store) = self.persistent_store.as_mut() {
+            store.put(encode_entry(&entry)?).map_err(|_| MemoryError::PersistenceFailure)?;
+        }
+        self.long_term.insert(id, entry);
+        self.next_id = next_id;
         Ok(id)
     }
 
@@ -308,6 +338,14 @@ impl MemoryManager {
         // Fail closed: do not remove the source record until derived cleanup succeeds.
         cleaner.delete_by_memory_id(memory_id)
             .map_err(|_| MemoryError::DerivedArtifactCleanupFailed)?;
+        if let Some(store) = self.persistent_store.as_mut() {
+            let scope = StorePrincipal {
+                tenant_id: entry.tenant_id.clone(),
+                user_id: entry.owner_user_id.clone(),
+                agent_id: entry.owner_agent_id.clone().unwrap_or_default(),
+            };
+            store.delete(&scope, memory_id).map_err(|_| MemoryError::PersistenceFailure)?;
+        }
         self.long_term.remove(&memory_id);
         Ok(())
     }
@@ -388,6 +426,88 @@ impl MemoryManager {
     }
 }
 
+
+fn encode_entry(entry: &MemoryEntry) -> Result<DurableRecord, MemoryError> {
+    let payload = [
+        kind_tag(entry.kind).to_string(),
+        hex_encode(entry.content.as_bytes()),
+        hex_encode(entry.provenance.source_id.as_bytes()),
+        hex_encode(entry.provenance.source_kind.as_bytes()),
+        entry.provenance.observed_at.to_string(),
+        entry.provenance.source_version.as_ref().map(|v| hex_encode(v.as_bytes())).unwrap_or_else(|| "-".into()),
+        trust_tag(entry.trust).to_string(),
+    ].join("\n").into_bytes();
+    Ok(DurableRecord {
+        id: entry.id,
+        tenant_id: entry.tenant_id.clone(),
+        user_id: entry.owner_user_id.clone(),
+        agent_id: entry.owner_agent_id.clone().unwrap_or_default(),
+        created_at: entry.created_at,
+        expires_at: entry.expires_at,
+        approved: entry.approved_by_user,
+        payload,
+    })
+}
+
+fn decode_entry(record: &DurableRecord) -> Option<MemoryEntry> {
+    if !record.approved || record.agent_id.is_empty() { return None; }
+    let payload = std::str::from_utf8(&record.payload).ok()?;
+    let fields: Vec<&str> = payload.split('\n').collect();
+    if fields.len() != 7 { return None; }
+    let kind = parse_kind(fields[0])?;
+    let content = String::from_utf8(hex_decode(fields[1])?).ok()?;
+    let source_id = String::from_utf8(hex_decode(fields[2])?).ok()?;
+    let source_kind = String::from_utf8(hex_decode(fields[3])?).ok()?;
+    let observed_at = fields[4].parse().ok()?;
+    let source_version = if fields[5] == "-" { None } else {
+        Some(String::from_utf8(hex_decode(fields[5])?).ok()?)
+    };
+    let trust = parse_trust(fields[6])?;
+    if content.trim().is_empty() || source_id.trim().is_empty() || source_kind.trim().is_empty()
+        || trust == TrustLevel::Untrusted { return None; }
+    Some(MemoryEntry {
+        id: record.id, tenant_id: record.tenant_id.clone(), owner_user_id: record.user_id.clone(),
+        owner_agent_id: Some(record.agent_id.clone()), kind, content,
+        provenance: Provenance { source_id, source_kind, observed_at, source_version },
+        trust, approved_by_user: record.approved, created_at: record.created_at,
+        expires_at: record.expires_at,
+    })
+}
+
+fn kind_tag(kind: MemoryKind) -> u8 {
+    match kind { MemoryKind::Preference => 1, MemoryKind::ProjectFact => 2, MemoryKind::Episode => 3,
+        MemoryKind::SemanticFact => 4, MemoryKind::Procedure => 5 }
+}
+fn parse_kind(tag: &str) -> Option<MemoryKind> {
+    match tag { "1" => Some(MemoryKind::Preference), "2" => Some(MemoryKind::ProjectFact),
+        "3" => Some(MemoryKind::Episode), "4" => Some(MemoryKind::SemanticFact),
+        "5" => Some(MemoryKind::Procedure), _ => None }
+}
+fn trust_tag(trust: TrustLevel) -> u8 {
+    match trust { TrustLevel::Untrusted => 0, TrustLevel::UserProvided => 1,
+        TrustLevel::VerifiedSource => 2, TrustLevel::SystemApproved => 3 }
+}
+fn parse_trust(tag: &str) -> Option<TrustLevel> {
+    match tag { "0" => Some(TrustLevel::Untrusted), "1" => Some(TrustLevel::UserProvided),
+        "2" => Some(TrustLevel::VerifiedSource), "3" => Some(TrustLevel::SystemApproved), _ => None }
+}
+fn hex_encode(bytes: &[u8]) -> String {
+    const HEX: &[u8; 16] = b"0123456789abcdef";
+    let mut out = String::with_capacity(bytes.len() * 2);
+    for byte in bytes { out.push(HEX[(byte >> 4) as usize] as char); out.push(HEX[(byte & 0x0f) as usize] as char); }
+    out
+}
+fn hex_decode(value: &str) -> Option<Vec<u8>> {
+    if value.len() % 2 != 0 { return None; }
+    fn nibble(byte: u8) -> Option<u8> { match byte {
+        b'0'..=b'9' => Some(byte - b'0'), b'a'..=b'f' => Some(byte - b'a' + 10),
+        b'A'..=b'F' => Some(byte - b'A' + 10), _ => None } }
+    let bytes = value.as_bytes();
+    let mut out = Vec::with_capacity(bytes.len() / 2);
+    for pair in bytes.chunks_exact(2) { out.push((nibble(pair[0])? << 4) | nibble(pair[1])?); }
+    Some(out)
+}
+
 /// Conservative tripwire only; not a substitute for a dedicated secret scanner or
 /// encrypted secret-management service. Private keys and credentials must never be
 /// passed to this API in the first place.
@@ -447,6 +567,47 @@ mod tests {
             self.deleted.push(memory_id);
             Ok(())
         }
+    }
+
+
+    #[test]
+    fn persistent_manager_restores_entries_and_next_id_after_restart() {
+        use std::fs;
+        use std::time::{SystemTime, UNIX_EPOCH};
+        let n = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos();
+        let path = std::env::temp_dir().join(format!("aurora-manager-restart-{}-{n}.db", std::process::id()));
+        let p = principal("t1", "u1", "a1");
+        let id;
+        {
+            let mut manager = MemoryManager::open_persistent(&path, 8, 200).unwrap();
+            id = manager.remember(&p, draft("durable fact", true, TrustLevel::VerifiedSource, None), 100).unwrap();
+        }
+        {
+            let mut manager = MemoryManager::open_persistent(&path, 8, 200).unwrap();
+            let restored = manager.retrieve(&p, 101, 10).unwrap();
+            assert_eq!(restored.len(), 1);
+            assert_eq!(restored[0].id, id);
+            assert_eq!(restored[0].content, "durable fact");
+            let next = manager.remember(&p, draft("second durable fact", true, TrustLevel::UserProvided, None), 102).unwrap();
+            assert!(next > id);
+        }
+        let _ = fs::remove_file(path);
+    }
+
+    #[test]
+    fn persistent_manager_deletion_survives_restart() {
+        use std::fs;
+        use std::time::{SystemTime, UNIX_EPOCH};
+        let n = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos();
+        let path = std::env::temp_dir().join(format!("aurora-manager-delete-{}-{n}.db", std::process::id()));
+        let p = principal("t1", "u1", "a1");
+        let mut manager = MemoryManager::open_persistent(&path, 8, 200).unwrap();
+        let id = manager.remember(&p, draft("delete me", true, TrustLevel::UserProvided, None), 100).unwrap();
+        manager.delete(&p, id, &mut Cleaner::default()).unwrap();
+        drop(manager);
+        let manager = MemoryManager::open_persistent(&path, 8, 200).unwrap();
+        assert_eq!(manager.retrieve(&p, 101, 10).unwrap().len(), 0);
+        let _ = fs::remove_file(path);
     }
 
     #[test]
