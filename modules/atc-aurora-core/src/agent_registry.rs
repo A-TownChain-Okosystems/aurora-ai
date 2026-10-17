@@ -60,7 +60,9 @@ impl AgentRegistry {
             && id.as_bytes()[0].is_ascii_alphanumeric()
             && id
                 .bytes()
-                .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b':' | b'_' | b'-' | b'.'))
+                .all(|byte| {
+                    byte.is_ascii_alphanumeric() || matches!(byte, b':' | b'_' | b'-' | b'.')
+                })
     }
 
     pub fn new() -> Self {
