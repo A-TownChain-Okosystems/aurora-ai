@@ -88,7 +88,7 @@ impl AgentRegistry {
         if role.is_empty() {
             return Err(RegistryError::EmptyRole);
         }
-        if self.agents.contains_key(id) {
+        if self.agents.get(id).is_some() {
             return Err(RegistryError::DuplicateId(id.into()));
         }
 
