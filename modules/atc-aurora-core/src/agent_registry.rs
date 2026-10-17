@@ -38,6 +38,7 @@ pub struct AgentInfo {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum RegistryError {
     EmptyId,
+    InvalidId(String),
     EmptyName,
     EmptyRole,
     DuplicateId(String),
@@ -54,6 +55,14 @@ pub struct AgentRegistry {
 }
 
 impl AgentRegistry {
+    fn valid_id(id: &str) -> bool {
+        !id.is_empty()
+            && id.as_bytes()[0].is_ascii_alphanumeric()
+            && id
+                .bytes()
+                .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b':' | b'_' | b'-' | b'.'))
+    }
+
     pub fn new() -> Self {
         Self::default()
     }
@@ -98,6 +107,9 @@ impl AgentRegistry {
         let role = role.trim();
         if id.is_empty() {
             return Err(RegistryError::EmptyId);
+        }
+        if !Self::valid_id(id) {
+            return Err(RegistryError::InvalidId(id.into()));
         }
         if name.is_empty() {
             return Err(RegistryError::EmptyName);
@@ -146,9 +158,12 @@ impl AgentRegistry {
         self.set_active(id, false)
     }
 
+    /// Retire an identity without deleting its tombstone, preventing accidental ID reuse.
     pub fn unregister(&mut self, id: &str) -> Result<AgentInfo, RegistryError> {
+        self.set_active(id, false)?;
         self.agents
-            .remove(id)
+            .get(id)
+            .cloned()
             .ok_or_else(|| RegistryError::AgentNotFound(id.into()))
     }
 
@@ -197,8 +212,16 @@ impl AgentRegistry {
     pub fn load_json<P: AsRef<Path>>(path: P) -> Result<Self, RegistryError> {
         let bytes =
             fs::read(path).map_err(|error| RegistryError::Persistence(error.to_string()))?;
-        serde_json::from_slice(&bytes)
-            .map_err(|error| RegistryError::Persistence(error.to_string()))
+        let registry: Self = serde_json::from_slice(&bytes)
+            .map_err(|error| RegistryError::Persistence(error.to_string()))?;
+        for (key, agent) in &registry.agents {
+            if key != &agent.id || !Self::valid_id(key) {
+                return Err(RegistryError::Persistence(
+                    "registry snapshot contains an invalid or mismatched agent identity".into(),
+                ));
+            }
+        }
+        Ok(registry)
     }
 }
 
@@ -296,6 +319,22 @@ mod tests {
         assert_eq!(restored.get_agent(&id).unwrap().id, id);
         assert!(!restored.is_active(&id));
         assert_eq!(restored.count(), 1);
+    }
+
+    #[test]
+    fn retired_ids_cannot_be_reused_and_invalid_id_syntax_is_rejected() {
+        let mut registry = AgentRegistry::new();
+        registry.register("agent:retired", "Retired", "worker", vec![]).unwrap();
+        let retired = registry.unregister("agent:retired").unwrap();
+        assert!(!retired.is_active);
+        assert_eq!(
+            registry.register("agent:retired", "Replacement", "worker", vec![]),
+            Err(RegistryError::DuplicateId("agent:retired".into()))
+        );
+        assert_eq!(
+            registry.register("agent with spaces", "Invalid", "worker", vec![]),
+            Err(RegistryError::InvalidId("agent with spaces".into()))
+        );
     }
 
     #[test]
