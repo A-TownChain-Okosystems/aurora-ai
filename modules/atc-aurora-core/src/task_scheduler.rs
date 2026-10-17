@@ -117,15 +117,22 @@ impl TaskScheduler {
     pub fn dispatch_ready(&mut self, now_ms: u64) -> Vec<String> {
         self.expire(now_ms);
         // A dependent task must not remain queued forever if a prerequisite failed later.
-        let blocked: Vec<String> = self.tasks.values()
-            .filter(|task| task.state == TaskState::Queued && task.dependencies.iter().any(|id|
-                self.tasks.get(id).is_some_and(|dep|
-                    matches!(
-                        dep.state,
-                        TaskState::Failed | TaskState::Cancelled | TaskState::TimedOut
-                    )
-                ))
-            .map(|task| task.id.clone()).collect();
+        let blocked: Vec<String> = self
+            .tasks
+            .values()
+            .filter(|task| {
+                task.state == TaskState::Queued
+                    && task.dependencies.iter().any(|id| {
+                        self.tasks.get(id).is_some_and(|dep| {
+                            matches!(
+                                dep.state,
+                                TaskState::Failed | TaskState::Cancelled | TaskState::TimedOut
+                            )
+                        })
+                    })
+            })
+            .map(|task| task.id.clone())
+            .collect();
         for id in blocked {
             if let Some(task) = self.tasks.get_mut(&id) {
                 task.state = TaskState::Failed;
