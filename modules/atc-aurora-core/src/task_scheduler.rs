@@ -54,7 +54,10 @@ impl TaskScheduler {
         if max_parallel == 0 {
             return Err(SchedulerError::InvalidParallelism);
         }
-        Ok(Self { max_parallel, tasks: BTreeMap::new() })
+        Ok(Self {
+            max_parallel,
+            tasks: BTreeMap::new(),
+        })
     }
 
     pub fn schedule(
@@ -66,27 +69,46 @@ impl TaskScheduler {
         timeout_ms: u64,
     ) -> Result<(), SchedulerError> {
         let id = id.trim();
-        if id.is_empty() { return Err(SchedulerError::EmptyId); }
-        if name.trim().is_empty() { return Err(SchedulerError::EmptyName); }
-        if timeout_ms == 0 { return Err(SchedulerError::ZeroTimeout); }
+        if id.is_empty() {
+            return Err(SchedulerError::EmptyId);
+        }
+        if name.trim().is_empty() {
+            return Err(SchedulerError::EmptyName);
+        }
+        if timeout_ms == 0 {
+            return Err(SchedulerError::ZeroTimeout);
+        }
         if self.tasks.get(id).is_some() {
             return Err(SchedulerError::DuplicateTask(id.into()));
         }
         let mut seen = std::collections::HashSet::new();
         for dependency in &dependencies {
-            if dependency == id || !seen.insert(dependency) {
+            if dependency.as_str() == id || !seen.insert(dependency) {
                 return Err(SchedulerError::MissingDependency(dependency.clone()));
             }
-            let dep = self.tasks.get(dependency)
+            let dep = self
+                .tasks
+                .get(dependency)
                 .ok_or_else(|| SchedulerError::MissingDependency(dependency.clone()))?;
-            if matches!(dep.state, TaskState::Failed | TaskState::Cancelled | TaskState::TimedOut) {
+            if matches!(
+                dep.state,
+                TaskState::Failed | TaskState::Cancelled | TaskState::TimedOut
+            ) {
                 return Err(SchedulerError::DependencyFailed(dependency.clone()));
             }
         }
-        self.tasks.insert(id.into(), Task {
-            id: id.into(), name: name.trim().into(), dependencies,
-            state: TaskState::Queued, submitted_at_ms: now_ms, started_at_ms: None, timeout_ms,
-        });
+        self.tasks.insert(
+            id.into(),
+            Task {
+                id: id.into(),
+                name: name.trim().into(),
+                dependencies,
+                state: TaskState::Queued,
+                submitted_at_ms: now_ms,
+                started_at_ms: None,
+                timeout_ms,
+            },
+        );
         Ok(())
     }
 
@@ -105,12 +127,26 @@ impl TaskScheduler {
                 task.state = TaskState::Failed;
             }
         }
-        let running = self.tasks.values().filter(|task| task.state == TaskState::Running).count();
+        let running = self
+            .tasks
+            .values()
+            .filter(|task| task.state == TaskState::Running)
+            .count();
         let slots = self.max_parallel.saturating_sub(running);
-        let ready: Vec<String> = self.tasks.values()
-            .filter(|task| task.state == TaskState::Queued && task.dependencies.iter().all(|id|
-                self.tasks.get(id).is_some_and(|dep| dep.state == TaskState::Completed)))
-            .map(|task| task.id.clone()).take(slots).collect();
+        let ready: Vec<String> = self
+            .tasks
+            .values()
+            .filter(|task| {
+                task.state == TaskState::Queued
+                    && task.dependencies.iter().all(|id| {
+                        self.tasks
+                            .get(id)
+                            .is_some_and(|dep| dep.state == TaskState::Completed)
+                    })
+            })
+            .map(|task| task.id.clone())
+            .take(slots)
+            .collect();
         for id in &ready {
             if let Some(task) = self.tasks.get_mut(id) {
                 task.state = TaskState::Running;
@@ -129,7 +165,10 @@ impl TaskScheduler {
     }
 
     pub fn cancel(&mut self, id: &str) -> Result<(), SchedulerError> {
-        let task = self.tasks.get_mut(id).ok_or_else(|| SchedulerError::TaskNotFound(id.into()))?;
+        let task = self
+            .tasks
+            .get_mut(id)
+            .ok_or_else(|| SchedulerError::TaskNotFound(id.into()))?;
         if !matches!(task.state, TaskState::Queued | TaskState::Running) {
             return Err(SchedulerError::InvalidTransition { id: id.into(), state: task.state });
         }
@@ -150,11 +189,23 @@ impl TaskScheduler {
         expired
     }
 
-    pub fn get(&self, id: &str) -> Option<&Task> { self.tasks.get(id) }
-    pub fn len(&self) -> usize { self.tasks.len() }
-    pub fn is_empty(&self) -> bool { self.tasks.is_empty() }
+    pub fn get(&self, id: &str) -> Option<&Task> {
+        self.tasks.get(id)
+    }
+
+    pub fn len(&self) -> usize {
+        self.tasks.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.tasks.is_empty()
+    }
+
     pub fn running_count(&self) -> usize {
-        self.tasks.values().filter(|task| task.state == TaskState::Running).count()
+        self.tasks
+            .values()
+            .filter(|task| task.state == TaskState::Running)
+            .count()
     }
 
     fn transition_running(&mut self, id: &str, target: TaskState) -> Result<(), SchedulerError> {
@@ -202,11 +253,15 @@ mod tests {
     #[test]
     fn duplicate_ids_and_missing_dependencies_fail_closed() {
         let mut scheduler = TaskScheduler::new(1).unwrap();
-        assert_eq!(scheduler.schedule("task:a", "A", vec!["missing".into()], 0, 10),
-            Err(SchedulerError::MissingDependency("missing".into())));
+        assert_eq!(
+            scheduler.schedule("task:a", "A", vec!["missing".into()], 0, 10),
+            Err(SchedulerError::MissingDependency("missing".into()))
+        );
         scheduler.schedule("task:a", "A", vec![], 0, 10).unwrap();
-        assert_eq!(scheduler.schedule("task:a", "duplicate", vec![], 0, 10),
-            Err(SchedulerError::DuplicateTask("task:a".into())));
+        assert_eq!(
+            scheduler.schedule("task:a", "duplicate", vec![], 0, 10),
+            Err(SchedulerError::DuplicateTask("task:a".into()))
+        );
     }
 
     #[test]
@@ -215,8 +270,10 @@ mod tests {
         scheduler.schedule("task:a", "A", vec![], 0, 10).unwrap();
         scheduler.dispatch_ready(0);
         scheduler.fail("task:a").unwrap();
-        assert_eq!(scheduler.schedule("task:b", "B", vec!["task:a".into()], 1, 10),
-            Err(SchedulerError::DependencyFailed("task:a".into())));
+        assert_eq!(
+            scheduler.schedule("task:b", "B", vec!["task:a".into()], 1, 10),
+            Err(SchedulerError::DependencyFailed("task:a".into()))
+        );
     }
 
     #[test]
