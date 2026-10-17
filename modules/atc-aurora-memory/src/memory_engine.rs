@@ -5,7 +5,7 @@
 
 use std::collections::{HashMap, VecDeque};
 use std::path::Path;
-use crate::persistence::{DurableMemoryStore, DurableRecord, StoreError, StorePrincipal};
+use crate::persistence::{DurableMemoryStore, DurableRecord, StorePrincipal};
 
 const ALLOWED_ROLES: &[&str] = &["user", "assistant", "tool", "system"];
 
@@ -182,6 +182,11 @@ impl MemoryManager {
         let mut max_id = 0u64;
         for record in store.records_for_recovery() {
             let entry = decode_entry(record).ok_or(MemoryError::PersistenceFailure)?;
+            manager.validate_content(&entry.content).map_err(|_| MemoryError::PersistenceFailure)?;
+            if entry.provenance.source_id.trim().is_empty()
+                || entry.provenance.source_kind.trim().is_empty() {
+                return Err(MemoryError::PersistenceFailure);
+            }
             max_id = max_id.max(entry.id);
             manager.long_term.insert(entry.id, entry);
         }
