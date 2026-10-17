@@ -20,8 +20,15 @@ pub enum CollectorError {
     EmptyExpectedAgents,
     DuplicateExpectedAgent(String),
     DuplicateExpectation(String),
-    UnexpectedResult { task_id: String, agent_id: String },
-    DuplicateResult { task_id: String, agent_id: String, run_id: String },
+    UnexpectedResult {
+        task_id: String,
+        agent_id: String,
+    },
+    DuplicateResult {
+        task_id: String,
+        agent_id: String,
+        run_id: String,
+    },
 }
 
 #[derive(Debug, Default)]
@@ -78,7 +85,11 @@ impl ResultCollector {
         if result.payload.trim().is_empty() {
             return Err(CollectorError::EmptyPayload);
         }
-        let key = (result.task_id.clone(), result.agent_id.clone(), result.run_id.clone());
+        let key = (
+            result.task_id.clone(),
+            result.agent_id.clone(),
+            result.run_id.clone(),
+        );
         let allowed = self
             .expected
             .get(&result.task_id)
@@ -116,9 +127,10 @@ impl ResultCollector {
         expected
             .iter()
             .filter(|agent| {
-                !self.results.keys().any(|(task, result_agent, _)| {
-                    task == task_id && result_agent == *agent
-                })
+                !self
+                    .results
+                    .keys()
+                    .any(|(task, result_agent, _)| task == task_id && result_agent == *agent)
             })
             .cloned()
             .collect()
@@ -141,8 +153,12 @@ mod tests {
     #[test]
     fn validates_attribution_and_rejects_duplicate_results() {
         let mut collector = ResultCollector::new();
-        collector.expect_agents("task:1", ["agent:a", "agent:b"]).unwrap();
-        collector.submit(result("task:1", "agent:b", "run:1", "B")).unwrap();
+        collector
+            .expect_agents("task:1", ["agent:a", "agent:b"])
+            .unwrap();
+        collector
+            .submit(result("task:1", "agent:b", "run:1", "B"))
+            .unwrap();
         assert_eq!(
             collector.submit(result("task:1", "agent:b", "run:1", "again")),
             Err(CollectorError::DuplicateResult {
@@ -165,11 +181,21 @@ mod tests {
     fn aggregation_is_deterministic_and_distinguishes_runs() {
         let mut collector = ResultCollector::new();
         collector.expect_agents("task:b", ["agent:z"]).unwrap();
-        collector.expect_agents("task:a", ["agent:y", "agent:x"]).unwrap();
-        collector.submit(result("task:b", "agent:z", "run:2", "B")).unwrap();
-        collector.submit(result("task:a", "agent:y", "run:1", "Y")).unwrap();
-        collector.submit(result("task:a", "agent:x", "run:3", "X")).unwrap();
-        collector.submit(result("task:a", "agent:x", "run:4", "X retry")).unwrap();
+        collector
+            .expect_agents("task:a", ["agent:y", "agent:x"])
+            .unwrap();
+        collector
+            .submit(result("task:b", "agent:z", "run:2", "B"))
+            .unwrap();
+        collector
+            .submit(result("task:a", "agent:y", "run:1", "Y"))
+            .unwrap();
+        collector
+            .submit(result("task:a", "agent:x", "run:3", "X"))
+            .unwrap();
+        collector
+            .submit(result("task:a", "agent:x", "run:4", "X retry"))
+            .unwrap();
         let aggregate = collector.aggregate();
         assert_eq!(
             aggregate
