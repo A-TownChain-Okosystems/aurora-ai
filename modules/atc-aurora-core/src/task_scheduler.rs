@@ -69,7 +69,7 @@ impl TaskScheduler {
         if id.is_empty() { return Err(SchedulerError::EmptyId); }
         if name.trim().is_empty() { return Err(SchedulerError::EmptyName); }
         if timeout_ms == 0 { return Err(SchedulerError::ZeroTimeout); }
-        if self.tasks.contains_key(id) {
+        if self.tasks.get(id).is_some() {
             return Err(SchedulerError::DuplicateTask(id.into()));
         }
         let mut seen = std::collections::HashSet::new();
