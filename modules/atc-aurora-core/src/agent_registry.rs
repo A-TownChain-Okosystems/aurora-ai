@@ -58,11 +58,9 @@ impl AgentRegistry {
     fn valid_id(id: &str) -> bool {
         !id.is_empty()
             && id.as_bytes()[0].is_ascii_alphanumeric()
-            && id
-                .bytes()
-                .all(|byte| {
-                    byte.is_ascii_alphanumeric() || matches!(byte, b':' | b'_' | b'-' | b'.')
-                })
+            && id.bytes().all(|byte| {
+                byte.is_ascii_alphanumeric() || matches!(byte, b':' | b'_' | b'-' | b'.')
+            })
     }
 
     pub fn new() -> Self {
@@ -326,7 +324,9 @@ mod tests {
     #[test]
     fn retired_ids_cannot_be_reused_and_invalid_id_syntax_is_rejected() {
         let mut registry = AgentRegistry::new();
-        registry.register("agent:retired", "Retired", "worker", vec![]).unwrap();
+        registry
+            .register("agent:retired", "Retired", "worker", vec![])
+            .unwrap();
         let retired = registry.unregister("agent:retired").unwrap();
         assert!(!retired.is_active);
         assert_eq!(
