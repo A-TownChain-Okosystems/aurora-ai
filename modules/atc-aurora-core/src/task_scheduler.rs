@@ -96,6 +96,8 @@ impl TaskScheduler {
         )
     }
 
+    // Keep assignment identity and scheduling constraints explicit at this API boundary.
+    #[allow(clippy::too_many_arguments)]
     pub fn schedule_for_agent(
         &mut self,
         id: &str,
@@ -129,6 +131,7 @@ impl TaskScheduler {
         )
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn schedule_inner(
         &mut self,
         id: &str,
