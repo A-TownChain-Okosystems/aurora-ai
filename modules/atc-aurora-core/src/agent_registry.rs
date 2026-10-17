@@ -88,7 +88,7 @@ impl AgentRegistry {
         if role.is_empty() {
             return Err(RegistryError::EmptyRole);
         }
-        if self.agents.get(id).is_some() {
+        if self.agents.keys().any(|existing| existing == id) {
             return Err(RegistryError::DuplicateId(id.into()));
         }
 
@@ -101,7 +101,8 @@ impl AgentRegistry {
             if !seen.insert(item.name.trim().to_owned()) {
                 return Err(RegistryError::DuplicateCapability(item.name.clone()));
             }
-            if item.name != item.name.trim() || item.description != item.description.trim()
+            if item.name != item.name.trim()
+                || item.description != item.description.trim()
                 || item.risk_level != item.risk_level.trim()
             {
                 return Err(RegistryError::InvalidCapabilityMetadata(item.name.clone()));
