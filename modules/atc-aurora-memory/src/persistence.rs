@@ -100,6 +100,9 @@ impl DurableMemoryStore {
 
     pub fn schema_version(&self) -> u8 { 2 }
 
+    /// Internal recovery view. Application APIs must use scoped get/list instead.
+    pub(crate) fn records_for_recovery(&self) -> &[DurableRecord] { &self.records }
+
     pub fn put(&mut self, record: DurableRecord) -> Result<(), StoreError> {
         record.validate()?;
         // IDs are canonical keys; only update the in-memory snapshot after durable append.
