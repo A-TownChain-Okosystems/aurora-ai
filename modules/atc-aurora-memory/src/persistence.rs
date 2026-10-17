@@ -102,13 +102,13 @@ impl DurableMemoryStore {
 
     pub fn put(&mut self, record: DurableRecord) -> Result<(), StoreError> {
         record.validate()?;
-        // IDs are canonical keys; replacement removes prior versions before appending.
-        self.records.retain(|existing| existing.id != record.id);
+        // IDs are canonical keys; only update the in-memory snapshot after durable append.
         let encoded = encode_record(&record)?;
         let mut file = OpenOptions::new().append(true).open(&self.path)?;
         file.write_all(&(encoded.len() as u32).to_be_bytes())?;
         file.write_all(&encoded)?;
         file.sync_all()?;
+        self.records.retain(|existing| existing.id != record.id);
         self.records.push(record);
         Ok(())
     }
