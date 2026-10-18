@@ -132,8 +132,11 @@ mod tests {
         let mut core = AuroraCore::new();
         core.start().unwrap();
         core.agent_registry
-            .register("agent:assistant", "Assistant", "assistant", vec![]);
-        core.agent_registry.set_active("agent:assistant", false);
+            .register("agent:assistant", "Assistant", "assistant", vec![])
+            .unwrap();
+        core.agent_registry
+            .set_active("agent:assistant", false)
+            .unwrap();
         assert!(core
             .process_request("agent:assistant", "hello")
             .unwrap_err()
@@ -144,12 +147,14 @@ mod tests {
     fn action_authorization_reuses_agent_registry_and_policy_engine() {
         let mut core = AuroraCore::new();
         core.start().unwrap();
-        core.agent_registry.register(
-            "agent:assistant",
-            "Assistant",
-            "assistant",
-            vec!["filesystem.read".into()],
-        );
+        core.agent_registry
+            .register(
+                "agent:assistant",
+                "Assistant",
+                "assistant",
+                vec!["filesystem.read".into()],
+            )
+            .unwrap();
         core.capability_policy.register(CapabilityPolicy::new(
             "agent:assistant",
             "filesystem.read",
@@ -172,12 +177,14 @@ mod tests {
     fn action_authorization_denies_missing_agent_capability() {
         let mut core = AuroraCore::new();
         core.start().unwrap();
-        core.agent_registry.register(
-            "agent:assistant",
-            "Assistant",
-            "assistant",
-            vec!["context.read".into()],
-        );
+        core.agent_registry
+            .register(
+                "agent:assistant",
+                "Assistant",
+                "assistant",
+                vec!["context.read".into()],
+            )
+            .unwrap();
         core.capability_policy.register(CapabilityPolicy::new(
             "agent:assistant",
             "filesystem.read",
