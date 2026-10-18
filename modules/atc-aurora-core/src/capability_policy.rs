@@ -7,6 +7,9 @@
 // - Unknown identities, capabilities, scopes and ambiguous policies fail closed.
 // - Missing approval pauses with ApprovalRequired; it is not silently converted to Allow.
 // - A grant is bound to one request and its complete principal/capability/action/scope tuple.
+// - Terminally denied capabilities cannot be enabled by ordinary policy registration.
+
+const TERMINALLY_DENIED_CAPABILITIES: &[&str] = &["wallet.export_key"];
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ActionRequest {
@@ -129,6 +132,12 @@ impl CapabilityPolicyEngine {
     }
 
     pub fn evaluate(&self, request: &ActionRequest) -> PolicyDecision {
+        // This denylist is deliberately checked before registered policies. An ordinary
+        // policy cannot override a terminal security prohibition.
+        if TERMINALLY_DENIED_CAPABILITIES.contains(&request.capability.as_str()) {
+            return PolicyDecision::Deny;
+        }
+
         let mut matching = self
             .policies
             .iter()
@@ -239,5 +248,27 @@ mod tests {
     #[test]
     fn policy_without_approval_allows_exact_match() {
         assert_eq!(policy(false).evaluate(&request()), PolicyDecision::Allow);
+    }
+
+    #[test]
+    fn terminal_wallet_export_deny_cannot_be_overridden_by_policy() {
+        let mut engine = CapabilityPolicyEngine::new();
+        engine.register(CapabilityPolicy::new(
+            "agent:test",
+            "wallet.export_key",
+            "export_private_key",
+            "wallet:default",
+            false,
+        ));
+        let request = ActionRequest {
+            request_id: "request:wallet-export".into(),
+            principal: "agent:test".into(),
+            capability: "wallet.export_key".into(),
+            action: "export_private_key".into(),
+            scope: "wallet:default".into(),
+            approval: None,
+        };
+
+        assert_eq!(engine.evaluate(&request), PolicyDecision::Deny);
     }
 }
