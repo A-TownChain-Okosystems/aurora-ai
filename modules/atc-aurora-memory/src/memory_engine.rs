@@ -397,8 +397,10 @@ impl MemoryManager {
         })
     }
 
-    pub fn count(&self) -> usize {
-        self.long_term.len()
+    /// Count only records visible to this principal; global counts leak tenant activity.
+    pub fn count(&self, principal: &AccessPrincipal) -> Result<usize, MemoryError> {
+        self.validate_principal(principal)?;
+        Ok(self.long_term.values().filter(|entry| self.can_read(entry, principal)).count())
     }
 
     fn can_read(&self, entry: &MemoryEntry, principal: &AccessPrincipal) -> bool {
@@ -638,7 +640,7 @@ mod tests {
             manager.remember(&p, draft("poisoned", true, TrustLevel::Untrusted, None), 100),
             Err(MemoryError::UntrustedContent)
         );
-        assert_eq!(manager.count(), 0);
+        assert_eq!(manager.count(&p).unwrap(), 0);
     }
 
     #[test]
@@ -669,10 +671,10 @@ mod tests {
         let id = manager.remember(&p, draft("approved fact", true, TrustLevel::UserProvided, None), 100).unwrap();
         let mut cleaner = Cleaner { fail: true, ..Cleaner::default() };
         assert_eq!(manager.delete(&p, id, &mut cleaner), Err(MemoryError::DerivedArtifactCleanupFailed));
-        assert_eq!(manager.count(), 1);
+        assert_eq!(manager.count(&p).unwrap(), 1);
         cleaner.fail = false;
         manager.delete(&p, id, &mut cleaner).unwrap();
-        assert_eq!(manager.count(), 0);
+        assert_eq!(manager.count(&p).unwrap(), 0);
         assert_eq!(cleaner.deleted, vec![id]);
     }
 
