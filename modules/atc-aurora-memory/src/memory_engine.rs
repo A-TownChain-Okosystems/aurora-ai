@@ -698,6 +698,25 @@ mod tests {
     }
 
     #[test]
+    fn approval_is_bound_to_exact_principal_and_draft() {
+        let mut manager = MemoryManager::new(8, 200);
+        let owner = principal("t1", "u1", "a1");
+        let draft = draft("approved fact", TrustLevel::VerifiedSource, None);
+        let approval = MemoryApproval::from_authenticated_host(&owner, &draft, "human:owner").unwrap();
+
+        assert_eq!(
+            manager.remember(
+                &owner,
+                draft("different content", TrustLevel::VerifiedSource, None),
+                Some(approval),
+                100,
+            ),
+            Err(MemoryError::ApprovalRequired)
+        );
+        assert_eq!(manager.count(&owner).unwrap(), 0);
+    }
+
+    #[test]
     fn retrieval_enforces_tenant_user_agent_and_expiry() {
         let mut manager = MemoryManager::new(8, 200);
         let p = principal("t1", "u1", "a1");
