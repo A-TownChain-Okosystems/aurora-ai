@@ -41,7 +41,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::CapabilityPolicy;
+    use crate::{ApprovalEngine, CapabilityPolicy, VerifiedApproval};
     use std::cell::Cell;
 
     fn request(capability: &str, action: &str, request_id: &str) -> ActionRequest {
@@ -125,6 +125,33 @@ mod tests {
 
         assert_eq!(result, Err(ActionExecutionError::ApprovalRequired));
         assert_eq!(calls.get(), 0);
+    }
+
+    #[test]
+    fn request_scoped_approval_allows_the_exact_pending_write_once() {
+        let core = active_core();
+        let mut request = write_request();
+        let mut approvals = ApprovalEngine::new();
+        approvals.request_approval(request.clone()).unwrap();
+
+        // This unit test exercises the seal/consume path only. It does not assert
+        // that a production human-authentication host adapter exists.
+        let confirmation = VerifiedApproval::from_authenticated_host(
+            &request.request_id,
+            "human:reviewer",
+        )
+        .unwrap();
+        request.approval = Some(approvals.approve(confirmation).unwrap());
+
+        let calls = Cell::new(0);
+        let result = execute_authorized(&core, "agent:assistant", &request, || {
+            calls.set(calls.get() + 1);
+            Ok::<_, ()>("written")
+        });
+
+        assert_eq!(result, Ok("written"));
+        assert_eq!(calls.get(), 1);
+        assert_eq!(approvals.pending_count(), 0);
     }
 
     #[test]
