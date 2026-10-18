@@ -76,10 +76,53 @@ pub struct MemoryDraft {
     pub content: String,
     pub provenance: Provenance,
     pub trust: TrustLevel,
-    /// An approval decision from the trusted application layer, never model output.
-    pub approved_by_user: bool,
     /// Optional absolute Unix timestamp.
     pub expires_at: Option<u64>,
+}
+
+/// A non-forgeable-by-external-callers seal for one exact draft and principal.
+/// The authenticated host adapter must mint this only after verifying the human.
+#[derive(Debug)]
+pub struct MemoryApproval {
+    tenant_id: String,
+    user_id: String,
+    agent_id: String,
+    draft: MemoryDraft,
+    approver_id: String,
+}
+
+impl MemoryApproval {
+    /// Internal host boundary. This is deliberately crate-private until the real
+    /// authenticated host adapter is integrated; non-empty IDs alone are not authentication.
+    #[allow(dead_code)]
+    pub(crate) fn from_authenticated_host(
+        principal: &AccessPrincipal,
+        draft: &MemoryDraft,
+        approver_id: &str,
+    ) -> Result<Self, MemoryError> {
+        if principal.tenant_id.trim().is_empty()
+            || principal.user_id.trim().is_empty()
+            || principal.agent_id.trim().is_empty()
+            || approver_id.trim().is_empty()
+        {
+            return Err(MemoryError::InvalidInput("authenticated approval context is incomplete"));
+        }
+        Ok(Self {
+            tenant_id: principal.tenant_id.clone(),
+            user_id: principal.user_id.clone(),
+            agent_id: principal.agent_id.clone(),
+            draft: draft.clone(),
+            approver_id: approver_id.to_owned(),
+        })
+    }
+
+    fn matches(&self, principal: &AccessPrincipal, draft: &MemoryDraft) -> bool {
+        !self.approver_id.trim().is_empty()
+            && self.tenant_id == principal.tenant_id
+            && self.user_id == principal.user_id
+            && self.agent_id == principal.agent_id
+            && self.draft == *draft
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -248,11 +291,13 @@ impl MemoryManager {
         &mut self,
         principal: &AccessPrincipal,
         draft: MemoryDraft,
+        approval: Option<MemoryApproval>,
         now: u64,
     ) -> Result<u64, MemoryError> {
         self.validate_principal(principal)?;
         self.validate_content(&draft.content)?;
-        if !draft.approved_by_user {
+        let approval = approval.ok_or(MemoryError::ApprovalRequired)?;
+        if !approval.matches(principal, &draft) {
             return Err(MemoryError::ApprovalRequired);
         }
         if draft.trust == TrustLevel::Untrusted {
@@ -279,7 +324,7 @@ impl MemoryManager {
             content: draft.content,
             provenance: draft.provenance,
             trust: draft.trust,
-            approved_by_user: draft.approved_by_user,
+            approved_by_user: true,
             created_at: now,
             expires_at: draft.expires_at,
         };
@@ -544,7 +589,7 @@ mod tests {
         }
     }
 
-    fn draft(content: &str, approved: bool, trust: TrustLevel, expiry: Option<u64>) -> MemoryDraft {
+    fn draft(content: &str, trust: TrustLevel, expiry: Option<u64>) -> MemoryDraft {
         MemoryDraft {
             kind: MemoryKind::ProjectFact,
             content: content.into(),
@@ -555,9 +600,18 @@ mod tests {
                 source_version: Some("v1".into()),
             },
             trust,
-            approved_by_user: approved,
             expires_at: expiry,
         }
+    }
+
+    fn remember_approved(
+        manager: &mut MemoryManager,
+        principal: &AccessPrincipal,
+        draft: MemoryDraft,
+        now: u64,
+    ) -> Result<u64, MemoryError> {
+        let approval = MemoryApproval::from_authenticated_host(principal, &draft, "human:owner")?;
+        manager.remember(principal, draft, Some(approval), now)
     }
 
     #[derive(Default)]
@@ -587,7 +641,7 @@ mod tests {
         let id;
         {
             let mut manager = MemoryManager::open_persistent(&path, 8, 200).unwrap();
-            id = manager.remember(&p, draft("durable fact", true, TrustLevel::VerifiedSource, None), 100).unwrap();
+            id = remember_approved(&mut manager, &p, draft("durable fact", TrustLevel::VerifiedSource, None), 100).unwrap();
         }
         {
             let mut manager = MemoryManager::open_persistent(&path, 8, 200).unwrap();
@@ -595,7 +649,7 @@ mod tests {
             assert_eq!(restored.len(), 1);
             assert_eq!(restored[0].id, id);
             assert_eq!(restored[0].content, "durable fact");
-            let next = manager.remember(&p, draft("second durable fact", true, TrustLevel::UserProvided, None), 102).unwrap();
+            let next = remember_approved(&mut manager, &p, draft("second durable fact", TrustLevel::UserProvided, None), 102).unwrap();
             assert!(next > id);
         }
         let _ = fs::remove_file(path);
@@ -609,7 +663,7 @@ mod tests {
         let path = std::env::temp_dir().join(format!("aurora-manager-delete-{}-{n}.db", std::process::id()));
         let p = principal("t1", "u1", "a1");
         let mut manager = MemoryManager::open_persistent(&path, 8, 200).unwrap();
-        let id = manager.remember(&p, draft("delete me", true, TrustLevel::UserProvided, None), 100).unwrap();
+        let id = remember_approved(&mut manager, &p, draft("delete me", TrustLevel::UserProvided, None), 100).unwrap();
         manager.delete(&p, id, &mut Cleaner::default()).unwrap();
         drop(manager);
         let manager = MemoryManager::open_persistent(&path, 8, 200).unwrap();
@@ -633,11 +687,11 @@ mod tests {
         let mut manager = MemoryManager::new(8, 200);
         let p = principal("t1", "u1", "a1");
         assert_eq!(
-            manager.remember(&p, draft("not approved", false, TrustLevel::UserProvided, None), 100),
+            manager.remember(&p, draft("not approved", TrustLevel::UserProvided, None), None, 100),
             Err(MemoryError::ApprovalRequired)
         );
         assert_eq!(
-            manager.remember(&p, draft("poisoned", true, TrustLevel::Untrusted, None), 100),
+            remember_approved(&mut manager, &p, draft("poisoned", TrustLevel::Untrusted, None), 100),
             Err(MemoryError::UntrustedContent)
         );
         assert_eq!(manager.count(&p).unwrap(), 0);
@@ -647,7 +701,7 @@ mod tests {
     fn retrieval_enforces_tenant_user_agent_and_expiry() {
         let mut manager = MemoryManager::new(8, 200);
         let p = principal("t1", "u1", "a1");
-        manager.remember(&p, draft("approved fact", true, TrustLevel::VerifiedSource, Some(200)), 100).unwrap();
+        remember_approved(&mut manager, &p, draft("approved fact", TrustLevel::VerifiedSource, Some(200)), 100).unwrap();
         assert_eq!(manager.retrieve(&principal("t2", "u1", "a1"), 150, 10).unwrap().len(), 0);
         assert_eq!(manager.retrieve(&principal("t1", "u2", "a1"), 150, 10).unwrap().len(), 0);
         assert_eq!(manager.retrieve(&principal("t1", "u1", "a2"), 150, 10).unwrap().len(), 0);
@@ -668,7 +722,7 @@ mod tests {
     fn delete_cleans_derived_artifacts_before_source_record() {
         let mut manager = MemoryManager::new(8, 200);
         let p = principal("t1", "u1", "a1");
-        let id = manager.remember(&p, draft("approved fact", true, TrustLevel::UserProvided, None), 100).unwrap();
+        let id = remember_approved(&mut manager, &p, draft("approved fact", TrustLevel::UserProvided, None), 100).unwrap();
         let mut cleaner = Cleaner { fail: true, ..Cleaner::default() };
         assert_eq!(manager.delete(&p, id, &mut cleaner), Err(MemoryError::DerivedArtifactCleanupFailed));
         assert_eq!(manager.count(&p).unwrap(), 1);
@@ -682,7 +736,7 @@ mod tests {
     fn explanation_requires_authorized_and_matching_source() {
         let mut manager = MemoryManager::new(8, 200);
         let p = principal("t1", "u1", "a1");
-        let id = manager.remember(&p, draft("approved fact", true, TrustLevel::VerifiedSource, None), 100).unwrap();
+        let id = remember_approved(&mut manager, &p, draft("approved fact", TrustLevel::VerifiedSource, None), 100).unwrap();
         let explanation = manager.create_explanation(
             &p,
             "Find the project identifier",
