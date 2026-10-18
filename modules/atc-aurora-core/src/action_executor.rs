@@ -16,7 +16,7 @@ pub enum ActionExecutionError<E> {
 
 /// Evaluate authorization immediately before invoking an action closure.
 ///
-/// The closure is never invoked for `Deny` or `ApprovalRequired`. Privileged
+/// The closure is never invoked for Deny or ApprovalRequired. Privileged
 /// adapters should place the complete side-effecting operation inside this closure
 /// and must not perform part of the operation before calling this function.
 ///
@@ -44,74 +44,81 @@ mod tests {
     use crate::CapabilityPolicy;
     use std::cell::Cell;
 
-    fn request() -> ActionRequest {
+    fn request(capability: &str, action: &str, request_id: &str) -> ActionRequest {
         ActionRequest {
-            request_id: "request:secure-executor-1".into(),
+            request_id: request_id.into(),
             principal: "agent:assistant".into(),
-            capability: "filesystem.write".into(),
-            action: "write_file".into(),
+            capability: capability.into(),
+            action: action.into(),
             scope: "workspace:project-a".into(),
             approval: None,
         }
     }
 
-    fn active_core(approval_required: bool) -> AuroraCore {
+    fn read_request() -> ActionRequest {
+        request("filesystem.read", "read_file", "request:read-1")
+    }
+
+    fn write_request() -> ActionRequest {
+        request("filesystem.write", "write_file", "request:write-1")
+    }
+
+    fn active_core() -> AuroraCore {
         let mut core = AuroraCore::new();
         core.start().unwrap();
         core.agent_registry.register(
             "agent:assistant",
             "Assistant",
             "assistant",
-            vec!["filesystem.write".into()],
+            vec![
+                "filesystem.read".into(),
+                "filesystem.write".into(),
+                "wallet.export_key".into(),
+            ],
         );
+        core.capability_policy.register(CapabilityPolicy::new(
+            "agent:assistant",
+            "filesystem.read",
+            "read_file",
+            "workspace:project-a",
+            false,
+        ));
         core.capability_policy.register(CapabilityPolicy::new(
             "agent:assistant",
             "filesystem.write",
             "write_file",
             "workspace:project-a",
-            approval_required,
+            true,
+        ));
+        // Even a mistakenly permissive policy must not override terminal deny.
+        core.capability_policy.register(CapabilityPolicy::new(
+            "agent:assistant",
+            "wallet.export_key",
+            "export_private_key",
+            "workspace:project-a",
+            false,
         ));
         core
     }
 
     #[test]
-    fn allowed_action_runs_once() {
-        let core = active_core(false);
+    fn filesystem_read_runs_once_when_allowed() {
+        let core = active_core();
         let calls = Cell::new(0);
-        let result = execute_authorized(&core, "agent:assistant", &request(), || {
+        let result = execute_authorized(&core, "agent:assistant", &read_request(), || {
             calls.set(calls.get() + 1);
-            Ok::<_, ()>("written")
+            Ok::<_, ()>("read")
         });
 
-        assert_eq!(result, Ok("written"));
+        assert_eq!(result, Ok("read"));
         assert_eq!(calls.get(), 1);
     }
 
     #[test]
-    fn denied_action_has_no_side_effect() {
-        let mut core = AuroraCore::new();
-        core.start().unwrap();
-        core.agent_registry.register(
-            "agent:assistant",
-            "Assistant",
-            "assistant",
-            vec!["filesystem.write".into()],
-        );
+    fn filesystem_write_requires_approval_and_has_no_side_effect_without_it() {
+        let core = active_core();
         let calls = Cell::new(0);
-        let result = execute_authorized(&core, "agent:assistant", &request(), || {
-            calls.set(calls.get() + 1);
-            Ok::<_, ()>(())
-        });
-
-        assert_eq!(result, Err(ActionExecutionError::Denied));
-        assert_eq!(calls.get(), 0);
-    }
-
-    #[test]
-    fn approval_required_action_has_no_side_effect() {
-        let core = active_core(true);
-        let calls = Cell::new(0);
-        let result = execute_authorized(&core, "agent:assistant", &request(), || {
+        let result = execute_authorized(&core, "agent:assistant", &write_request(), || {
             calls.set(calls.get() + 1);
             Ok::<_, ()>(())
         });
@@ -121,10 +128,49 @@ mod tests {
     }
 
     #[test]
-    fn identity_mismatch_has_no_side_effect() {
-        let core = active_core(false);
+    fn unknown_policy_is_denied_without_side_effect() {
+        let mut core = active_core();
+        core.agent_registry.register(
+            "agent:untrusted",
+            "Untrusted",
+            "untrusted",
+            vec!["filesystem.read".into()],
+        );
+        let mut request = read_request();
+        request.principal = "agent:untrusted".into();
         let calls = Cell::new(0);
-        let result = execute_authorized(&core, "agent:other", &request(), || {
+        let result = execute_authorized(&core, "agent:untrusted", &request, || {
+            calls.set(calls.get() + 1);
+            Ok::<_, ()>(())
+        });
+
+        assert_eq!(result, Err(ActionExecutionError::Denied));
+        assert_eq!(calls.get(), 0);
+    }
+
+    #[test]
+    fn identity_mismatch_has_no_side_effect() {
+        let core = active_core();
+        let calls = Cell::new(0);
+        let result = execute_authorized(&core, "agent:other", &read_request(), || {
+            calls.set(calls.get() + 1);
+            Ok::<_, ()>(())
+        });
+
+        assert_eq!(result, Err(ActionExecutionError::Denied));
+        assert_eq!(calls.get(), 0);
+    }
+
+    #[test]
+    fn terminal_wallet_key_export_deny_has_no_side_effect() {
+        let core = active_core();
+        let request = request(
+            "wallet.export_key",
+            "export_private_key",
+            "request:wallet-export",
+        );
+        let calls = Cell::new(0);
+        let result = execute_authorized(&core, "agent:assistant", &request, || {
             calls.set(calls.get() + 1);
             Ok::<_, ()>(())
         });
@@ -135,8 +181,8 @@ mod tests {
 
     #[test]
     fn action_failure_is_reported_after_authorization() {
-        let core = active_core(false);
-        let result = execute_authorized(&core, "agent:assistant", &request(), || {
+        let core = active_core();
+        let result = execute_authorized(&core, "agent:assistant", &read_request(), || {
             Err::<(), _>("adapter failure")
         });
 
