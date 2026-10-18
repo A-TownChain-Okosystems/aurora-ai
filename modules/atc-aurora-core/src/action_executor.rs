@@ -136,11 +136,9 @@ mod tests {
 
         // This unit test exercises the seal/consume path only. It does not assert
         // that a production human-authentication host adapter exists.
-        let confirmation = VerifiedApproval::from_authenticated_host(
-            &request.request_id,
-            "human:reviewer",
-        )
-        .unwrap();
+        let confirmation =
+            VerifiedApproval::from_authenticated_host(&request.request_id, "human:reviewer")
+                .unwrap();
         request.approval = Some(approvals.approve(confirmation).unwrap());
 
         let calls = Cell::new(0);
