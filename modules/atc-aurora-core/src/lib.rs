@@ -1,6 +1,7 @@
 // atc-aurora-core — Central AI Engine, Model Hub, LLM Router
 // Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 
+pub mod action_executor;
 pub mod agent_registry;
 pub mod approval;
 pub mod audit;
@@ -12,6 +13,7 @@ pub mod llm_router;
 pub mod model_hub;
 pub mod state;
 
+pub use action_executor::{ActionExecutor, ExecutorError};
 pub use agent_registry::AgentRegistry;
 pub use approval::{ApprovalEngine, ApprovalError, VerifiedApproval};
 pub use audit::{AuditError, AuditLogger, AuditRecord};
