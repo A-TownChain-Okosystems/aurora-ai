@@ -38,7 +38,9 @@ impl Default for ActionExecutor {
 
 impl ActionExecutor {
     pub fn new() -> Self {
-        Self { handlers: HashMap::new() }
+        Self {
+            handlers: HashMap::new(),
+        }
     }
 
     /// Register a trusted application-owned handler. Do not register handlers or
@@ -58,10 +60,13 @@ impl ActionExecutor {
         if self.handlers.contains_key(action) {
             return Err(ExecutorError::DuplicateAction);
         }
-        self.handlers.insert(action.to_owned(), RegisteredHandler {
-            capability: capability.to_owned(),
-            run: Box::new(handler),
-        });
+        self.handlers.insert(
+            action.to_owned(),
+            RegisteredHandler {
+                capability: capability.to_owned(),
+                run: Box::new(handler),
+            },
+        );
         Ok(())
     }
 
@@ -74,7 +79,10 @@ impl ActionExecutor {
         agent_id: &str,
         request: &ActionRequest,
     ) -> Result<String, ExecutorError> {
-        let handler = self.handlers.get(&request.action).ok_or(ExecutorError::UnknownAction)?;
+        let handler = self
+            .handlers
+            .get(&request.action)
+            .ok_or(ExecutorError::UnknownAction)?;
         if handler.capability != request.capability {
             return Err(ExecutorError::CapabilityMismatch);
         }
@@ -134,12 +142,17 @@ mod tests {
         let calls = Arc::new(AtomicUsize::new(0));
         let observed = Arc::clone(&calls);
         let mut executor = ActionExecutor::new();
-        executor.register("read_file", "filesystem.read", move |_| {
-            observed.fetch_add(1, Ordering::SeqCst);
-            Ok("should not run".into())
-        }).unwrap();
+        executor
+            .register("read_file", "filesystem.read", move |_| {
+                observed.fetch_add(1, Ordering::SeqCst);
+                Ok("should not run".into())
+            })
+            .unwrap();
 
-        assert_eq!(executor.execute(&core, "agent:assistant", &request), Err(ExecutorError::Denied));
+        assert_eq!(
+            executor.execute(&core, "agent:assistant", &request),
+            Err(ExecutorError::Denied)
+        );
         assert_eq!(calls.load(Ordering::SeqCst), 0);
     }
 
@@ -149,12 +162,17 @@ mod tests {
         let calls = Arc::new(AtomicUsize::new(0));
         let observed = Arc::clone(&calls);
         let mut executor = ActionExecutor::new();
-        executor.register("read_file", "filesystem.read", move |_| {
-            observed.fetch_add(1, Ordering::SeqCst);
-            Ok("should not run".into())
-        }).unwrap();
+        executor
+            .register("read_file", "filesystem.read", move |_| {
+                observed.fetch_add(1, Ordering::SeqCst);
+                Ok("should not run".into())
+            })
+            .unwrap();
 
-        assert_eq!(executor.execute(&core, "agent:assistant", &request), Err(ExecutorError::ApprovalRequired));
+        assert_eq!(
+            executor.execute(&core, "agent:assistant", &request),
+            Err(ExecutorError::ApprovalRequired)
+        );
         assert_eq!(calls.load(Ordering::SeqCst), 0);
     }
 
@@ -164,12 +182,17 @@ mod tests {
         let calls = Arc::new(AtomicUsize::new(0));
         let observed = Arc::clone(&calls);
         let mut executor = ActionExecutor::new();
-        executor.register("read_file", "filesystem.write", move |_| {
-            observed.fetch_add(1, Ordering::SeqCst);
-            Ok("should not run".into())
-        }).unwrap();
+        executor
+            .register("read_file", "filesystem.write", move |_| {
+                observed.fetch_add(1, Ordering::SeqCst);
+                Ok("should not run".into())
+            })
+            .unwrap();
 
-        assert_eq!(executor.execute(&core, "agent:assistant", &request), Err(ExecutorError::CapabilityMismatch));
+        assert_eq!(
+            executor.execute(&core, "agent:assistant", &request),
+            Err(ExecutorError::CapabilityMismatch)
+        );
         assert_eq!(calls.load(Ordering::SeqCst), 0);
     }
 
@@ -179,19 +202,26 @@ mod tests {
         let calls = Arc::new(AtomicUsize::new(0));
         let observed = Arc::clone(&calls);
         let mut executor = ActionExecutor::new();
-        executor.register("read_file", "filesystem.read", move |request| {
-            observed.fetch_add(1, Ordering::SeqCst);
-            Ok(request.scope.clone())
-        }).unwrap();
+        executor
+            .register("read_file", "filesystem.read", move |request| {
+                observed.fetch_add(1, Ordering::SeqCst);
+                Ok(request.scope.clone())
+            })
+            .unwrap();
 
-        assert_eq!(executor.execute(&core, "agent:assistant", &request), Ok("workspace:project-a".into()));
+        assert_eq!(
+            executor.execute(&core, "agent:assistant", &request),
+            Ok("workspace:project-a".into())
+        );
         assert_eq!(calls.load(Ordering::SeqCst), 1);
     }
 
     #[test]
     fn duplicate_action_registration_is_rejected() {
         let mut executor = ActionExecutor::new();
-        executor.register("read_file", "filesystem.read", |_| Ok("first".into())).unwrap();
+        executor
+            .register("read_file", "filesystem.read", |_| Ok("first".into()))
+            .unwrap();
         assert_eq!(
             executor.register("read_file", "filesystem.read", |_| Ok("second".into())),
             Err(ExecutorError::DuplicateAction)
