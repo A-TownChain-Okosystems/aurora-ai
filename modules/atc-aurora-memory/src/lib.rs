@@ -15,6 +15,6 @@ pub use learning_pipeline::LearningPipeline;
 pub use context_window::ContextWindow;
 pub use memory_engine::{
     AccessPrincipal, BuiltContext, ContextItem, DerivedArtifactCleaner, ExplanationRecord,
-    ExplanationSource, MemoryDraft, MemoryEntry, MemoryError, MemoryKind, MemoryManager,
+    ExplanationSource, MemoryApproval, MemoryDraft, MemoryEntry, MemoryError, MemoryKind, MemoryManager,
     Provenance, ShortTermMessage, TrustLevel,
 };
