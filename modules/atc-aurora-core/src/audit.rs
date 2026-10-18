@@ -7,6 +7,10 @@ pub struct AuditRecord {
     pub event_id: String,
     pub request_id: String,
     pub actor: String,
+    pub agent_id: Option<String>,
+    pub swarm_id: Option<String>,
+    pub task_id: Option<String>,
+    pub run_id: Option<String>,
     pub action: String,
     pub outcome: String,
     pub detail: String,
@@ -58,6 +62,13 @@ impl AuditLogger {
             .collect()
     }
 
+    pub fn records_for_agent(&self, agent_id: &str) -> Vec<&AuditRecord> {
+        self.records
+            .iter()
+            .filter(|record| record.agent_id.as_deref() == Some(agent_id))
+            .collect()
+    }
+
     pub fn len(&self) -> usize {
         self.records.len()
     }
@@ -71,11 +82,15 @@ impl AuditLogger {
 mod tests {
     use super::*;
 
-    fn record(event_id: &str) -> AuditRecord {
+    fn record(event_id: &str, agent_id: Option<&str>) -> AuditRecord {
         AuditRecord {
             event_id: event_id.into(),
             request_id: "request:1".into(),
-            actor: "agent:assistant".into(),
+            actor: agent_id.unwrap_or("system").into(),
+            agent_id: agent_id.map(str::to_owned),
+            swarm_id: Some("swarm:1".into()),
+            task_id: Some("task:1".into()),
+            run_id: Some("run:1".into()),
             action: "filesystem.read".into(),
             outcome: "Allow".into(),
             detail: "unit test".into(),
@@ -83,20 +98,21 @@ mod tests {
     }
 
     #[test]
-    fn audit_log_is_append_only_and_queryable() {
+    fn audit_log_is_append_only_and_queryable_by_request_and_agent() {
         let mut audit = AuditLogger::new();
-        audit.append(record("event:1")).unwrap();
-        audit.append(record("event:2")).unwrap();
+        audit.append(record("event:1", Some("agent:one"))).unwrap();
+        audit.append(record("event:2", Some("agent:two"))).unwrap();
         assert_eq!(audit.len(), 2);
         assert_eq!(audit.records_for_request("request:1").len(), 2);
+        assert_eq!(audit.records_for_agent("agent:one").len(), 1);
     }
 
     #[test]
     fn duplicate_audit_event_is_rejected() {
         let mut audit = AuditLogger::new();
-        audit.append(record("event:1")).unwrap();
+        audit.append(record("event:1", Some("agent:one"))).unwrap();
         assert_eq!(
-            audit.append(record("event:1")),
+            audit.append(record("event:1", Some("agent:two"))),
             Err(AuditError::DuplicateEventId)
         );
         assert_eq!(audit.len(), 1);

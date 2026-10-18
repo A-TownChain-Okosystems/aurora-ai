@@ -1,5 +1,6 @@
 // Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 // Config Manager — manages Aurora configuration
+
 use std::collections::HashMap;
 
 pub struct ConfigManager {
@@ -8,7 +9,9 @@ pub struct ConfigManager {
 
 impl ConfigManager {
     pub fn new() -> Self {
-        let mut cm = Self { config: HashMap::new() };
+        let mut cm = Self {
+            config: HashMap::new(),
+        };
         cm.set("version", "1.0.0");
         cm.set("max_agents", "12");
         cm.set("default_model", "shiva-1.0");
@@ -16,13 +19,34 @@ impl ConfigManager {
         cm
     }
 
-    pub fn set(&mut self, key: &str, value: &str) { self.config.insert(key.into(), value.into()); }
-    pub fn get(&self, key: &str) -> Option<&String> { self.config.get(key) }
-    pub fn get_or_default(&self, key: &str, default: &str) -> String {
-        self.config.get(key).cloned().unwrap_or_else(|| default.into())
+    pub fn set(&mut self, key: &str, value: &str) {
+        self.config.insert(key.into(), value.into());
     }
-    pub fn remove(&mut self, key: &str) { self.config.remove(key); }
-    pub fn keys(&self) -> Vec<String> { self.config.keys().cloned().collect() }
+
+    pub fn get(&self, key: &str) -> Option<&String> {
+        self.config.get(key)
+    }
+
+    pub fn get_or_default(&self, key: &str, default: &str) -> String {
+        self.config
+            .get(key)
+            .cloned()
+            .unwrap_or_else(|| default.into())
+    }
+
+    pub fn remove(&mut self, key: &str) {
+        self.config.remove(key);
+    }
+
+    pub fn keys(&self) -> Vec<String> {
+        self.config.keys().cloned().collect()
+    }
+}
+
+impl Default for ConfigManager {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 #[cfg(test)]
