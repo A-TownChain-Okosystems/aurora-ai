@@ -53,6 +53,12 @@ impl LlmRouter {
     }
 }
 
+impl Default for LlmRouter {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
