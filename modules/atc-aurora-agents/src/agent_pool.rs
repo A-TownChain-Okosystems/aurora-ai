@@ -46,6 +46,12 @@ impl AgentPool {
     pub fn count(&self) -> usize { self.agents.len() }
 }
 
+impl Default for AgentPool {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
