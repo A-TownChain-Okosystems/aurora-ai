@@ -1,8 +1,8 @@
 // Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 // Agent Pool — manages all 12 agents
-use std::collections::HashMap;
 use crate::agent_base::{Agent, AgentContext, AgentResponse};
 use crate::agents::*;
+use std::collections::HashMap;
 
 pub struct AgentPool {
     agents: HashMap<String, Box<dyn Agent>>,
@@ -10,7 +10,9 @@ pub struct AgentPool {
 
 impl AgentPool {
     pub fn new() -> Self {
-        let mut pool = Self { agents: HashMap::new() };
+        let mut pool = Self {
+            agents: HashMap::new(),
+        };
         pool.register(Box::new(GovernanceAgent));
         pool.register(Box::new(ProductAgent));
         pool.register(Box::new(RoadmapAgent));
@@ -32,18 +34,29 @@ impl AgentPool {
     }
 
     pub fn execute(&self, agent_id: &str, ctx: AgentContext) -> Result<AgentResponse, String> {
-        let agent = self.agents.get(agent_id)
+        let agent = self
+            .agents
+            .get(agent_id)
             .ok_or_else(|| format!("Agent '{}' not found", agent_id))?;
         Ok(agent.execute(ctx))
     }
 
     pub fn list(&self) -> Vec<(&str, &str, &str)> {
-        self.agents.values()
+        self.agents
+            .values()
             .map(|a| (a.id(), a.name(), a.role()))
             .collect()
     }
 
-    pub fn count(&self) -> usize { self.agents.len() }
+    pub fn count(&self) -> usize {
+        self.agents.len()
+    }
+}
+
+impl Default for AgentPool {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 #[cfg(test)]
@@ -56,6 +69,8 @@ mod tests {
         assert_eq!(pool.count(), 12);
         let ctx = AgentContext::new("task-1", "test");
         assert!(pool.execute("governance", ctx).is_ok());
-        assert!(pool.execute("nonexistent", AgentContext::new("x", "y")).is_err());
+        assert!(pool
+            .execute("nonexistent", AgentContext::new("x", "y"))
+            .is_err());
     }
 }
