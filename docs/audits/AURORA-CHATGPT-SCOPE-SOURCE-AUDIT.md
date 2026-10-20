@@ -168,3 +168,18 @@ These are PR-triggered workflow run results associated with the exact head SHA. 
 ## 6. Release gate
 
 No broad product implementation should be authorized until P0-A through P0-D have an accepted owner, stable contract, explicit tests and exact-SHA evidence. Keep all other requirements as `UNMAPPED_RESIDUAL` or `SPECIFIED` until their canonical source, symbol, contract and test are actually established. No E2E or production-ready claim is made by this audit.
+
+
+## 7. Final CI evidence for audit-document head
+
+The audit document itself is present in commit `81675db31375bc4b72b0a969d630c7b58b517a91`. All five PR-triggered workflows for that commit subsequently completed successfully. This is documentation-branch CI evidence only; it does not prove the functional requirements are implemented.
+
+| Workflow | Run | Job / ID | Key validation steps | Conclusion |
+|---|---|---|---|---|
+| Repository Governance (ATC-STD-201/202/203) | [39459145387](https://github.com/A-TownChain-Okosystems/aurora-ai/actions/runs/39459145387) | `audit` / `118753709044` | Repository-Audit (R-Level aus .atc/repository.yaml) | success |
+| Dependency Review | [39459145388](https://github.com/A-TownChain-Okosystems/aurora-ai/actions/runs/39459145388) | `dependency-review` / `118753709163` | Dependency Review | success |
+| CodeQL | [39459145412](https://github.com/A-TownChain-Okosystems/aurora-ai/actions/runs/39459145412) | `analyze` / `118753709393` | CodeQL init; CodeQL analyze | success |
+| SDK Build and Test | [39459145378](https://github.com/A-TownChain-Okosystems/aurora-ai/actions/runs/39459145378) | `cargo` / `118753709133` | Build; Test | success |
+| Aurora AI Code Quality | [39459145415](https://github.com/A-TownChain-Okosystems/aurora-ai/actions/runs/39459145415) | `python` / `118753709152`; `rust` / `118753709679`; `node` / `118753710021` | Compile Python modules; Validate Rust modules; Validate Node module | success |
+
+All listed jobs and their named validation steps report `completed/success`. These runs are associated with head SHA `81675db31375bc4b72b0a969d630c7b58b517a91`; they must not be conflated with the earlier source-inspection baseline `032519b5bac505b25651214ec717f448264c8948`. The PR remains a Draft. No implementation, security integration, or E2E status is promoted by these documentation-only CI results.
