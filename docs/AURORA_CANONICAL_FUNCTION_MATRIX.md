@@ -129,3 +129,26 @@ CI Verified ≠ E2E Verified
 - Provider-specific inference, production-grade RAG, multimodal backends, full agent planning, blockchain signing execution, deployment automation and complete end-to-end verification remain separate implementation/evidence gates.
 
 No item in this document is a production-readiness claim.
+
+
+## ChatGPT-comparable product scope mapping
+
+The detailed component-level requirements are maintained in **`docs/AURORA_FUNCTION_CATALOG.md`**, section **“ChatGPT-Comparable Functional Scope — Normative Specification Draft”**. That catalog is the single detailed functional inventory; this matrix remains the canonical architecture/domain map and must not duplicate the per-function requirements.
+
+The product scope maps to existing domains as follows:
+
+| Product capability group | Canonical matrix domains | Primary boundary to validate |
+|---|---|---|
+| Chat, history, projects, personalization and workbench | AI-14, AI-18, AI-11 | AI Studio + existing conversation/artifact APIs |
+| Model selection, real inference, context and scheduling | AI-03, AI-04, AI-05, AI-14 | Core ModelHub + Runtime/provider contracts |
+| Web research, citations and knowledge retrieval | AI-10, AI-11, AI-19, AI-22 | Memory/RAG + authorized research adapters |
+| Memory, retention, isolation and deletion | AI-09, AI-10, AI-11 | Canonical `atc-aurora-memory` + MEMORY-001 |
+| Files, documents, spreadsheets and data analysis | AI-05, AI-11, AI-15, AI-18 | Runtime/Python service + sandbox + artifact API |
+| Agents, tools, workflows and automation | AI-06, AI-07, AI-08, AI-16 | Existing agent framework + authorized execution path |
+| Image, audio, voice and video | AI-03, AI-05, AI-15 | Provider capability negotiation + runtime |
+| Code intelligence and repository operations | AI-18, AI-21, AI-22, AI-23 | Developer interfaces + authorized repository adapter |
+| Browser, computer and OS interaction | AI-08, AI-12, AI-16 | Scoped Runtime adapters + GlobusOS/ShivaCore enforcement |
+| Security, audit, evaluation and operations | AI-01, AI-02, AI-12, AI-13, AI-19, AI-20, AI-21, AI-22, AI-23 | Existing policy, security, operations and evidence gates |
+| Aurora domain intelligence and ecosystem extensions | AI-16, AI-17, AI-18 | Existing domain services and canonical ecosystem interfaces |
+
+All requirements in the detailed catalog begin as `SPECIFIED`; this mapping does not promote any component's implementation status. Source discovery, exact-SHA test/CI evidence, integration and E2E verification remain separate AURORA-001 gates. Existing modules and contracts must be reused or extended; any duplicate or disconnected implementation is a release-blocking finding.
