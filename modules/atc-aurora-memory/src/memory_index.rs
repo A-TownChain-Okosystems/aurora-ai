@@ -16,33 +16,57 @@ pub struct MemoryIndex {
 }
 
 impl MemoryIndex {
-    pub fn new() -> Self { Self { memories: Vec::new(), tag_index: HashMap::new() } }
+    pub fn new() -> Self {
+        Self {
+            memories: Vec::new(),
+            tag_index: HashMap::new(),
+        }
+    }
 
     pub fn add(&mut self, content: &str, tags: Vec<String>, ts: u64) -> u64 {
         let id = self.memories.len() as u64;
         for tag in &tags {
-            self.tag_index.entry(tag.clone()).or_default().push(self.memories.len());
+            self.tag_index
+                .entry(tag.clone())
+                .or_default()
+                .push(self.memories.len());
         }
-        self.memories.push(Memory { id, content: content.into(), tags, timestamp: ts });
+        self.memories.push(Memory {
+            id,
+            content: content.into(),
+            tags,
+            timestamp: ts,
+        });
         id
     }
 
     pub fn by_tag(&self, tag: &str) -> Vec<&Memory> {
-        self.tag_index.get(tag)
-            .map(|indices| indices.iter().filter_map(|&i| self.memories.get(i)).collect())
+        self.tag_index
+            .get(tag)
+            .map(|indices| {
+                indices
+                    .iter()
+                    .filter_map(|&i| self.memories.get(i))
+                    .collect()
+            })
             .unwrap_or_default()
     }
 
-    pub fn count(&self) -> usize { self.memories.len() }
+    pub fn count(&self) -> usize {
+        self.memories.len()
+    }
 }
 
 impl Default for MemoryIndex {
-    fn default() -> Self { Self::new() }
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
     #[test]
     fn default_is_empty() {
         assert_eq!(MemoryIndex::default().count(), 0);

@@ -31,12 +31,15 @@ impl ContextWindow {
     pub fn clear(&mut self) {
         self.messages.clear();
     }
+
     pub fn len(&self) -> usize {
         self.messages.len()
     }
+
     pub fn is_empty(&self) -> bool {
         self.messages.is_empty()
     }
+
     pub fn is_full(&self) -> bool {
         self.messages.len() >= self.max_size
     }
@@ -45,6 +48,7 @@ impl ContextWindow {
 #[cfg(test)]
 mod tests {
     use super::*;
+
     #[test]
     fn test_context() {
         let mut cw = ContextWindow::new(3);
