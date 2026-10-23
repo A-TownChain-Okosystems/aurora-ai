@@ -41,10 +41,7 @@ impl VectorStore {
             .map(|(k, v)| (k.clone(), Self::cosine_similarity(query, v)))
             .filter(|(_, score)| *score > 0.0)
             .collect();
-        results.sort_by(|a, b| {
-            b.1.partial_cmp(&a.1)
-                .unwrap_or(std::cmp::Ordering::Equal)
-        });
+        results.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
         results.truncate(limit);
         results
     }
