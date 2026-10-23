@@ -19,9 +19,20 @@ impl LearningPipeline {
     }
 }
 
+impl Default for LearningPipeline {
+    fn default() -> Self { Self::new() }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn default_starts_untrained() {
+        let pipeline = LearningPipeline::default();
+        assert_eq!(pipeline.iterations, 0);
+        assert_eq!(pipeline.accuracy, 0.0);
+    }
+
     #[test]
     fn test_learning() {
         let mut lp = LearningPipeline::new();

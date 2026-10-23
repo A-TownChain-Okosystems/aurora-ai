@@ -36,9 +36,18 @@ impl MemoryIndex {
     pub fn count(&self) -> usize { self.memories.len() }
 }
 
+impl Default for MemoryIndex {
+    fn default() -> Self { Self::new() }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn default_is_empty() {
+        assert_eq!(MemoryIndex::default().count(), 0);
+    }
+
     #[test]
     fn test_index() {
         let mut mi = MemoryIndex::new();

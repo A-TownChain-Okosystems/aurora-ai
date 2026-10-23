@@ -24,6 +24,7 @@ impl ContextWindow {
 
     pub fn clear(&mut self) { self.messages.clear(); }
     pub fn len(&self) -> usize { self.messages.len() }
+    pub fn is_empty(&self) -> bool { self.messages.is_empty() }
     pub fn is_full(&self) -> bool { self.messages.len() >= self.max_size }
 }
 
@@ -33,12 +34,16 @@ mod tests {
     #[test]
     fn test_context() {
         let mut cw = ContextWindow::new(3);
+        assert!(cw.is_empty());
         cw.add("user", "hello");
         cw.add("assistant", "hi");
         cw.add("user", "bye");
         cw.add("assistant", "goodbye");
         assert_eq!(cw.len(), 3);
+        assert!(!cw.is_empty());
         assert!(cw.get_context().contains("goodbye"));
         assert!(!cw.get_context().contains("hello"));
+        cw.clear();
+        assert!(cw.is_empty());
     }
 }

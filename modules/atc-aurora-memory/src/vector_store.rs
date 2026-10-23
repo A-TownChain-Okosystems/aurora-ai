@@ -37,9 +37,18 @@ impl VectorStore {
     pub fn count(&self) -> usize { self.vectors.len() }
 }
 
+impl Default for VectorStore {
+    fn default() -> Self { Self::new() }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn default_is_empty() {
+        assert_eq!(VectorStore::default().count(), 0);
+    }
+
     #[test]
     fn test_vector_store() {
         let mut vs = VectorStore::new();
