@@ -6,7 +6,12 @@ pub struct LearningPipeline {
 }
 
 impl LearningPipeline {
-    pub fn new() -> Self { Self { iterations: 0, accuracy: 0.0 } }
+    pub fn new() -> Self {
+        Self {
+            iterations: 0,
+            accuracy: 0.0,
+        }
+    }
 
     pub fn train(&mut self, feedback_score: f64) {
         self.iterations += 1;
@@ -19,13 +24,29 @@ impl LearningPipeline {
     }
 }
 
+impl Default for LearningPipeline {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn default_starts_untrained() {
+        let pipeline = LearningPipeline::default();
+        assert_eq!(pipeline.iterations, 0);
+        assert_eq!(pipeline.accuracy, 0.0);
+    }
+
     #[test]
     fn test_learning() {
         let mut lp = LearningPipeline::new();
-        for _ in 0..100 { lp.train(0.95); }
+        for _ in 0..100 {
+            lp.train(0.95);
+        }
         assert!(lp.accuracy > 0.5);
         assert!(lp.is_converged(0.5));
     }
