@@ -38,7 +38,7 @@ jobs:
           while IFS= read -r manifest; do
             [ -n "$manifest" ] || continue
             cargo test --manifest-path "$manifest"
-            cargo clippy --manifest-path "$manifest" --all-targets -- -D warnings -A clippy::new_without_default -A clippy::len_without_is_empty
+            cargo clippy --manifest-path "$manifest" --all-targets -- -D warnings
           done <<< "$manifests"
   python:
     runs-on: ubuntu-latest
