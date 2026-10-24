@@ -7,4 +7,4 @@ pub mod agent_pool;
 
 pub use agents::*;
 pub use agent_base::{Agent, AgentContext, AgentResponse};
-pub use agent_pool::AgentPool;
+pub use agent_pool::{AgentPool, AuthorizedAgentExecutionError};
