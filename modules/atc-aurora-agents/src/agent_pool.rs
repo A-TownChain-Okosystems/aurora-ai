@@ -163,7 +163,10 @@ mod tests {
             AgentContext::new("task-allowed", "test"),
         );
         assert!(result.is_ok());
-        assert_eq!(core.authorize_action("agent:governance", &request()), PolicyDecision::Allow);
+        assert_eq!(
+            core.authorize_action("agent:governance", &request()),
+            PolicyDecision::Allow
+        );
     }
 
     #[test]
