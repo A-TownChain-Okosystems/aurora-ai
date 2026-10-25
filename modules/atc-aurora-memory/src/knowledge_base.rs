@@ -60,6 +60,12 @@ impl KnowledgeBase {
     }
 }
 
+impl Default for KnowledgeBase {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
