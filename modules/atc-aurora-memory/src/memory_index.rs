@@ -57,6 +57,12 @@ impl MemoryIndex {
     }
 }
 
+impl Default for MemoryIndex {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
