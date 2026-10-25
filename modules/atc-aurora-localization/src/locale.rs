@@ -38,9 +38,9 @@ impl FromStr for Locale {
         {
             return Err(LocaleError);
         }
-        if parts.any(|p| {
-            p.is_empty() || p.len() > 8 || !p.bytes().all(|b| b.is_ascii_alphanumeric())
-        }) {
+        if parts
+            .any(|p| p.is_empty() || p.len() > 8 || !p.bytes().all(|b| b.is_ascii_alphanumeric()))
+        {
             return Err(LocaleError);
         }
         Ok(Self(value.replace('_', "-")))
