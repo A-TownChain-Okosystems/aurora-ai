@@ -17,10 +17,7 @@ fn placeholders(text: &str) -> Vec<String> {
             if let Some(end) = text[i + 1..].find('}') {
                 let end = i + 1 + end;
                 let name = &text[i + 1..end];
-                if !name.is_empty()
-                    && name
-                        .bytes()
-                        .all(|b| b.is_ascii_alphanumeric() || b == b'_')
+                if !name.is_empty() && name.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'_')
                 {
                     found.insert(name.to_string());
                 }
@@ -49,7 +46,9 @@ mod tests {
 
     #[test]
     fn accepts_reordered_placeholders() {
-        assert!(validate_placeholders("Hello {player} — {count}", "{count} x für {player}").is_ok());
+        assert!(
+            validate_placeholders("Hello {player} — {count}", "{count} x für {player}").is_ok()
+        );
     }
 
     #[test]
