@@ -31,16 +31,13 @@ impl Catalog {
 
     pub fn resolve(&self, id: &str, locale: &Locale) -> Option<LocalizedString> {
         let entry = self.entries.get(id)?;
-        let text = entry
-            .translations
-            .get(locale)
-            .or_else(|| {
-                entry
-                    .translations
-                    .iter()
-                    .find(|(l, _)| l.language() == locale.language())
-                    .map(|(_, t)| t)
-            })?;
+        let text = entry.translations.get(locale).or_else(|| {
+            entry
+                .translations
+                .iter()
+                .find(|(l, _)| l.language() == locale.language())
+                .map(|(_, t)| t)
+        })?;
         Some(LocalizedString {
             locale: locale.clone(),
             text: text.clone(),
