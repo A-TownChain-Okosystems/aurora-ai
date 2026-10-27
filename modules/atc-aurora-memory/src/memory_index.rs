@@ -50,6 +50,12 @@ impl MemoryIndex {
     }
 }
 
+impl Default for MemoryIndex {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 fn can_read(memory: &Memory, principal: &AccessPrincipal) -> bool {
     memory.tenant_id == principal.tenant_id
         && memory.owner_user_id == principal.user_id
