@@ -1,5 +1,7 @@
 // Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 // Vector store — embeddings are keyed and searched within an authenticated principal scope.
+use std::collections::HashMap;
+
 use crate::{AccessPrincipal, MemoryError};
 
 type ScopedKey = (String, String, String, String);
@@ -84,6 +86,12 @@ impl VectorStore {
                 k.0 == principal.tenant_id && k.1 == principal.user_id && k.2 == principal.agent_id
             })
             .count())
+    }
+}
+
+impl Default for VectorStore {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
