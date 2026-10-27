@@ -43,6 +43,12 @@ impl LearningPipeline {
     }
 }
 
+impl Default for LearningPipeline {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 fn principal_key(principal: &AccessPrincipal) -> (String, String, String) {
     (principal.tenant_id.clone(), principal.user_id.clone(), principal.agent_id.clone())
 }
