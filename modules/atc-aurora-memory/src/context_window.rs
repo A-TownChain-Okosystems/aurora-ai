@@ -47,6 +47,10 @@ impl ContextWindow {
         Ok(self.sessions.get(&session_key(principal, session_id)).map_or(0, Vec::len))
     }
 
+    pub fn is_empty(&self, principal: &AccessPrincipal, session_id: &str) -> Result<bool, MemoryError> {
+        Ok(self.len(principal, session_id)? == 0)
+    }
+
     pub fn is_full(&self, principal: &AccessPrincipal, session_id: &str) -> Result<bool, MemoryError> {
         Ok(self.len(principal, session_id)? >= self.max_size)
     }
