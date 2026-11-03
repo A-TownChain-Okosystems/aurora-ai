@@ -107,7 +107,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p evidence
-          git ls-tree -r --full-tree "$GITHUB_SHA" > evidence/source-tree.txt
+          git ls-tree -r --full-tree "$GITHUB_SHA" > source-tree.txt
           python3 - <<'PY'
           import datetime, hashlib, os, re
           sha = os.environ["GITHUB_SHA"]
@@ -119,7 +119,7 @@ jobs:
           passed = npm_result == "success" and pytest_result == "success"
           status = "pass_with_evidence" if passed else "not_run"
           result = "PASS" if passed else "FAIL"
-          source_tree_sha256 = hashlib.sha256(open("evidence/source-tree.txt", "rb").read()).hexdigest()
+          source_tree_sha256 = hashlib.sha256(open("source-tree.txt", "rb").read()).hexdigest()
           path = ".atc/evidence/evidence.yaml"
           text = open(path, encoding="utf-8").read()
           text = re.sub(r"(?m)^bound_commit: [^\n]*", "bound_commit: " + sha, text)
@@ -136,7 +136,7 @@ jobs:
               "  result: " + result + "\n"
               "  runner: github-actions\n"
               "  jobs: npm-tests=" + npm_result + ",pytest=" + pytest_result + "\n"
-              "  source_tree_file: evidence/source-tree.txt\n"
+              "  source_tree_file: source-tree.txt\n"
               "  source_tree_sha256: " + source_tree_sha256 + "\n"
           )
           if re.search(r"(?m)^test_run:\n(?:  [^\n]*\n)+", text):
