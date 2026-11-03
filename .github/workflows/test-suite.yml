@@ -161,3 +161,60 @@ jobs:
           git add .atc/evidence/evidence.yaml
           git commit -m "chore(evidence): bind exact test result [skip ci]" || echo "nothing to commit"
           git push
+
+  evidence-pr:
+    if: ${{ always() && github.event_name == 'pull_request' }}
+    needs: [npm-tests, pytest]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Resolve exact PR execution SHA
+        id: revision
+        env:
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          test -n "$PR_HEAD_SHA"
+          echo "sha=$PR_HEAD_SHA" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.revision.outputs.sha }}
+          fetch-depth: 0
+      - name: Build immutable PR evidence
+        env:
+          EXECUTION_SHA: ${{ steps.revision.outputs.sha }}
+          NPM_RESULT: ${{ needs.npm-tests.result }}
+          PYTEST_RESULT: ${{ needs.pytest.result }}
+        run: |
+          set -euo pipefail
+          actual="$(git rev-parse HEAD)"
+          test "$actual" = "$EXECUTION_SHA"
+          mkdir -p evidence
+          git ls-tree -r --full-tree "$EXECUTION_SHA" > evidence/source-tree.txt
+          source_tree_sha256="$(sha256sum evidence/source-tree.txt | cut -d ' ' -f 1)"
+          result=PASS
+          if [ "$NPM_RESULT" != success ] || [ "$PYTEST_RESULT" != success ]; then
+            result=FAIL
+          fi
+          cat > evidence/evidence.yaml <<EOF
+          schema: atc-pr-evidence/v1
+          repository: A-TownChain-Okosystems/aurora-ai
+          workflow: ATC Test Suite
+          run_id: $GITHUB_RUN_ID
+          commit: $EXECUTION_SHA
+          result: $result
+          jobs:
+            npm-tests: $NPM_RESULT
+            pytest: $PYTEST_RESULT
+          source_tree:
+            path: source-tree.txt
+            sha256: $source_tree_sha256
+          EOF
+          sha256sum evidence/evidence.yaml > evidence/evidence.yaml.sha256
+      - name: Upload immutable PR evidence artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: aurora-pr-evidence-${{ github.event.pull_request.head.sha }}
+          path: evidence/
+          if-no-files-found: error
+          retention-days: 90
