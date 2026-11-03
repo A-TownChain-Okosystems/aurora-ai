@@ -122,27 +122,27 @@ jobs:
           source_tree_sha256 = hashlib.sha256(open("source-tree.txt", "rb").read()).hexdigest()
           path = ".atc/evidence/evidence.yaml"
           text = open(path, encoding="utf-8").read()
-          text = re.sub(r"(?m)^bound_commit: [^\\n]*", "bound_commit: " + sha, text)
-          text = re.sub(r"(?m)^generated: [^\\n]*", 'generated: "' + ts[:10] + '"', text)
-          text = re.sub(r"(?m)^generated_by: [^\\n]*", 'generated_by: "ATC Test Suite exact-commit evidence"', text)
-          text = re.sub(r"(?m)^(tests:\\n  status:) [^\\n]*", lambda m: m.group(1) + " " + status, text)
-          text = re.sub(r"(?m)^  evidence: [^\\n]*\\n?", "", text)
+          text = re.sub(r"(?m)^bound_commit: [^\n]*", "bound_commit: " + sha, text)
+          text = re.sub(r"(?m)^generated: [^\n]*", 'generated: "' + ts[:10] + '"', text)
+          text = re.sub(r"(?m)^generated_by: [^\n]*", 'generated_by: "ATC Test Suite exact-commit evidence"', text)
+          text = re.sub(r"(?m)^(tests:\n  status:) [^\n]*", lambda m: m.group(1) + " " + status, text)
+          text = re.sub(r"(?m)^  evidence: [^\n]*\n?", "", text)
           block = (
-              "test_run:\\n"
-              "  workflow: " + wf + "\\n"
-              "  run_id: " + rid + "\\n"
-              "  commit: " + sha + "\\n"
-              "  timestamp: " + ts + "\\n"
-              "  result: " + result + "\\n"
-              "  runner: github-actions\\n"
-              "  jobs: npm-tests=" + npm_result + ",pytest=" + pytest_result + "\\n"
-              "  source_tree_file: source-tree.txt\\n"
-              "  source_tree_sha256: " + source_tree_sha256 + "\\n"
+              "test_run:\n"
+              "  workflow: " + wf + "\n"
+              "  run_id: " + rid + "\n"
+              "  commit: " + sha + "\n"
+              "  timestamp: " + ts + "\n"
+              "  result: " + result + "\n"
+              "  runner: github-actions\n"
+              "  jobs: npm-tests=" + npm_result + ",pytest=" + pytest_result + "\n"
+              "  source_tree_file: source-tree.txt\n"
+              "  source_tree_sha256: " + source_tree_sha256 + "\n"
           )
-          if re.search(r"(?m)^test_run:\\n(?:  [^\\n]*\\n)+", text):
-              text = re.sub(r"(?m)^test_run:\\n(?:  [^\\n]*\\n)+", block, text)
+          if re.search(r"(?m)^test_run:\n(?:  [^\n]*\n)+", text):
+              text = re.sub(r"(?m)^test_run:\n(?:  [^\n]*\n)+", block, text)
           else:
-              text = text.rstrip() + "\\n" + block
+              text = text.rstrip() + "\n" + block
           open(path, "w", encoding="utf-8").write(text)
           PY
           cp .atc/evidence/evidence.yaml evidence/evidence.yaml
