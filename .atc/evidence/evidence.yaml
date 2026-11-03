@@ -13,8 +13,7 @@ implementation:
   status: substantial        # substantial|partial|skeleton|docs_only
   summary: "Agent Runtime, Rust Core, 19+ Views als ehrliche Platzhalter (SCR-0078)"
 tests:
-  status: pass_with_evidence       # pass_with_evidence|not_run|not_applicable
-  evidence: "27/27 vitest + Vite/esbuild-Build gruen (SCR-0078)"
+  status: not_run       # pass_with_evidence|not_run|not_applicable
 security:
   status: not_audited
 conformance:
