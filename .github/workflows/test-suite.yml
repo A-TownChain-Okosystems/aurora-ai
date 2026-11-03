@@ -1,18 +1,42 @@
 name: ATC Test Suite
+
 on:
   workflow_dispatch:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
+
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   npm-tests:
     runs-on: ubuntu-latest
     steps:
+      - name: Resolve exact execution SHA
+        id: revision
+        env:
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          if [ -n "$PR_HEAD_SHA" ]; then
+            echo "sha=$PR_HEAD_SHA" >> "$GITHUB_OUTPUT"
+          else
+            echo "sha=$GITHUB_SHA" >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.revision.outputs.sha }}
+      - name: Verify exact revision
+        env:
+          EXPECTED_SHA: ${{ steps.revision.outputs.sha }}
+        run: |
+          actual="$(git rev-parse HEAD)"
+          test "$actual" = "$EXPECTED_SHA"
+          echo "EXECUTION_SHA=$actual" >> "$GITHUB_ENV"
       - uses: actions/setup-node@v4
-        with: {node-version: "20"}
+        with:
+          node-version: "22.19.0"
       - name: npm install + test/build (SCR-0078)
         run: |
           set +e
@@ -24,13 +48,34 @@ jobs:
             (cd "$d" && npm test --if-present --silent) || { echo "npm test FAILED in $d"; FAIL=1; }
             (cd "$d" && npm run build --if-present --silent) || { echo "npm build FAILED in $d"; FAIL=1; }
           done < <(find . -name package.json -not -path "*/archive/*" -not -path "*/node_modules/*" -not -path "*/.*/")
-          exit $FAIL
+          exit "$FAIL"
+
   pytest:
     runs-on: ubuntu-latest
     steps:
+      - name: Resolve exact execution SHA
+        id: revision
+        env:
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          if [ -n "$PR_HEAD_SHA" ]; then
+            echo "sha=$PR_HEAD_SHA" >> "$GITHUB_OUTPUT"
+          else
+            echo "sha=$GITHUB_SHA" >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.revision.outputs.sha }}
+      - name: Verify exact revision
+        env:
+          EXPECTED_SHA: ${{ steps.revision.outputs.sha }}
+        run: |
+          actual="$(git rev-parse HEAD)"
+          test "$actual" = "$EXPECTED_SHA"
+          echo "EXECUTION_SHA=$actual" >> "$GITHUB_ENV"
       - uses: actions/setup-python@v5
-        with: {python-version: "3.11"}
+        with:
+          python-version: "3.11"
       - name: pytest ueber alle Requirements-Module (SCR-0078)
         run: |
           set +e
@@ -41,37 +86,135 @@ jobs:
               echo "SKIP $d: keine Tests vorhanden"; continue
             fi
             echo "=== pytest in $d"
-            (cd "$d" && pip install -q -r requirements.txt pytest && python -m pytest -q --no-header) \
-              || { echo "pytest FAILED in $d"; FAIL=1; }
+            (cd "$d" && pip install -q -r requirements.txt pytest && python -m pytest -q --no-header) || { echo "pytest FAILED in $d"; FAIL=1; }
           done < <(find . -name requirements.txt -not -path "*/archive/*")
-          exit $FAIL
-      - name: Evidence-Bindung (SCR-0086 idempotentes test_run-Update je Lauf + hartes Push-Gate)
-        if: success()
+          exit "$FAIL"
+
+  evidence:
+    if: ${{ always() && github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
+    needs: [npm-tests, pytest]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Bind test status and build exact-commit evidence
+        env:
+          NPM_RESULT: ${{ needs.npm-tests.result }}
+          PYTEST_RESULT: ${{ needs.pytest.result }}
         run: |
+          set -euo pipefail
+          mkdir -p evidence
+          git ls-tree -r --full-tree "$GITHUB_SHA" > source-tree.txt
           python3 - <<'PY'
-          import os, datetime, re
+          import datetime, hashlib, os, re
           sha = os.environ["GITHUB_SHA"]
           rid = os.environ["GITHUB_RUN_ID"]
-          wf  = os.environ.get("GITHUB_WORKFLOW", "ATC Test Suite")
-          ts  = datetime.datetime.now(datetime.timezone.utc).isoformat()
-          p = ".atc/evidence/evidence.yaml"
-          t = open(p, encoding="utf-8").read()
-          t = re.sub(r"bound_commit: [^\n]*", "bound_commit: " + sha, t)
-          block = ("test_run:\n"
-                   "  workflow: " + wf + "\n"
-                   "  run_id: " + rid + "\n"
-                   "  commit: " + sha + "\n"
-                   "  timestamp: " + ts + "\n"
-                   "  result: PASS\n"
-                   "  runner: github-actions\n")
-          if re.search(r"(?m)^test_run:\n(?:  [^\n]*\n)+", t):
-              t = re.sub(r"(?m)^test_run:\n(?:  [^\n]*\n)+", block, t)
+          wf = os.environ.get("GITHUB_WORKFLOW", "ATC Test Suite")
+          ts = datetime.datetime.now(datetime.timezone.utc).isoformat()
+          npm_result = os.environ["NPM_RESULT"]
+          pytest_result = os.environ["PYTEST_RESULT"]
+          passed = npm_result == "success" and pytest_result == "success"
+          status = "pass_with_evidence" if passed else "not_run"
+          result = "PASS" if passed else "FAIL"
+          source_tree_sha256 = hashlib.sha256(open("source-tree.txt", "rb").read()).hexdigest()
+          path = ".atc/evidence/evidence.yaml"
+          text = open(path, encoding="utf-8").read()
+          text = re.sub(r"(?m)^bound_commit: [^\n]*", "bound_commit: " + sha, text)
+          text = re.sub(r"(?m)^generated: [^\n]*", 'generated: "' + ts[:10] + '"', text)
+          text = re.sub(r"(?m)^generated_by: [^\n]*", 'generated_by: "ATC Test Suite exact-commit evidence"', text)
+          text = re.sub(r"(?m)^(tests:\n  status:) [^\n]*", lambda m: m.group(1) + " " + status, text)
+          text = re.sub(r"(?m)^  evidence: [^\n]*\n?", "", text)
+          block = (
+              "test_run:\n"
+              "  workflow: " + wf + "\n"
+              "  run_id: " + rid + "\n"
+              "  commit: " + sha + "\n"
+              "  timestamp: " + ts + "\n"
+              "  result: " + result + "\n"
+              "  runner: github-actions\n"
+              "  jobs: npm-tests=" + npm_result + ",pytest=" + pytest_result + "\n"
+              "  source_tree_file: source-tree.txt\n"
+              "  source_tree_sha256: " + source_tree_sha256 + "\n"
+          )
+          if re.search(r"(?m)^test_run:\n(?:  [^\n]*\n)+", text):
+              text = re.sub(r"(?m)^test_run:\n(?:  [^\n]*\n)+", block, text)
           else:
-              t = t.rstrip() + "\n" + block
-          open(p, "w", encoding="utf-8").write(t)
+              text = text.rstrip() + "\n" + block
+          open(path, "w", encoding="utf-8").write(text)
           PY
+          cp .atc/evidence/evidence.yaml evidence/evidence.yaml
+          sha256sum evidence/evidence.yaml > evidence/evidence.yaml.sha256
+      - name: Upload immutable evidence artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: aurora-evidence-${{ github.sha }}
+          path: evidence/
+          if-no-files-found: error
+          retention-days: 90
+      - name: Persist evidence status
+        run: |
           git config user.name "Aurora-Bot"
           git config user.email "aurora@base44.ai"
           git add .atc/evidence/evidence.yaml
-          git commit -m "chore(evidence): bound_commit + test_run aktualisiert (SCR-0086) [skip ci]" || echo "nichts zu committen"
+          git commit -m "chore(evidence): bind exact test result [skip ci]" || echo "nothing to commit"
           git push
+
+  evidence-pr:
+    if: ${{ always() && github.event_name == 'pull_request' }}
+    needs: [npm-tests, pytest]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Resolve exact PR execution SHA
+        id: revision
+        env:
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          test -n "$PR_HEAD_SHA"
+          echo "sha=$PR_HEAD_SHA" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.revision.outputs.sha }}
+          fetch-depth: 0
+      - name: Build immutable PR evidence
+        env:
+          EXECUTION_SHA: ${{ steps.revision.outputs.sha }}
+          NPM_RESULT: ${{ needs.npm-tests.result }}
+          PYTEST_RESULT: ${{ needs.pytest.result }}
+        run: |
+          set -euo pipefail
+          actual="$(git rev-parse HEAD)"
+          test "$actual" = "$EXECUTION_SHA"
+          mkdir -p evidence
+          git ls-tree -r --full-tree "$EXECUTION_SHA" > source-tree.txt
+          source_tree_sha256="$(sha256sum source-tree.txt | cut -d ' ' -f 1)"
+          result=PASS
+          if [ "$NPM_RESULT" != success ] || [ "$PYTEST_RESULT" != success ]; then
+            result=FAIL
+          fi
+          cat > evidence/evidence.yaml <<EOF
+          schema: atc-pr-evidence/v1
+          repository: A-TownChain-Okosystems/aurora-ai
+          workflow: ATC Test Suite
+          run_id: $GITHUB_RUN_ID
+          commit: $EXECUTION_SHA
+          result: $result
+          jobs:
+            npm-tests: $NPM_RESULT
+            pytest: $PYTEST_RESULT
+          source_tree:
+            path: source-tree.txt
+            sha256: $source_tree_sha256
+          EOF
+          sha256sum evidence/evidence.yaml > evidence/evidence.yaml.sha256
+      - name: Upload immutable PR evidence artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: aurora-pr-evidence-${{ github.event.pull_request.head.sha }}
+          path: evidence/
+          if-no-files-found: error
+          retention-days: 90
