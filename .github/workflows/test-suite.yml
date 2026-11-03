@@ -100,6 +100,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+        with:
+          fetch-depth: 0
       - name: Bind test status and build exact-commit evidence
         env:
           NPM_RESULT: ${{ needs.npm-tests.result }}
@@ -190,8 +192,8 @@ jobs:
           actual="$(git rev-parse HEAD)"
           test "$actual" = "$EXECUTION_SHA"
           mkdir -p evidence
-          git ls-tree -r --full-tree "$EXECUTION_SHA" > evidence/source-tree.txt
-          source_tree_sha256="$(sha256sum evidence/source-tree.txt | cut -d ' ' -f 1)"
+          git ls-tree -r --full-tree "$EXECUTION_SHA" > source-tree.txt
+          source_tree_sha256="$(sha256sum source-tree.txt | cut -d ' ' -f 1)"
           result=PASS
           if [ "$NPM_RESULT" != success ] || [ "$PYTEST_RESULT" != success ]; then
             result=FAIL
