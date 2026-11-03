@@ -100,8 +100,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-        with:
-          fetch-depth: 0
       - name: Bind test status and build exact-commit evidence
         env:
           NPM_RESULT: ${{ needs.npm-tests.result }}
