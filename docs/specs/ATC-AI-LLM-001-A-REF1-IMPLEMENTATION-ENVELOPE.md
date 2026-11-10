@@ -106,7 +106,7 @@ zwei Momente (fp32). Das sind 2 + 2 + 4 + 4 + 4 = 16 Byte je Parameter.
 
 | Modell | Parameter | Zustand | Bewertung |
 |---|---|---|---|
-| Ref-1 | 5,77 Mio | 92 MB | unkritisch, auch in f32 vollständig |
+| Ref-1 | 5,87 Mio | 93,9 MB | unkritisch, auch in f32 vollständig |
 | 0.5B | 517,8 Mio | 8,3 GB | eine 24-GB-Karte reicht für den Zustand |
 | 3B | 2.939 Mio | 47,0 GB | eine 24-GB-Karte reicht nicht, eine 80-GB-Karte knapp |
 | 7B | 6.610 Mio | 105,8 GB | zwei 80-GB-Karten nur mit Zustandsaufteilung |
@@ -157,7 +157,7 @@ damit speicherseitig trivial, was P8 zu einer reinen Korrektheitsaufgabe macht.
 | Schichten | 6 | mindestens 4 nötig, damit Restpfad und Norm zusammenwirken |
 | Heads / KV-Heads | 8 / 8 | MHA, damit der GQA-Pfad nicht zusätzlich geprüft werden muss |
 | `d_head` | 32 | 256 / 8 |
-| `d_ff` | 683 | ergibt exakt 5.771.776 Parameter; 704 wäre durch 64 teilbar und kostet 1,7 Prozent mehr, Entscheidung bei T2.6 |
+| `d_ff` | 704 | K5, entschieden 11.11.2026: 2.816 Byte je Zeile sind exakt 44 Cache-Lines und exakt 88 AVX2-Vektoren. 683 ergäbe 2.732 Byte, also 42,69 Cache-Lines und 85,375 Vektoren. Preis: 96.768 Parameter, 1,68 Prozent. |
 | Vokabular | 4096 | byte-level BPE mit Byte-Rückfall |
 | Kontext `T` | 512 | Attention-Anteil bleibt bei 27 Prozent, Rechnung bleibt beherrschbar |
 | Norm | RMSNorm, Pre-Norm, ε = 1e-5 | numerisch stabiler als Post-Norm bei kleiner Tiefe |
@@ -168,12 +168,12 @@ damit speicherseitig trivial, was P8 zu einer reinen Korrektheitsaufgabe macht.
 | Dropout | 0,0 in der Referenz, optional im Training | 0,0 macht den Gradiententest exakt |
 
 Parameterrechnung, nachvollziehbar:
-`6 · (4·256² + 3·256·683 + 2·256) + 4096·256 = 4.723.200 + 1.048.576 = 5.771.776`
+`6 · (4·256² + 3·256·704 + 2·256) + 4096·256 = 4.819.968 + 1.048.576 = 5.868.544`
 
 ### 5.2 Schrittbudget und Lernnachweise
 
-FLOPs je Token bei `T = 512`: `6·5.771.776 + 12·6·256·512 = 4,41e7`.
-Bei `B = 8` sind das 4.096 Token je Schritt und `1,81e11` FLOPs je Schritt.
+FLOPs je Token bei `T = 512`: `6·5.868.544 + 12·6·256·512 = 4,46e7`.
+Bei `B = 8` sind das 4.096 Token je Schritt und `1,83e11` FLOPs je Schritt.
 
 Wanduhr je Schritt bei angenommener CPU-Leistung:
 
@@ -194,7 +194,7 @@ Damit ist die Aussage belastbar: Ref-1 kann auf CPU innerhalb eines Arbeitstags
 bis L2 geführt werden. L3 ist ein Nachtlauf, kein Kurztest. Wer L3 schneller
 will, braucht eine GPU, was D4 entscheidet und nicht dieses Dokument.
 
-Speicherbedarf des gesamten Ref-1-Trainings: 92 MB Zustand plus höchstens 60 MB
+Speicherbedarf des gesamten Ref-1-Trainings: 93,9 MB Zustand (16 Byte je Parameter) plus höchstens 60 MB
 Aktivierungen mit Checkpointing. Ref-1 läuft damit in jedem Profil aus D4,
 einschließlich der 64-GB-CPU.
 
@@ -393,7 +393,7 @@ späteren Phase zugeordnet und wird in P1 bis P4 nicht begonnen, auch nicht
 | K1 | Wird AD-021 um den frameworkfreien Produktivpfad ergänzt (Weg 1 aus 9.1)? | blockiert P2 |
 | K2 | Wird `a-townchain/ai/aurora-ai` erneuert oder entfernt? | verhindert die dritte Wahrheit |
 | K3 | Welche CPU ist die Referenz für die Durchsatzmessung T2.6? | macht aus Annahmen Messwerte |
-| K4 | Bleibt `d_ff = 683` oder wird auf 704 (durch 64 teilbar) gewechselt? | 1,7 Prozent Parameter, relevanter SIMD-Effekt |
+| K5 | `d_ff = 683` oder 704? | **ENTSCHIEDEN 11.11.2026: 704**, siehe Spezifikation 7.1.1 |
 
 ---
 
