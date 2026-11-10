@@ -7,6 +7,13 @@ Alle wesentlichen Änderungen an diesem Projekt werden in dieser Datei dokumenti
 ### Added
 - `docs/specs/ATC-AI-LLM-001-AURORA-FOUNDATION-MODEL.md`: P0 specification for the native Aurora Foundation Model (Aurora LLM). Covers verified baseline inventory, numeric and determinism contract, crate layout, artifact format `.atcm`, parameter and compute sizing, phase plan P0-P10, test matrix, and the three-level learning acceptance criterion.
 
+### Changed (Revision 1.2.0, K4 und K5 entschieden)
+- `d_ff` von 683 auf 704, Parameterzahl 5.868.544 statt 5.771.776, also 1,68 Prozent mehr. Grund: 2.816 Byte je Zeile sind exakt 44 Cache-Lines zu 64 Byte und exakt 88 AVX2-Vektoren, Rest 0. Mit 683 überquert jede Zeile eine Cache-Line.
+- Vokabular bleibt 4096 und ist jetzt verbindlich, mit Falsifikator: unter 2,2 Byte je Token auf dem P1-Zielkorpus wird neu bewertet.
+- Neue verbindliche Modellkonfiguration in Abschnitt 7.1.1 als einzige Quelle. Kein Crate darf einen eigenen Default für diese Werte definieren.
+- Anhang nachgezogen: Parameterrechnung, 4,46e7 FLOPs je Token, 1,83e11 FLOPs je Schritt, 93,9 MB Trainingszustand.
+- K1 und K2 als geschlossen geführt, K3 offen mit entschiedenem Messverfahren.
+
 ### Added (Revision 1.1.0 und Anhang)
 - `docs/specs/ATC-AI-LLM-001-A-REF1-IMPLEMENTATION-ENVELOPE.md`: Implementierungsgrenzen fuer Ref-1. Korrigiertes Rechenmodell (Attention-Term, 16 bis 27 Prozent Aufschlag gegen die 6ND-Naeherung), Speichermodell als eigentliche Grenze, Schrittbudget fuer L1 bis L3, Determinismusverfahren, hergeleitete Toleranzen, festgelegte API-Flaeche, Abgrenzung zu AD-021 und zu den bestehenden aurora-ai-Kopien.
 - `ATC-AI-LLM-001` auf Version 1.1.0: Entscheidungen D1 bis D5 angenommen, vier neue Entscheidungen K1 bis K4 offen.
