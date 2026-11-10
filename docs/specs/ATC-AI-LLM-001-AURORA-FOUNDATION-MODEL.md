@@ -1,8 +1,8 @@
 ---
 document_id: ATC-AI-LLM-001
 title: Aurora Foundation Model (Aurora LLM): P0 Architektur und Spezifikation
-version: 1.0.0
-status: proposed
+version: 1.1.0
+status: accepted
 owner: A-TownChain-Okosystems
 created: 2026-11-10
 updated: 2026-11-10
@@ -19,6 +19,16 @@ evidence_gate: AURORA-001
 Dieses Dokument ist P0 des Entwicklungsfahrplans. Es legt Architektur, Numerik,
 Determinismus, Artefaktformat, Phasengrenzen und Abnahmekriterien fest. Es
 enthält keinen Produktivcode und behauptet keine Implementierung.
+
+
+## Revision 1.1.0 vom 2026-11-10
+
+Die fünf offenen Entscheidungen sind durch den Owner angenommen (D1 bis D5,
+Abschnitt 14). Damit ist dieses Dokument nicht mehr Vorschlag, sondern
+verbindliche Entwicklungsbasis für P1 bis P4. Präzisiert wird es durch den
+Anhang `ATC-AI-LLM-001-A` (Implementierungsgrenzen Ref-1), der das Rechenmodell
+korrigiert, das Speichermodell als eigentliche Grenze nachweist und vier neue
+Entscheidungen K1 bis K4 stellt.
 
 Geltungsregel aus `AURORA-001`: Architektur ist nicht Implementierung, nicht
 Test, nicht CI-Evidenz. Jede Statusaussage in diesem Dokument benennt, welcher
@@ -346,6 +356,12 @@ Token je Parameter. Wanduhrzeit bei angenommener effektiver Leistung.
 | 3B | 58,8 Mrd | 1,0e21 | 239.907 d | 120 d | 40 d |
 | 7B | 132,2 Mrd | 5,2e21 | 1,2 Mio d | 607 d | 202 d |
 
+Diese Tabelle rechnet mit der Näherung `6·N·D` und lässt den Attention-Anteil
+weg. Der Anhang `ATC-AI-LLM-001-A` korrigiert das: je Token kommt `12·L·d·T`
+hinzu, also 16 bis 27 Prozent mehr Aufwand, und der Speicher erweist sich als die
+härtere Grenze als die Rechenzeit. Die Zahlen hier bleiben als Verhältnis
+gültig, nicht als Wanduhrzeit.
+
 Die Durchsatzwerte sind Annahmen, keine Messungen. Der erste echte Messwert
 entsteht als Austrittskriterium von P2 (Abschnitt 9, T2.6). Die Aussage, die
 sich daraus schon heute sicher ableiten lässt: 0.5B ist auf einer GPU ein
@@ -603,7 +619,8 @@ Ref-1 auf CPU in Minuten oder Stunden trainiert.
 
 In dieser Reihenfolge, jeder Schritt einzeln prüfbar:
 
-1. Dieses Dokument reviewen und annehmen (P0).
+1. K1 entscheiden (Anhang 9.1). Ohne diese Entscheidung verstößt jedes neue
+   Crate gegen AD-021.
 2. `atc-aurora-tensor` anlegen: `Tensor`-Typ, `f32`-Speicher, Formprüfung,
    Matmul, Addition. Erster Test: T2.1.
 3. Autograd-Gerüst mit numerischem Gradiententest für Matmul und Addition
@@ -618,17 +635,31 @@ Gradiententest ist eine Behauptung.
 
 ---
 
-## 14. Offene Entscheidungen
+## 14. Entscheidungen
 
-| ID | Frage | Empfehlung |
+### 14.1 Angenommen am 2026-11-10
+
+| ID | Entscheidung | Ergebnis |
 |---|---|---|
-| D1 | Wird Ref-1 als verbindliches erstes Meilensteinmodell angenommen, vor jeder Skalierung? | Ja. Ohne messbaren Lernnachweis auf 5,8 Mio Parametern ist jede Skalierung unbelegt |
-| D2 | Tokenizer-Normalisierung in v1: keine, oder Unicode-NFC mit versionierter Tabelle? | Keine in v1. NFC bringt Mehrsprachigkeit, kostet eine Tabellenversion im Digest und einen weiteren Fehlerpfad |
-| D3 | Woher kommt der Trainingskorpus, und unter welcher Lizenz? | Vor P5 zu entscheiden. Ohne Antwort bleibt P5 gesperrt |
-| D4 | Welche Hardware steht für 0.5B und größer zur Verfügung? | Vor jeder Terminaussage zu 0.5B zu beantworten |
-| D5 | Wird die ATC Model ABI als eigener Standard in `atc-standards` beauftragt? | Ja, getrennt von diesem Dokument |
+| D1 | Ref-1 als verbindliches erstes Modell, vor jeder Skalierung | **angenommen**, 5,77 Mio Parameter, f32, CPU, zufällige Initialisierung, Loss-Nachweis und reproduzierbare Läufe als Austritt |
+| D2 | Keine implizite Unicode-Normalisierung im nativen Tokenizer | **angenommen**, UTF-8 als Eingabeformat, keine NFC- oder NFKC-Umwandlung, verlustfreie Kodierung, versioniertes Vokabular |
+| D3 | Eigener, kuratierter Korpus mit nachvollziehbarer Herkunft und Lizenz | **angenommen**, je Datensatz Quelle, Lizenz, Abrufdatum, SHA-256, Sprachzuordnung, Qualitätsbewertung, Duplikatprüfung, Ausschlusskriterien; keine ungeprüften Scrapes |
+| D4 | Drei verbindliche Hardwareprofile (CPU 64 GB, GPU 24 GB, Workstation 48 bis 80 GB) | **angenommen als Planungsziele**, geschärft durch den Anhang: 24 GB tragen Ref-1 und 0.5B mit Checkpointing, nicht 3B |
+| D5 | ATC Model ABI als eigener normativer Standard | **angenommen**, Zuschnitt: Modellarchitektur und Implementierung in `aurora-ai`, normative ABI in `atc-standards`, Hardware- und Sicherheitsintegration in `globus-os`, Entwicklerschnittstelle in `atc-sdk`. Das ABI ist Schnittstellenstandard, keine zweite Inferenz-Engine |
 
----
+Damit ist der Kern der Zielsetzung bestätigt: Aurora LLM muss ohne fremde
+Modellgewichte, ohne externe Inferenz-Engine und ohne fremdes KI-Framework ein
+eigenes Modell trainieren und ausführen. Skalierung folgt erst nach dem
+vollständigen Ref-1-Nachweis.
+
+### 14.2 Neu offen, blockierend für P2
+
+| ID | Frage | Wirkung |
+|---|---|---|
+| K1 | Wird AD-021 um den frameworkfreien Produktivpfad ergänzt? | **blockiert P2**, weil AD-021 heute einen Python-AI-Layer mit PyTorch/ONNX vorsieht und damit im Widerspruch zu I3 steht |
+| K2 | Wird die Zweitkopie `a-townchain/ai/aurora-ai` erneuert oder entfernt? | verhindert eine dritte Wahrheit, siehe Anhang 9.2 |
+| K3 | Welche CPU ist die Referenz für die Durchsatzmessung T2.6? | macht aus Annahmen Messwerte |
+| K4 | Bleibt `d_ff = 683` oder wird auf 704 gewechselt? | 1,7 Prozent Parameter gegen SIMD-Ausrichtung |
 
 ## 15. Verhältnis zu bestehenden Aussagen im Ökosystem
 
@@ -642,6 +673,10 @@ Gradiententest ist eine Behauptung.
   bereitstellen. Sie ist nicht Teil der Berechnung (Invariante I1).
 
 ---
+
+Anhang: `docs/specs/ATC-AI-LLM-001-A-REF1-IMPLEMENTATION-ENVELOPE.md`
+(Implementierungsgrenzen Ref-1, Rechen- und Speichermodell, API-Fläche,
+Abgrenzung zur bestehenden Struktur).
 
 *Dieses Dokument ist Spezifikation, kein Nachweis. Es enthält 0 Zeilen
 Produktivcode und keinen einzigen Messwert aus einem eigenen Modelllauf. Die
