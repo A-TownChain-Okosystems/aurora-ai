@@ -1,12 +1,17 @@
 # 🧩 Komponenten-Plan — atc-aurora-runtime
 
+> **Korrektur 2026-11-10:** Die fünf Dateien existieren bereits als
+> Spezifikationsnotizen. Dieses Modul hat kein `Cargo.toml` und keine
+> Rust-Quelle. Der Plan beschreibt die geplante Schnittstelle, nicht
+> implementierten Code.
+
 > **Erstellt:** 2026-08-08 | **Agent:** Aurora
 
 ## 1. `src/agent_runtime.atc`
 
 **Beschreibung:** Session, task, lifecycle
 
-**Status:** 📋 GEPLANT
+**Status:** 📝 NOTIZ VORHANDEN, nicht ausführbar
 
 **Schnittstellen:**
 - Eingabe: —
@@ -14,7 +19,7 @@
 - Abhängigkeiten: —
 
 **Akzeptanzkriterien:**
-1. Datei existiert und parst mit ATCLang v0.3 Parser
+1. Datei existiert (erfüllt) und parst mit ATCLang v0.3 Parser (nicht nachgewiesen: kein Parser-Lauf in diesem Repository, kein CI-Schritt)
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
 
@@ -22,7 +27,7 @@
 
 **Beschreibung:** Tool registration & execution
 
-**Status:** 📋 GEPLANT
+**Status:** 📝 NOTIZ VORHANDEN, nicht ausführbar
 
 **Schnittstellen:**
 - Eingabe: —
@@ -30,7 +35,7 @@
 - Abhängigkeiten: —
 
 **Akzeptanzkriterien:**
-1. Datei existiert und parst mit ATCLang v0.3 Parser
+1. Datei existiert (erfüllt) und parst mit ATCLang v0.3 Parser (nicht nachgewiesen: kein Parser-Lauf in diesem Repository, kein CI-Schritt)
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
 
@@ -38,7 +43,7 @@
 
 **Beschreibung:** Sandboxed execution
 
-**Status:** 📋 GEPLANT
+**Status:** 📝 NOTIZ VORHANDEN, nicht ausführbar
 
 **Schnittstellen:**
 - Eingabe: —
@@ -46,7 +51,7 @@
 - Abhängigkeiten: —
 
 **Akzeptanzkriterien:**
-1. Datei existiert und parst mit ATCLang v0.3 Parser
+1. Datei existiert (erfüllt) und parst mit ATCLang v0.3 Parser (nicht nachgewiesen: kein Parser-Lauf in diesem Repository, kein CI-Schritt)
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
 
@@ -54,7 +59,7 @@
 
 **Beschreibung:** Task queue
 
-**Status:** 📋 GEPLANT
+**Status:** 📝 NOTIZ VORHANDEN, nicht ausführbar
 
 **Schnittstellen:**
 - Eingabe: —
@@ -62,7 +67,7 @@
 - Abhängigkeiten: —
 
 **Akzeptanzkriterien:**
-1. Datei existiert und parst mit ATCLang v0.3 Parser
+1. Datei existiert (erfüllt) und parst mit ATCLang v0.3 Parser (nicht nachgewiesen: kein Parser-Lauf in diesem Repository, kein CI-Schritt)
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
 
@@ -70,7 +75,7 @@
 
 **Beschreibung:** Result aggregation
 
-**Status:** 📋 GEPLANT
+**Status:** 📝 NOTIZ VORHANDEN, nicht ausführbar
 
 **Schnittstellen:**
 - Eingabe: —
@@ -78,7 +83,7 @@
 - Abhängigkeiten: —
 
 **Akzeptanzkriterien:**
-1. Datei existiert und parst mit ATCLang v0.3 Parser
+1. Datei existiert (erfüllt) und parst mit ATCLang v0.3 Parser (nicht nachgewiesen: kein Parser-Lauf in diesem Repository, kein CI-Schritt)
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
 
