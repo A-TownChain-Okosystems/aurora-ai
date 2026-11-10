@@ -1,7 +1,7 @@
 ---
 document_id: ATC-AI-LLM-001
 title: Aurora Foundation Model (Aurora LLM): P0 Architektur und Spezifikation
-version: 1.2.0
+version: 1.3.0
 status: accepted
 owner: A-TownChain-Okosystems
 created: 2026-11-10
@@ -701,20 +701,46 @@ Die Nummernfolge K4 und K5 weicht von der früheren Zählung ab, weil K4 in
 Version 1.1.0 die Frage nach `d_ff` trug. Verbindlich ist die Benennung in
 dieser Tabelle.
 
-### 14.3 Offen, blockierend für die Evidenz
+### 14.3 K3 entschieden: First Qualified Hardware
 
-| ID | Frage | Wirkung |
-|---|---|---|
-| K3 | Welche CPU ist die Referenz für die Durchsatzmessung T2.6? | macht aus Annahmen Messwerte. Die Hardware ist nicht benannt, weder in diesem Repository noch in den Hub-Dokumenten. |
+Beschlossen am 11.11.2026. Es wird keine CPU auf Verdacht benannt. Eine nicht
+vorhandene oder nicht verfügbare Workstation als Referenz einzutragen wäre
+methodisch falsch, weil sie einen Maßstab behauptet, der nie gemessen wurde.
 
-Das Messverfahren für K3 ist dagegen entschieden und nicht Teil der offenen
-Frage: ein Thread, CPU-Affinität und Pinning, Fingerprint aus `/proc/cpuinfo`,
-fünf Aufwärmläufe, drei Messläufe, Median, ausgegeben als Token pro Sekunde und
-Byte pro Sekunde. Im Messprotokoll zusätzlich zu erfassen: CPU-Modell und
+**Referenzregel:** Die erste Maschine, die das vollständige Qualifikationsprofil
+erfüllt und für T2.6 exklusiv messen darf, wird die verbindliche CPU-Referenz.
+Nicht die erste verfügbare CPU wird Referenz, sondern die erste qualifizierte.
+
+| Kriterium | Vorgabe |
+|---|---|
+| Architektur | x86-64 |
+| SIMD-Minimum | AVX2 |
+| Erweiterung | AVX-512, sofern vorhanden |
+| NUMA | ein Sockel |
+| Arbeitsspeicher | mindestens 1 GB frei für Ref-1 |
+| Zugriff | exklusiv während der Messung |
+| Takt | stabil, kein Throttling |
+| Umgebung | native Ausführung |
+| Ausgeschlossen | Shared Container, CI-Läufer |
+
+**Messprotokoll:** verbindlich nach `ATC-AI-LLM-001-C` (T2.6-Messprotokoll).
+Kurzform: ein Thread, CPU-Affinität und Pinning, Fingerprint aus `/proc/cpuinfo`,
+fünf Aufwärmläufe, drei unabhängige Messläufe, Median als Referenzwert, Angabe in
+Token pro Sekunde und Byte pro Sekunde. Zusätzlich zu erfassen: CPU-Modell und
 Microcode, Kernelversion, Rust-Version und Compilerflags, unterstützte
-SIMD-Erweiterungen, Speicher- und NUMA-Konfiguration, CPU-Frequenz während der
-Messung sowie thermisches Throttling. Fehlt eines dieser Felder, ist die Messung
-nicht reproduzierbar und zählt nicht als Evidenz.
+SIMD-Erweiterungen, Speicher- und NUMA-Konfiguration, Frequenz und Temperatur
+während der Messung. Fehlt eines dieser Felder, ist die Messung nicht
+reproduzierbar und zählt nicht als Evidenz.
+
+**Governance, Wechsel der Referenz:** Spätere Hardware ersetzt die Referenzwerte
+nicht stillschweigend. Ein Wechsel erfordert einen neuen CPU-Fingerprint, ein
+neues Messprotokoll, einen Vergleich gegen die bisherige Referenz und eine
+dokumentierte Freigabe. Bis dahin bleiben alle Durchsatzzahlen relativ zur
+qualifizierten Referenz.
+
+**Status:** noch keine Maschine qualifiziert. Bis zur ersten qualifizierten
+Messung bleibt jede Durchsatzzahl eine Annahme und darf nicht als Messwert
+zitiert werden.
 
 ## 15. Verhältnis zu bestehenden Aussagen im Ökosystem
 
