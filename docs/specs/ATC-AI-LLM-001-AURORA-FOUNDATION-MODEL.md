@@ -1,11 +1,11 @@
 ---
 document_id: ATC-AI-LLM-001
 title: Aurora Foundation Model (Aurora LLM): P0 Architektur und Spezifikation
-version: 1.1.0
+version: 1.2.0
 status: accepted
 owner: A-TownChain-Okosystems
 created: 2026-11-10
-updated: 2026-11-10
+updated: 2026-11-11
 standard: atc-standards
 layer: L2 (aurora-ai)
 security_class: S3
@@ -314,9 +314,9 @@ Matrizen, gebundene Ein- und Ausgabeeinbettung), nicht gemessen.
 | Feld | Wert |
 |---|---|
 | Rolle | Referenzmodell für Korrektheit und Lernnachweis, kein Produktmodell |
-| Parameter | 5,8 Mio |
+| Parameter | 5.868.544 (5,87 Mio) |
 | `d_model` / Schichten / Köpfe | 256 / 6 / 8 (KV-Köpfe = 8) |
-| `d_ff` | 683 |
+| `d_ff` | 704 |
 | Vokabular | 4.096 |
 | Kontext | 512 |
 | Präzision | f32 |
@@ -328,6 +328,42 @@ Matrizen, gebundene Ein- und Ausgabeeinbettung), nicht gemessen.
 Begründung: klein genug, um auf CPU in Minuten bis Stunden zu trainieren, groß
 genug, dass Attention und Restpfad echt geprüft werden, und exakt
 finite-differenz-prüfbar.
+
+### 7.1.1 Verbindliche Modellkonfiguration, einzige Quelle
+
+Die folgenden Werte sind mit K4 und K5 vom 11.11.2026 beschlossen und ab hier
+verbindlich. Ein Crate darf keinen eigenen Default für einen dieser Werte
+definieren. Gelesen wird aus dem Artefaktmanifest; eine Konstante mit
+abweichendem Wert ist ein Konfigurationsfehler, kein zulässiger Default.
+
+| Feld | Wert | Herkunft |
+|---|---|---|
+| Parameter, exakt | 5.868.544 | aus der Formel, nicht gemessen |
+| `d_model` | 256 | Abschnitt 7.1 |
+| Schichten `L` | 6 | Abschnitt 7.1 |
+| Köpfe / KV-Köpfe | 8 / 8 | Abschnitt 7.1 |
+| `d_ff` | 704 | **K5, entschieden 11.11.2026** |
+| Vokabular `V` | 4096 | **K4, entschieden 11.11.2026** |
+| Kontext `T` | 512 | Abschnitt 7.1 |
+| Präzision | f32 | D1 |
+
+Begründung K5, `d_ff = 704`: eine Zeile mit 704 f32 sind 2.816 Byte, also exakt
+44 Cache-Lines zu 64 Byte und exakt 88 AVX2-Vektoren; Rest 0. Mit 683 sind es
+2.732 Byte, also 42,69 Cache-Lines und 85,375 Vektoren, und jede Zeile überquert
+eine Cache-Line. Preis sind 96.768 Parameter, also 1,68 Prozent. Die
+Parameterzahl war abgeleitet, die Ausrichtung ist eine Eigenschaft, die man
+nachträglich nicht mehr bekommt.
+
+Begründung K4, `V = 4096`: der Ausgabekopf kostet 2·d·V je Token, bei d = 256
+also 2,10 MFLOP bei 4096 gegen 4,19 MFLOP bei 8192. Das sind 18,2 gegen 30,7
+Prozent der Vorwärts-FLOPs, weil der Rumpf bei dieser Modellgröße klein bleibt.
+Je Byte Text ist der Unterschied fast neutral (4,44 gegen 4,01 MFLOP), aber bei
+8192 geht fast ein Drittel der Rechnung in den Kopf statt in den Rumpf, und
+seltene Merges brauchen mehr Korpus.
+
+Falsifikator für K4: misst P1 auf dem tatsächlichen Zielkorpus weniger als 2,2
+Byte je Token, wird die Entscheidung neu bewertet. Maßgeblich ist der
+P1-Zielkorpus, kein künstlicher Testkorpus.
 
 ### 7.2 Zielgrößen
 
@@ -652,14 +688,33 @@ Modellgewichte, ohne externe Inferenz-Engine und ohne fremdes KI-Framework ein
 eigenes Modell trainieren und ausführen. Skalierung folgt erst nach dem
 vollständigen Ref-1-Nachweis.
 
-### 14.2 Neu offen, blockierend für P2
+### 14.2 Entscheidungsstand, Stand 11.11.2026
+
+| ID | Frage | Stand |
+|---|---|---|
+| K1 | Wird AD-021 um den frameworkfreien Produktivpfad ergänzt? | **GESCHLOSSEN** durch AD-052 vom 11.11.2026 |
+| K2 | Wird die Zweitkopie `a-townchain/ai/aurora-ai` erneuert oder entfernt? | **GESCHLOSSEN**, entfernt am 11.11.2026 |
+| K4 | `d_ff = 683` oder 704? | **ENTSCHIEDEN: 704**, Abschnitt 7.1.1 |
+| K5 | Vokabular 4096 oder 8192? | **ENTSCHIEDEN: 4096**, Abschnitt 7.1.1 |
+
+Die Nummernfolge K4 und K5 weicht von der früheren Zählung ab, weil K4 in
+Version 1.1.0 die Frage nach `d_ff` trug. Verbindlich ist die Benennung in
+dieser Tabelle.
+
+### 14.3 Offen, blockierend für die Evidenz
 
 | ID | Frage | Wirkung |
 |---|---|---|
-| K1 | Wird AD-021 um den frameworkfreien Produktivpfad ergänzt? | **blockiert P2**, weil AD-021 heute einen Python-AI-Layer mit PyTorch/ONNX vorsieht und damit im Widerspruch zu I3 steht |
-| K2 | Wird die Zweitkopie `a-townchain/ai/aurora-ai` erneuert oder entfernt? | verhindert eine dritte Wahrheit, siehe Anhang 9.2 |
-| K3 | Welche CPU ist die Referenz für die Durchsatzmessung T2.6? | macht aus Annahmen Messwerte |
-| K4 | Bleibt `d_ff = 683` oder wird auf 704 gewechselt? | 1,7 Prozent Parameter gegen SIMD-Ausrichtung |
+| K3 | Welche CPU ist die Referenz für die Durchsatzmessung T2.6? | macht aus Annahmen Messwerte. Die Hardware ist nicht benannt, weder in diesem Repository noch in den Hub-Dokumenten. |
+
+Das Messverfahren für K3 ist dagegen entschieden und nicht Teil der offenen
+Frage: ein Thread, CPU-Affinität und Pinning, Fingerprint aus `/proc/cpuinfo`,
+fünf Aufwärmläufe, drei Messläufe, Median, ausgegeben als Token pro Sekunde und
+Byte pro Sekunde. Im Messprotokoll zusätzlich zu erfassen: CPU-Modell und
+Microcode, Kernelversion, Rust-Version und Compilerflags, unterstützte
+SIMD-Erweiterungen, Speicher- und NUMA-Konfiguration, CPU-Frequenz während der
+Messung sowie thermisches Throttling. Fehlt eines dieser Felder, ist die Messung
+nicht reproduzierbar und zählt nicht als Evidenz.
 
 ## 15. Verhältnis zu bestehenden Aussagen im Ökosystem
 
