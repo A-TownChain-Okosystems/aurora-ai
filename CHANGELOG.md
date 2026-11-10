@@ -7,6 +7,11 @@ Alle wesentlichen Änderungen an diesem Projekt werden in dieser Datei dokumenti
 ### Added
 - `docs/specs/ATC-AI-LLM-001-AURORA-FOUNDATION-MODEL.md`: P0 specification for the native Aurora Foundation Model (Aurora LLM). Covers verified baseline inventory, numeric and determinism contract, crate layout, artifact format `.atcm`, parameter and compute sizing, phase plan P0-P10, test matrix, and the three-level learning acceptance criterion.
 
+### Added (Revision 1.3.0, K3 entschieden)
+- Referenzregel First Qualified Hardware in Abschnitt 14.3: die erste Maschine, die das vollständige Qualifikationsprofil erfüllt und exklusiv messen darf, wird die verbindliche CPU-Referenz. Keine CPU wird auf Verdacht benannt.
+- Neues Dokument `ATC-AI-LLM-001-C`, T2.6-Messprotokoll: Qualifikationsprofil, Pflichtfelder der Umgebung, Messablauf mit fünf Aufwärm- und drei Messläufen, Median, Streuungsgrenze 5 Prozent, Rohdatenpflicht.
+- Governance für den Wechsel der Referenz: neuer Fingerprint, neues Protokoll, Vergleich gegen die bisherige Referenz, dokumentierte Freigabe. Keine stillschweigende Ersetzung.
+
 ### Changed (Revision 1.2.0, K4 und K5 entschieden)
 - `d_ff` von 683 auf 704, Parameterzahl 5.868.544 statt 5.771.776, also 1,68 Prozent mehr. Grund: 2.816 Byte je Zeile sind exakt 44 Cache-Lines zu 64 Byte und exakt 88 AVX2-Vektoren, Rest 0. Mit 683 überquert jede Zeile eine Cache-Line.
 - Vokabular bleibt 4096 und ist jetzt verbindlich, mit Falsifikator: unter 2,2 Byte je Token auf dem P1-Zielkorpus wird neu bewertet.
