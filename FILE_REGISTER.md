@@ -1,7 +1,9 @@
 # 📋 File Register — aurora-ai
 
-> **Zweck:** Vollständige maschinell generierte Liste aller Dateien (SCR-0082, Matrix-Dim-12).
-> **Auto-generiert:** 2026-09-10 10:50 UTC | via GitHub-Trees-API
+> **Zweck:** Vollständige Liste aller Dateien (SCR-0082, Matrix-Dim-12).
+> **Neu erzeugt:** 2026-11-10 | Quelle: Git-Trees-API `aurora-ai` main, Zielbaum dieses Commits
+> **Korrektur:** Die Fassung vom 2026-09-10 nannte 425 Dateien und war gegenüber dem Bestand veraltet (`*.rs` 16 statt 31, `*.md` 61 statt 78, `*.ts` 40 statt 43, sechs Workflow-Dateien fehlend).
+> **Zählweise:** Gezählt werden Blobs, also echte Dateien. Verzeichnisse zählen nicht mit. Der Baum enthält 53 Verzeichnisse zusätzlich.
 > **Standards:** ATC-STD-201 · Evidence: `.atc/evidence/evidence.yaml`
 
 ---
@@ -10,19 +12,27 @@
 
 | Metrik | Wert |
 |--------|------|
-| **Total Dateien** | 425 |
+| **Total Dateien** | 476 |
+| **Verzeichnisse** | 53 |
 | **.tsx** | 157 |
 | **.atc** | 80 |
-| **.md** | 61 |
-| **.ts** | 40 |
+| **.md** | 78 |
+| **.ts** | 43 |
+| **.rs** | 31 |
 | **.js** | 17 |
-| **.rs** | 16 |
-| **(keine)** | 15 |
+| **.json** | 11 |
 | **.cjs** | 11 |
-| **.yaml** | 5 |
-| **.json** | 5 |
+| **.yaml** | 9 |
+| **(keine)** | 8 |
+| **.yml** | 7 |
+| **.gitignore** | 7 |
+| **.toml** | 5 |
 | **.py** | 5 |
-| **.yml** | 4 |
+| **.txt** | 3 |
+| **.example** | 1 |
+| **.html** | 1 |
+| **.css** | 1 |
+| **.lock** | 1 |
 
 ---
 
@@ -33,9 +43,13 @@
 - `.atc/lifecycle.yaml`
 - `.atc/ownership.yaml`
 - `.atc/repository.yaml`
+- `.atc/standards.yaml`
 - `.github/dependabot.yml`
+- `.github/workflows/code-quality.yml`
 - `.github/workflows/codeql.yml`
+- `.github/workflows/dependency-review.yml`
 - `.github/workflows/governance-ci.yml`
+- `.github/workflows/sdk.yml`
 - `.github/workflows/test-suite.yml`
 - `.gitignore`
 - `AGENTS.md`
@@ -45,14 +59,32 @@
 - `CODEOWNERS`
 - `CODE_OF_CONDUCT.md`
 - `CONTRIBUTING.md`
+- `FILE_REGISTER.md`
 - `GOVERNANCE.md`
 - `LICENSE`
 - `README.md`
 - `ROADMAP.md`
 - `SECURITY.md`
 - `STATUS.md`
+- `docs/ATC_AI_COMPUTE_BACKEND_CONTRACT.md`
+- `docs/AURORA_CANONICAL_FUNCTION_MATRIX.md`
+- `docs/AURORA_DECENTRALIZED_MEMORY_FUNCTION_CATALOG.json`
+- `docs/AURORA_DECENTRALIZED_MEMORY_FUNCTION_CATALOG.md`
+- `docs/AURORA_FUNCTION_CATALOG.md`
+- `docs/AURORA_FUNCTION_CATALOG.yaml`
+- `docs/AURORA_RUNTIME_EXECUTION_SSOT_DECISION.md`
+- `docs/DECENTRALIZED_MEMORY_ARCHITECTURE.md`
+- `docs/ENGINEERING_AUDIT.md`
+- `docs/GLOBUSOS_INTEGRATION.md`
+- `docs/MEMORY-001_CANONICAL_CONTRACT.md`
 - `docs/REPOSITORY_STANDARD.md`
+- `docs/audits/AURORA-001-COMPLETENESS.yaml`
+- `docs/audits/AURORA-CHATGPT-SCOPE-SOURCE-AUDIT.md`
+- `docs/aurora-swarm-orchestration.md`
 - `docs/specs/ATC-AI-CAP-001-CAPABILITY-TOKENS.md`
+- `docs/specs/ATC-AI-LLM-001-A-REF1-IMPLEMENTATION-ENVELOPE.md`
+- `docs/specs/ATC-AI-LLM-001-AURORA-FOUNDATION-MODEL.md`
+- `docs/specs/ATC-AI-LOC-001-LOCALIZATION.md`
 - `docs/specs/ATC-AI-MEM-001-MEMORY-SECURITY.md`
 - `docs/specs/ATC-AI-S2-001-S2-CONTROLS.md`
 - `docs/specs/ATC-AI-TB-001-TRUST-BOUNDARY.md`
@@ -295,6 +327,9 @@
 - `modules/atc-aistudio/src/db/schema.ts`
 - `modules/atc-aistudio/src/ecosystemData.ts`
 - `modules/atc-aistudio/src/fix_translation.cjs`
+- `modules/atc-aistudio/src/graphics/graphicsAi.test.ts`
+- `modules/atc-aistudio/src/graphics/graphicsAi.ts`
+- `modules/atc-aistudio/src/graphics/index.ts`
 - `modules/atc-aistudio/src/hooks/useGoogleSheetsSync.ts`
 - `modules/atc-aistudio/src/hooks/useKeyboardShortcut.ts`
 - `modules/atc-aistudio/src/index.css`
@@ -407,17 +442,35 @@
 - `modules/atc-aurora-core/README.md`
 - `modules/atc-aurora-core/ROADMAP.md`
 - `modules/atc-aurora-core/STATUS.md`
+- `modules/atc-aurora-core/SWARM_AGENT_IDENTITY.md`
 - `modules/atc-aurora-core/src/agent_registry.atc`
 - `modules/atc-aurora-core/src/agent_registry.rs`
+- `modules/atc-aurora-core/src/approval.rs`
+- `modules/atc-aurora-core/src/audit.rs`
 - `modules/atc-aurora-core/src/aurora_core.atc`
 - `modules/atc-aurora-core/src/aurora_core.rs`
+- `modules/atc-aurora-core/src/capability_policy.rs`
 - `modules/atc-aurora-core/src/config_manager.atc`
 - `modules/atc-aurora-core/src/config_manager.rs`
+- `modules/atc-aurora-core/src/event.rs`
 - `modules/atc-aurora-core/src/lib.rs`
 - `modules/atc-aurora-core/src/llm_router.atc`
 - `modules/atc-aurora-core/src/llm_router.rs`
 - `modules/atc-aurora-core/src/model_hub.atc`
 - `modules/atc-aurora-core/src/model_hub.rs`
+- `modules/atc-aurora-core/src/result_collector.rs`
+- `modules/atc-aurora-core/src/state.rs`
+- `modules/atc-aurora-core/src/task_scheduler.rs`
+- `modules/atc-aurora-localization/Cargo.lock`
+- `modules/atc-aurora-localization/Cargo.toml`
+- `modules/atc-aurora-localization/README.md`
+- `modules/atc-aurora-localization/src/catalog.rs`
+- `modules/atc-aurora-localization/src/engine.rs`
+- `modules/atc-aurora-localization/src/lib.rs`
+- `modules/atc-aurora-localization/src/locale.rs`
+- `modules/atc-aurora-localization/src/memory.rs`
+- `modules/atc-aurora-localization/src/terminology.rs`
+- `modules/atc-aurora-localization/src/validation.rs`
 - `modules/atc-aurora-memory/.gitignore`
 - `modules/atc-aurora-memory/ARCHITECTURE.md`
 - `modules/atc-aurora-memory/CHANGELOG.md`
@@ -453,3 +506,11 @@
 - `modules/atc-aurora-runtime/src/sandbox.atc`
 - `modules/atc-aurora-runtime/src/task_scheduler.atc`
 - `modules/atc-aurora-runtime/src/tool_executor.atc`
+- `schemas/aurora-action-request.schema.yaml`
+- `schemas/memory/capability.schema.json`
+- `schemas/memory/federation_handshake.schema.json`
+- `schemas/memory/memory_record.schema.json`
+- `sdk/Cargo.toml`
+- `sdk/src/lib.rs`
+- `tests/memory/capability_handshake_vectors.json`
+- `tests/memory/memory_record_vectors.json`
