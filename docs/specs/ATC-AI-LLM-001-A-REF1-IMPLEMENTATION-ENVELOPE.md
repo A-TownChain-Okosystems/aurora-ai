@@ -392,7 +392,7 @@ späteren Phase zugeordnet und wird in P1 bis P4 nicht begonnen, auch nicht
 |---|---|---|
 | K1 | Wird AD-021 um den frameworkfreien Produktivpfad ergänzt (Weg 1 aus 9.1)? | blockiert P2 |
 | K2 | Wird `a-townchain/ai/aurora-ai` erneuert oder entfernt? | verhindert die dritte Wahrheit |
-| K3 | Welche CPU ist die Referenz für die Durchsatzmessung T2.6? | macht aus Annahmen Messwerte |
+| K3 | Welche CPU ist die Referenz für die Durchsatzmessung T2.6? | **ENTSCHIEDEN 11.11.2026: First Qualified Hardware**, Protokoll ATC-AI-LLM-001-C |
 | K5 | `d_ff = 683` oder 704? | **ENTSCHIEDEN 11.11.2026: 704**, siehe Spezifikation 7.1.1 |
 
 ---
