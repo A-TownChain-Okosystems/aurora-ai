@@ -2,6 +2,20 @@
 
 Alle wesentlichen Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+## [Unreleased] - 2026-11-10
+
+### Added
+- `docs/specs/ATC-AI-LLM-001-AURORA-FOUNDATION-MODEL.md`: P0 specification for the native Aurora Foundation Model (Aurora LLM). Covers verified baseline inventory, numeric and determinism contract, crate layout, artifact format `.atcm`, parameter and compute sizing, phase plan P0-P10, test matrix, and the three-level learning acceptance criterion.
+
+### Changed
+- Nothing in code. Specification only, 0 lines of production code.
+
+### Verification
+- Baseline inventory bound to commit `b4858f350fcc8db4d48c1cb20b2f116be53c41fe` (file list via Git Trees API, keyword scan over all `*.rs`).
+- Parameter counts are computed from a stated formula, not measured, and labelled as computed.
+- Throughput figures are assumptions with a measurement planned as P2 exit criterion T2.6.
+- No build, test or runtime claim is made by this change.
+
 ## [Unreleased] — 2026-10-18
 
 ### Added
