@@ -38,7 +38,7 @@ Formen werden mit geprüfter Multiplikation berechnet, ein Überlauf ist
 
 ## Tests
 
-`cargo test` im Crate, 29 Tests, Stand 11.11.2026 alle grün. Zusätzlich
+`cargo test` im Crate, 36 Tests, Stand 11.11.2026 alle grün. Zusätzlich
 `cargo check` für das `no_std`-Profil, weil `cargo test` mit std übersetzt und
 Fehler ohne std verdeckt.
 
