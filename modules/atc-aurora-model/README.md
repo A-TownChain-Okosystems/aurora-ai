@@ -44,8 +44,12 @@ Die Differenz laesst sich zerlegen: 97 024 = 379 x 256, ohne die abschliessende
 Norm 96 768 = 6 x 63 Zeilen. Sie entspricht damit genau der abschliessenden Norm
 plus 63 Zeilen je Block, also `d_ff` 683 statt 704. Mit `d_ff` 683 und ohne
 abschliessende Norm ergibt die Ableitung exakt 5 771 776, und 683 ist gerade
-aufgerundetes 8/3 x 256. Der Sollwert sieht damit nach einer Rechnung aus, die vor
-der Einfrierung von K5 und vor der Aufnahme der finalen Norm entstanden ist.
+aufgerundetes 8/3 x 256. Der Sollwert ist damit belegt die Zahl **vor** der K5-Entscheidung: der Blueprint
+nennt in §6 selbst `d_ff` 683 oder 704 als offenen Punkt, und 683 gegen 704 sind
+genau 96 768 Parameter, also 1,68 Prozent. Die Modellspezifikation nennt in
+Abschnitt 7.1.1 nach K5 5 868 544 aus der Formel
+`P = L(4d^2 + 3 d d_ff + 2d) + V d`. Diese Formel zaehlt die abschliessende Norm
+allerdings nicht mit; mit ihr sind es 5 868 800, und so rechnet dieses Crate.
 
 Entscheidungsvorlage mit Rechenweg, Suchraum, zwei exakten Aufloesungen und drei
 Optionen: [`docs/decisions/AD-B18-PARAMETERHAUSHALT.md`](../../docs/decisions/AD-B18-PARAMETERHAUSHALT.md).
