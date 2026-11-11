@@ -4,6 +4,7 @@
 > **Neu erzeugt:** 2026-11-11 | Quelle: Git-Trees-API `aurora-ai` main, Zielbaum dieses Commits
 > **Korrektur:** Die Fassung vom 2026-09-10 nannte 425 Dateien und war gegenüber dem Bestand veraltet (`*.rs` 16 statt 31, `*.md` 61 statt 78, `*.ts` 40 statt 43, sechs Workflow-Dateien fehlend).
 > **Zählweise:** Gezählt werden Blobs, also echte Dateien. Verzeichnisse zählen nicht mit. Der Baum enthält 59 Verzeichnisse zusätzlich.
+> **Stand-Vermerk 11.11.2026 (ATC-AI-LLM-002):** eine Datei ergänzt — `docs/specs/ATC-AI-LLM-002-ATCM-ARTIFACT-CONTRACT.md`. Damit 506 Dateien, `.md` 87.
 > **Stand-Vermerk 11.11.2026 (M-05 Vorwaertslauf):** vier Dateien ergänzt — `modules/atc-aurora-model/src/{weights,forward,tests_forward}.rs` und `modules/atc-aurora-model/Cargo.lock` (Pfadabhängigkeit auf `atc-aurora-tensor`). Damit 505 Dateien, `.rs` 48, `.lock` 2.
 > **Stand-Vermerk 11.11.2026 (B-18):** eine Datei ergänzt — `docs/decisions/AD-B18-PARAMETERHAUSHALT.md` (Entscheidungsvorlage, neues Verzeichnis `docs/decisions`). Damit 501 Dateien, 59 Verzeichnisse, `.md` 86.
 > **Stand-Vermerk 11.11.2026 (M-05):** sieben Dateien ergänzt — Crate `modules/atc-aurora-model` (`Cargo.toml`, `README.md`, `STATUS.md`, `src/{lib,config,params,tests}.rs`). Damit 500 Dateien, 58 Verzeichnisse, `.md` 85, `.rs` 45, `.toml` 7.
@@ -16,11 +17,11 @@
 
 | Metrik | Wert |
 |--------|------|
-| **Total Dateien** | 505 |
+| **Total Dateien** | 506 |
 | **Verzeichnisse** | 59 |
 | **.tsx** | 157 |
 | **.atc** | 80 |
-| **.md** | 86 |
+| **.md** | 87 |
 | **.ts** | 43 |
 | **.rs** | 48 |
 | **.js** | 17 |
@@ -91,6 +92,7 @@
 - `docs/specs/ATC-AI-LLM-001-AURORA-FOUNDATION-MODEL.md`
 - `docs/specs/ATC-AI-LLM-001-B-P1-P2-BLUEPRINT.md`
 - `docs/specs/ATC-AI-LLM-001-C-T2.6-MESSPROTOKOLL.md`
+- `docs/specs/ATC-AI-LLM-002-ATCM-ARTIFACT-CONTRACT.md`
 - `docs/specs/ATC-AI-LOC-001-LOCALIZATION.md`
 - `docs/specs/ATC-AI-MEM-001-MEMORY-SECURITY.md`
 - `docs/specs/ATC-AI-S2-001-S2-CONTROLS.md`
