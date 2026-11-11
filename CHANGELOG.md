@@ -1,5 +1,28 @@
 # Changelog
 
+## 2026-11-11 — M-05 begonnen: Parameterhaushalt, B-18 mit Befund
+
+- **Neues Crate `modules/atc-aurora-model`** (Blueprint Abschnitt 3.5, M-05).
+  Inhalt dieses Schnitts: `Config` mit den Architekturbedingungen (Breite,
+  Kopfteilung, KV-Kopfe, Zwischenraum, Vokabular, geteilte Einbettung),
+  `Breakdown` und `param_count` mit gepruefter Arithmetik. Kein Vorwaertslauf,
+  keine Attention, keine Gewichte, keine Initialisierung, kein Dateiformat.
+- **B-18 abgeleitet statt gesetzt.** Die Zahl kommt aus der Konfiguration:
+  Embedding 1 048 576, Attention 1 572 864, SwiGLU 3 244 032, Block-Normen
+  3 072, finale Norm 256, zusammen **5 868 800** (ohne finale Norm 5 868 544).
+- **BEFUND: der Blueprint-Sollwert passt nicht dazu.** B-18 nennt **5 771 776**.
+  Die Differenz ist **97 024** Elemente (96 768 ohne die abschliessende Norm) —
+  keine Rundung, sondern ein Widerspruch zwischen Sollwert und eingefrorener
+  Architektur (K4 Vokabular 4096, K5 `d_ff` 704, sechs Bloecke, geteilte
+  Einbettung, keine Bias-Terme). Der Test
+  `b_18_blueprint_sollwert_weicht_von_der_ableitung_ab` haelt die Abweichung
+  fest; die Implementierung folgt der Architektur, nicht dem Sollwert. Die
+  Aufloesung ist eine Owner-Entscheidung, keine Implementierungsfrage.
+- **Pruefungen:** 8 Tests gruen, clippy `-D warnings` sauber, rustfmt sauber.
+  `CI_VERIFIED` bleibt offen (Commit-Herkunft unverifiziert, Actions starten
+  nicht); `M-05` ist damit `IMPLEMENTED` und `TESTED`, mehr nicht.
+- **Register** auf 500 Dateien und 58 Verzeichnisse nachgezogen.
+
 ## 2026-11-11 — CI-Blockade eingegrenzt
 
 - **Abrechnung als Ursache ausgeschlossen.** Alle betroffenen Repositories sind
