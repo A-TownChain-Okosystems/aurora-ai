@@ -1,0 +1,9 @@
+[package]
+name = "atc-aurora-tensor"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "Nativer Tensor-Kern der Aurora-Referenzimplementierung (M-01 tensor-core, M-02 tensor-ops)"
+
+[dependencies]
+libm = "0.2"
