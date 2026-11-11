@@ -161,7 +161,7 @@ damit speicherseitig trivial, was P8 zu einer reinen Korrektheitsaufgabe macht.
 | Vokabular | 4096 | byte-level BPE mit Byte-Rückfall |
 | Kontext `T` | 512 | Attention-Anteil bleibt bei 27 Prozent, Rechnung bleibt beherrschbar |
 | Norm | RMSNorm, Pre-Norm, ε = 1e-5 | numerisch stabiler als Post-Norm bei kleiner Tiefe |
-| Position | RoPE, θ = 10000 | keine gelernten Positionsparameter |
+| Position | RoPE, θ = 10 000 (**Normwert**, K6 entschieden 11.11.2026) | keine gelernten Positionsparameter; das ATCM-Artefakt deklariert den Wert und der Leser lehnt Abweichungen ab |
 | MLP | SwiGLU, keine Bias-Terme | drei Matrizen, gated |
 | Einbettung | gebunden (Ein- und Ausgabe teilen Gewichte) | spart 1,05 Mio Parameter |
 | Präzision | f32 durchgehend | Voraussetzung für den Gradiententest |
