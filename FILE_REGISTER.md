@@ -3,7 +3,7 @@
 > **Zweck:** Vollständige Liste aller Dateien (SCR-0082, Matrix-Dim-12).
 > **Neu erzeugt:** 2026-11-11 | Quelle: Git-Trees-API `aurora-ai` main, Zielbaum dieses Commits
 > **Korrektur:** Die Fassung vom 2026-09-10 nannte 425 Dateien und war gegenüber dem Bestand veraltet (`*.rs` 16 statt 31, `*.md` 61 statt 78, `*.ts` 40 statt 43, sechs Workflow-Dateien fehlend).
-> **Zählweise:** Gezählt werden Blobs, also echte Dateien. Verzeichnisse zählen nicht mit. Der Baum enthält 55 Verzeichnisse zusätzlich.
+> **Zählweise:** Gezählt werden Blobs, also echte Dateien. Verzeichnisse zählen nicht mit. Der Baum enthält 56 Verzeichnisse zusätzlich.
 > **Standards:** ATC-STD-201 · Evidence: `.atc/evidence/evidence.yaml`
 
 ---
@@ -12,8 +12,8 @@
 
 | Metrik | Wert |
 |--------|------|
-| **Total Dateien** | 487 |
-| **Verzeichnisse** | 55 |
+| **Total Dateien** | 488 |
+| **Verzeichnisse** | 56 |
 | **.tsx** | 157 |
 | **.atc** | 80 |
 | **.md** | 82 |
@@ -27,7 +27,7 @@
 | **.yml** | 7 |
 | **.gitignore** | 7 |
 | **.toml** | 6 |
-| **.py** | 5 |
+| **.py** | 6 |
 | **.txt** | 3 |
 | **.example** | 1 |
 | **.html** | 1 |
@@ -525,3 +525,4 @@
 - `sdk/src/lib.rs`
 - `tests/memory/capability_handshake_vectors.json`
 - `tests/memory/memory_record_vectors.json`
+- `tools/check_file_register.py`
