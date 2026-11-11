@@ -1,5 +1,24 @@
 # Changelog
 
+## 2026-11-11 — B-18: Herkunft des Sollwerts belegt (Fassung 0.2.0)
+
+- **Der Sollwert 5.771.776 ist die Zahl vor K5.** Belegstelle im Blueprint selbst:
+  `ATC-AI-LLM-001-B` §6 führt `d_ff` 683 oder 704 als offenen Punkt K5 mit „1,7 Prozent
+  Parameter gegen SIMD-Ausrichtung". 683 gegen 704 sind exakt 96.768 Parameter, also
+  1,68 Prozent. B-18 ist damit die einzige Stelle, die K5 nicht mitgezogen hat;
+  `ATC-AI-LLM-001-A` §7.1.1 nennt nach K5 **5.868.544**.
+- **Zweiter Befund: die Formel zählt die abschliessende Norm nicht mit.**
+  `P = L·(4d² + 3·d·d_ff + 2d) + V·d` ergibt 5.868.544; mit der abschliessenden RMSNorm
+  vor dem Ausgabekopf sind es **5.868.800**, und so rechnet das Crate. Die Block-Normen
+  (`2d`) sind in derselben Formel mitgezählt, es fehlt genau ein `+ d` ausserhalb der Blöcke.
+- **Entscheidungsdokument auf 0.2.0**: Belegstellen, zweiter Befund, Optionen A/B/C,
+  Auflösungen F1 (Formel korrigieren, empfohlen) und F2 (keine abschliessende Norm).
+  Empfehlung jetzt **A zusammen mit F1** — A ist die Nachführung einer getroffenen
+  Entscheidung, keine neue Architekturfrage. Das Dokument entscheidet weiterhin nichts.
+- **README und STATUS** nennen die Belegstellen und beide offenen Entscheidungen.
+  Keine Zahl, kein Status und keine Reifeklasse geändert: M-05 bleibt `IMPLEMENTED`
+  und `TESTED`, `CI_VERIFIED` offen. Register unverändert 501 Dateien, 59 Verzeichnisse.
+
 ## 2026-11-11 — Entscheidungsvorlage B-18: Sollwert gegen Ableitung
 
 - **Neues Dokument `docs/decisions/AD-B18-PARAMETERHAUSHALT.md`** (ATC-DOC-AI-AD-001,
