@@ -102,6 +102,11 @@ fn check_weights(cfg: &Config, w: &Weights) -> Result<(), ForwardError> {
     if w.final_norm.shape() != [d] {
         return Err(ForwardError::WeightMismatch { what: "final_norm" });
     }
+    match (&w.lm_head, cfg.tied_embedding) {
+        (None, true) => {}
+        (Some(head), false) if head.shape() == [d, cfg.vocab] => {}
+        _ => return Err(ForwardError::WeightMismatch { what: "lm_head" }),
+    }
     if w.blocks.len() != cfg.n_layers {
         return Err(ForwardError::WeightMismatch { what: "blocks" });
     }
@@ -236,8 +241,15 @@ pub fn forward(
     }
 
     let x = x.rms_norm(&w.final_norm, NORM_EPS, budget)?;
-    // Gebundene Einbettung: der Ausgabekopf ist die transponierte Tabelle.
-    let head = w.tok_emb.transpose(budget)?;
-    let logits = x.matmul(&head, budget)?;
+    // Ausgabekopf: bei gebundener Einbettung die transponierte Tabelle (sie
+    // liegt als `(vocab, d_model)`), sonst der eigene Kopf in Projektionsform
+    // `(d_model, vocab)` (Befund F-02 der Gate-Pruefung).
+    let logits = match &w.lm_head {
+        Some(head) => x.matmul(head, budget)?,
+        None => {
+            let head = w.tok_emb.transpose(budget)?;
+            x.matmul(&head, budget)?
+        }
+    };
     Ok(logits)
 }
