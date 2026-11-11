@@ -4,6 +4,7 @@
 > **Neu erzeugt:** 2026-11-11 | Quelle: Git-Trees-API `aurora-ai` main, Zielbaum dieses Commits
 > **Korrektur:** Die Fassung vom 2026-09-10 nannte 425 Dateien und war gegenüber dem Bestand veraltet (`*.rs` 16 statt 31, `*.md` 61 statt 78, `*.ts` 40 statt 43, sechs Workflow-Dateien fehlend).
 > **Zählweise:** Gezählt werden Blobs, also echte Dateien. Verzeichnisse zählen nicht mit. Der Baum enthält 59 Verzeichnisse zusätzlich.
+> **Stand-Vermerk 11.11.2026 (B-21 implementiert):** fünf Dateien ergänzt — `modules/atc-aurora-model/src/artifact/{mod,sha256,write,read,tests}.rs`. Damit 512 Dateien, 60 Verzeichnisse, `.rs` 53.
 > **Stand-Vermerk 11.11.2026 (Gate-Prüfung G1–G5):** eine Datei ergänzt — `docs/audits/2026-11-11-ATC-AI-LLM-002-GATE-REVIEW.md`. Damit 507 Dateien, `.md` 88.
 > **Stand-Vermerk 11.11.2026 (ATC-AI-LLM-002):** eine Datei ergänzt — `docs/specs/ATC-AI-LLM-002-ATCM-ARTIFACT-CONTRACT.md`. Damit 506 Dateien, `.md` 87.
 > **Stand-Vermerk 11.11.2026 (M-05 Vorwaertslauf):** vier Dateien ergänzt — `modules/atc-aurora-model/src/{weights,forward,tests_forward}.rs` und `modules/atc-aurora-model/Cargo.lock` (Pfadabhängigkeit auf `atc-aurora-tensor`). Damit 505 Dateien, `.rs` 48, `.lock` 2.
@@ -18,13 +19,13 @@
 
 | Metrik | Wert |
 |--------|------|
-| **Total Dateien** | 507 |
-| **Verzeichnisse** | 59 |
+| **Total Dateien** | 512 |
+| **Verzeichnisse** | 60 |
 | **.tsx** | 157 |
 | **.atc** | 80 |
 | **.md** | 88 |
 | **.ts** | 43 |
-| **.rs** | 48 |
+| **.rs** | 53 |
 | **.js** | 17 |
 | **.json** | 11 |
 | **.cjs** | 11 |
@@ -507,6 +508,11 @@
 - `modules/atc-aurora-model/Cargo.toml`
 - `modules/atc-aurora-model/README.md`
 - `modules/atc-aurora-model/STATUS.md`
+- `modules/atc-aurora-model/src/artifact/mod.rs`
+- `modules/atc-aurora-model/src/artifact/read.rs`
+- `modules/atc-aurora-model/src/artifact/sha256.rs`
+- `modules/atc-aurora-model/src/artifact/tests.rs`
+- `modules/atc-aurora-model/src/artifact/write.rs`
 - `modules/atc-aurora-model/src/config.rs`
 - `modules/atc-aurora-model/src/forward.rs`
 - `modules/atc-aurora-model/src/lib.rs`
