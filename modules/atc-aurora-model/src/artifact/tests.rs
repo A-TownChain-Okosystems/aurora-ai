@@ -732,3 +732,56 @@ fn artefakt_der_referenz_traegt_die_paramterzahl() {
         )
     );
 }
+
+/// Messung der Dekodierkosten, nicht Teil der Suite.
+///
+/// Aufruf: `cargo test --release -- --ignored --nocapture messung`.
+/// Die Zahlen stehen in `docs/measurements/2026-11-11-artifact-decode-cost.md`.
+#[test]
+#[ignore = "Messung, kein Prueffall"]
+fn messung_dekodierkosten_ref1() {
+    use std::time::Instant;
+    let cfg = Config::ref1();
+    let w = Weights::from_seed(&cfg, 1);
+    let mut bytes = Vec::new();
+    let digest = write(&cfg, &w, &mut bytes).unwrap();
+    println!(
+        "Datei: {} Byte, Tensoren: {}",
+        bytes.len(),
+        2 + 8 * cfg.n_layers
+    );
+
+    let t0 = Instant::now();
+    let a = read(
+        &bytes,
+        TrustAnchor::ExpectedDigest(digest),
+        &ReadOptions::strict(1 << 31),
+        &mut Budget::new(1 << 31),
+        Some(&cfg),
+    )
+    .unwrap();
+    let t_read = t0.elapsed();
+    println!("read (Struktur + Digest + Anker): {t_read:?}");
+
+    let t_h = Instant::now();
+    let _ = super::sha256::digest(&bytes);
+    println!("nur SHA-256 ueber die ganze Datei: {:?}", t_h.elapsed());
+
+    let t1 = Instant::now();
+    let mut elements = 0usize;
+    for index in 0..a.tensors().len() {
+        elements += a.tensor_f32(index).unwrap().len();
+    }
+    let t_f32 = t1.elapsed();
+    println!("tensor_f32 je Tensor ({elements} Elemente): {t_f32:?}");
+
+    let t2 = Instant::now();
+    let back = a.to_weights().unwrap();
+    let t_weights = t2.elapsed();
+    println!("to_weights (Vollkopie): {t_weights:?}");
+    println!("Elemente gleich: {}", back.param_count() == w.param_count());
+    println!(
+        "Verhaeltnis to_weights/tensor_f32: {:.2}",
+        t_weights.as_secs_f64() / t_f32.as_secs_f64()
+    );
+}
