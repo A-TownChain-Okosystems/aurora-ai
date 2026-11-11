@@ -3,9 +3,9 @@
 | Bereich | Status | Beleg |
 |---|---|---|
 | Parameterhaushalt | `IMPLEMENTED` | `Config`, `Breakdown`, `param_count`, gepruefte Arithmetik |
-| Lokale Pruefung | `TESTED` | 16 Tests, `cargo test` gruen, clippy `-D warnings` sauber, fmt sauber |
+| Lokale Pruefung | `TESTED` | 61 Tests, `cargo test` gruen, clippy `-D warnings` sauber, fmt sauber |
 | Vorwaertslauf (B-19, B-20) | `IMPLEMENTED` | `forward`, `Weights`, RoPE, kausale Multi-Head-Attention, gebundener Kopf |
-| Artefakt (B-21) | **offen** | braucht Format, Digest und Zustandsschreiben |
+| Artefakt (B-21) | `IMPLEMENTED` | `write`/`read` gegen `ATC-AI-LLM-002` v1.2.0, AT-01…AT-35 grün |
 | `CI_VERIFIED` | **offen** | Actions starten nicht, solange die Commit-Herkunft unverifiziert ist |
 | `E2E_VERIFIED` | **offen** | kein Lauf im Gesamtsystem |
 
@@ -54,6 +54,22 @@ Kein KV-Cache, kein Batching, kein Sampler (gehoert zu P8/`atc-aurora-runtime`).
 nennt nur "RoPE". Er ist damit ein expliziter Implementierungsparameter, kein
 Normwert, und steht im Artefaktformat als deklariertes Feld (`ATC-AI-LLM-002` §3,
 offener Punkt K6). B-20 kostet im Debug-Build etwa 22 Sekunden.
+
+## Artefakt: Stand der Umsetzung
+
+`write` und `read` sind implementiert (`src/artifact/`): Header mit zentralen
+Offsets (104 Byte, Befund F-01 damit dauerhaft geschlossen), kanonische
+Tensorfolge einschließlich `lm_head` bei nicht gebundener Einbettung, SHA-256
+über die ganze Datei mit genulltem Digest-Feld (eigene, geprüfte Umsetzung),
+fail-closed Lesereihenfolge, `max_bytes` **vor** dem Hashen, geprüfte
+Integer-Arithmetik, Sichten statt Modellkopie.
+
+Geprüft sind 35 Fälle: AT-01 bis AT-35, dazu Roundtrip (geteilt und getrennt),
+Determinismus, byte-identisches Neuschreiben eines gelesenen Artefakts und vier
+bekannte SHA-256-Werte. Gesamt 61 Tests im Crate.
+
+`CI_VERIFIED` bleibt offen: Actions laufen auf diesem Commit wegen der
+unverifizierten Konto-E-Mail nicht an.
 
 ## Artefaktvertrag, Prüfstand
 
