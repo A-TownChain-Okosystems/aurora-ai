@@ -517,3 +517,47 @@ fn alle_ops_pruefen_budget_vor_der_zuteilung() {
     ));
     assert_eq!(b.used(), 0, "kein Fehlschlag darf etwas verbuchen");
 }
+
+// ------------------------------------------- Abhängigkeitsregel (AD-026/028)
+//
+// Die Zuständigkeitsgrenze soll nicht nur im Dokument stehen, sondern bei jedem
+// Testlauf geprüft werden: dieser Kern hängt an nichts außer libm. Kein
+// Kernel-Crate, keine zweite Tensor-Bibliothek, keine Laufzeit aus L1.
+
+#[test]
+fn abhaengigkeitsregel_nur_libm() {
+    const MANIFEST: &str = include_str!("../Cargo.toml");
+    let mut in_deps = false;
+    let mut deps: Vec<String> = Vec::new();
+    for line in MANIFEST.lines() {
+        let l = line.trim();
+        if l.starts_with('[') {
+            in_deps = l == "[dependencies]";
+            continue;
+        }
+        if in_deps && !l.is_empty() && !l.starts_with('#') {
+            if let Some((name, _)) = l.split_once('=') {
+                deps.push(name.trim().to_string());
+            }
+        }
+    }
+    assert_eq!(
+        deps,
+        vec!["libm".to_string()],
+        "nur libm ist zulaessig: {deps:?}"
+    );
+    for verboten in [
+        "shivacore",
+        "globus",
+        "kernel",
+        "aurora-core",
+        "torch",
+        "candle",
+        "burn",
+    ] {
+        assert!(
+            !MANIFEST.to_lowercase().contains(verboten),
+            "unzulaessige Abhaengigkeit oder Nennung im Manifest: {verboten}"
+        );
+    }
+}
