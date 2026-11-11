@@ -20,8 +20,16 @@ beschreiben. Beides ist eine Owner-Entscheidung, keine Implementierungsfrage.
 Zerlegung: 97 024 = 379 x 256, ohne abschliessende Norm 96 768 = 6 x 63 Zeilen.
 Die Differenz ist damit genau die abschliessende Norm plus 63 Zeilen je Block,
 also `d_ff` 683 statt 704; mit `d_ff` 683 und ohne abschliessende Norm ergibt die
-Ableitung exakt 5 771 776 (mit dem Crate nachgerechnet). Entscheidungsvorlage mit
-Optionen A/B/C: [`docs/decisions/AD-B18-PARAMETERHAUSHALT.md`](../../docs/decisions/AD-B18-PARAMETERHAUSHALT.md).
+Ableitung exakt 5 771 776 (mit dem Crate nachgerechnet).
+
+Belegt: 5 771 776 ist der Stand **vor** K5. Der Blueprint nennt `d_ff` 683 oder 704
+in §6 als offenen Punkt (1,7 Prozent Parameter), die Spezifikation nennt nach K5 in
+§7.1.1 5 868 544 aus der Formel `P = L(4d^2 + 3 d d_ff + 2d) + V d`. Diese Formel
+zaehlt die abschliessende Norm nicht mit (5 868 800 mit ihr).
+
+Zwei offene Owner-Entscheidungen: **A** B-18 auf den K5-Wert nachziehen,
+**F1/F2** ob die abschliessende Norm mitzaehlt. Vorlage mit Belegstellen, Rechenweg
+und Folgen: [`docs/decisions/AD-B18-PARAMETERHAUSHALT.md`](../../docs/decisions/AD-B18-PARAMETERHAUSHALT.md).
 
 ## Nicht enthalten
 
