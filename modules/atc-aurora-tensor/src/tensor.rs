@@ -153,6 +153,12 @@ impl Tensor {
         &self.data
     }
 
+    /// Schreibzugriff auf den Puffer. Nur für Aufrufer gedacht, die die Form
+    /// unverändert lassen; die Länge ist durch die Form festgelegt.
+    pub(crate) fn as_mut_slice(&mut self) -> &mut [f32] {
+        &mut self.data
+    }
+
     pub fn to_vec(&self) -> Vec<f32> {
         self.data.clone()
     }
