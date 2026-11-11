@@ -8,6 +8,7 @@
 
 #![forbid(unsafe_code)]
 
+pub mod artifact;
 pub mod config;
 pub mod forward;
 pub mod params;
@@ -18,6 +19,9 @@ mod tests;
 #[cfg(test)]
 mod tests_forward;
 
+pub use artifact::{
+    read, write, Artifact, ReadError, ReadOptions, TensorDesc, TrustAnchor, WriteError,
+};
 pub use config::{Config, RefusalReason};
 pub use forward::{forward, ForwardError, NORM_EPS, ROPE_BASE};
 pub use params::{breakdown, param_count, Breakdown, BreakdownError};
