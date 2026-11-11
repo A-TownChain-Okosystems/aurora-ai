@@ -3,6 +3,7 @@ name = "atc-aurora-model"
 version = "0.1.0"
 edition = "2021"
 license = "Apache-2.0"
-description = "Referenzmodell der Aurora-Implementierung (M-05 model): Konfiguration, Parameterhaushalt, Zaehlung"
+description = "Referenzmodell der Aurora-Implementierung (M-05 model): Konfiguration, Parameterhaushalt, Gewichte, Vorwaertslauf, Zaehlung"
 
 [dependencies]
+atc-aurora-tensor = { path = "../atc-aurora-tensor" }
