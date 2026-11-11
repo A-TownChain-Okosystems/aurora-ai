@@ -321,3 +321,199 @@ fn budget_freigabe_ermoeglicht_neue_zuteilung() {
     assert!(Tensor::zeros(vec![2], &mut b).is_ok());
     assert_eq!(t.size(), 2);
 }
+
+// ------------------------------------------------------------ Vertrag B-05
+//
+// B-05 verlangt: Matmul gegen ein von Hand gerechnetes 2x2-Beispiel, exakt in
+// f64, im f32-Pfad innerhalb 1e-6 relativ. Das Crate führt f32 als einzigen
+// Puffer (ATC-AI-LLM-001 Abschnitt 7.1.1), die f64-Referenz entsteht deshalb im
+// Test und nicht als zweiter Tensorpfad.
+
+fn rel_diff(got: f32, want: f64) -> f64 {
+    let denom = if want == 0.0 { 1.0 } else { want.abs() };
+    ((got as f64) - want).abs() / denom
+}
+
+#[test]
+fn b_05_matmul_handgerechnet_2x2() {
+    // A = [[1.5, -2.0], [0.25, 4.0]], B = [[3.0, 0.5], [-1.0, 2.0]]
+    // AB[0][0] = 1.5*3.0 + (-2.0)*(-1.0) = 4.5 + 2.0   =  6.5
+    // AB[0][1] = 1.5*0.5 + (-2.0)*2.0    = 0.75 - 4.0  = -3.25
+    // AB[1][0] = 0.25*3.0 + 4.0*(-1.0)   = 0.75 - 4.0  = -3.25
+    // AB[1][1] = 0.25*0.5 + 4.0*2.0      = 0.125 + 8.0 =  8.125
+    let mut b = budget();
+    let a = Tensor::new(vec![2, 2], vec![1.5, -2.0, 0.25, 4.0]).unwrap();
+    let o = Tensor::new(vec![2, 2], vec![3.0, 0.5, -1.0, 2.0]).unwrap();
+    let r = a.matmul(&o, &mut b).unwrap();
+    assert_eq!(r.shape(), &[2, 2]);
+    // Alle vier Werte sind dyadisch, in f64 also exakt.
+    let want: [f64; 4] = [6.5, -3.25, -3.25, 8.125];
+    for (i, (got, w)) in r.as_slice().iter().zip(want.iter()).enumerate() {
+        assert_eq!(*got as f64, *w, "Position {i}: f64-Referenz exakt erwartet");
+        assert!(
+            rel_diff(*got, *w) <= 1e-6,
+            "Position {i}: relative Abweichung zu groß"
+        );
+    }
+}
+
+#[test]
+fn b_05_matmul_f32_pfad_innerhalb_der_toleranz() {
+    // Werte ohne exakte Binärdarstellung, damit die Toleranz überhaupt wirkt.
+    // Referenz: dieselben Eingaben, in f64 aufsummiert.
+    let mut b = budget();
+    let av: [f32; 4] = [0.1, 0.2, 0.35, 0.7];
+    let bv: [f32; 4] = [0.3, 0.9, 1.1, 0.25];
+    let a = Tensor::new(vec![2, 2], av.to_vec()).unwrap();
+    let o = Tensor::new(vec![2, 2], bv.to_vec()).unwrap();
+    let got = a.matmul(&o, &mut b).unwrap();
+
+    let mut want = [0f64; 4];
+    for i in 0..2 {
+        for j in 0..2 {
+            let mut acc = 0f64;
+            for k in 0..2 {
+                acc += f64::from(av[i * 2 + k]) * f64::from(bv[k * 2 + j]);
+            }
+            want[i * 2 + j] = acc;
+        }
+    }
+    for (i, (g, w)) in got.as_slice().iter().zip(want.iter()).enumerate() {
+        assert!(
+            rel_diff(*g, *w) < 1e-6,
+            "Position {i}: {} gegen {w}",
+            rel_diff(*g, *w)
+        );
+    }
+}
+
+// ------------------------------------------------------------ Vertrag B-06
+
+#[test]
+fn b_06_doppelte_transponierung() {
+    let mut b = budget();
+    let a = Tensor::new(vec![2, 3], vec![0.1, -0.2, 0.3, 0.4, 1.5, -2.5]).unwrap();
+    let tt = a.transpose(&mut b).unwrap().transpose(&mut b).unwrap();
+    assert_eq!(tt.shape(), a.shape());
+    // Transponieren ist eine Permutation, also bitgleich und nicht nur nah dran.
+    assert_eq!(tt.as_slice(), a.as_slice());
+}
+
+#[test]
+fn b_06_transponierte_reihenfolge() {
+    // (AB)ᵀ == Bᵀ·Aᵀ innerhalb Toleranz. Die Summationsreihenfolge
+    // unterscheidet sich, deshalb ist hier keine Bitgleichheit zu erwarten.
+    let mut b = budget();
+    let av: [f32; 6] = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6];
+    let bv: [f32; 6] = [0.7, 0.8, 0.9, 1.0, 1.1, 1.2];
+    let a = Tensor::new(vec![2, 3], av.to_vec()).unwrap();
+    let o = Tensor::new(vec![3, 2], bv.to_vec()).unwrap();
+
+    let left = a.matmul(&o, &mut b).unwrap().transpose(&mut b).unwrap();
+    let right = o
+        .transpose(&mut b)
+        .unwrap()
+        .matmul(&a.transpose(&mut b).unwrap(), &mut b)
+        .unwrap();
+
+    assert_eq!(left.shape(), right.shape());
+    for (i, (l, r)) in left.as_slice().iter().zip(right.as_slice()).enumerate() {
+        let d = ((*l as f64) - (*r as f64)).abs() / if *r == 0.0 { 1.0 } else { (*r as f64).abs() };
+        assert!(d < 1e-6, "Position {i}: relative Abweichung {d}");
+    }
+}
+
+// ------------------------------------------------------------ Vertrag B-07
+
+#[test]
+fn b_07_softmax_logits_plus_minus_1e5() {
+    // Zwei Zeilen: eine mit +1e5 und -1e5, eine nur mit -1e5.
+    let mut b = budget();
+    let a = Tensor::new(vec![2, 3], vec![1e5, -1e5, 0.0, -1e5, -1e5, -1e5]).unwrap();
+    let s = a.softmax(&mut b).unwrap();
+    for (i, v) in s.as_slice().iter().enumerate() {
+        assert!(v.is_finite(), "Position {i} ist nicht endlich: {v}");
+        assert!(
+            *v >= 0.0 && *v <= 1.0,
+            "Position {i} liegt außerhalb [0,1]: {v}"
+        );
+    }
+    let d = s.as_slice();
+    assert!(
+        (d[0] + d[1] + d[2] - 1.0).abs() <= 1e-6,
+        "Zeilensumme 1: {}",
+        d[0] + d[1] + d[2]
+    );
+    assert!(
+        (d[3] + d[4] + d[5] - 1.0).abs() <= 1e-6,
+        "Zeilensumme 2: {}",
+        d[3] + d[4] + d[5]
+    );
+    // Zeile 1 wird von +1e5 dominiert, Zeile 2 ist gleichverteilt.
+    assert!((d[0] - 1.0).abs() <= 1e-6);
+    assert!((d[3] - 1.0 / 3.0).abs() <= 1e-6);
+}
+
+#[test]
+fn b_07_softmax_zeilensumme_bei_grossen_logits() {
+    // Zeilen mit unterschiedlich großen, aber benachbarten Logits.
+    let mut b = budget();
+    let a = Tensor::new(vec![2, 2], vec![1e5, 99999.0, 1e5, -1e5]).unwrap();
+    let s = a.softmax(&mut b).unwrap();
+    let d = s.as_slice();
+    assert!(
+        (d[0] + d[1] - 1.0).abs() <= 1e-6,
+        "Zeilensumme 1: {}",
+        d[0] + d[1]
+    );
+    assert!(
+        (d[2] + d[3] - 1.0).abs() <= 1e-6,
+        "Zeilensumme 2: {}",
+        d[2] + d[3]
+    );
+    for v in d {
+        assert!(v.is_finite());
+    }
+}
+
+// ------------------------------------ Budget- und Überlaufschutz aller Ops
+
+#[test]
+fn alle_ops_pruefen_budget_vor_der_zuteilung() {
+    let a = Tensor::new(vec![2, 2], vec![1.0, 2.0, 3.0, 4.0]).unwrap();
+    let o = Tensor::new(vec![2, 2], vec![1.0, 2.0, 3.0, 4.0]).unwrap();
+    let mut b = Budget::new(0);
+    assert!(matches!(
+        a.add(&o, &mut b),
+        Err(TensorError::BudgetExceeded { .. })
+    ));
+    assert!(matches!(
+        a.mul(&o, &mut b),
+        Err(TensorError::BudgetExceeded { .. })
+    ));
+    assert!(matches!(
+        a.scale(2.0, &mut b),
+        Err(TensorError::BudgetExceeded { .. })
+    ));
+    assert!(matches!(
+        a.matmul(&o, &mut b),
+        Err(TensorError::BudgetExceeded { .. })
+    ));
+    assert!(matches!(
+        a.transpose(&mut b),
+        Err(TensorError::BudgetExceeded { .. })
+    ));
+    assert!(matches!(
+        a.softmax(&mut b),
+        Err(TensorError::BudgetExceeded { .. })
+    ));
+    assert!(matches!(
+        a.relu(&mut b),
+        Err(TensorError::BudgetExceeded { .. })
+    ));
+    assert!(matches!(
+        a.sigmoid(&mut b),
+        Err(TensorError::BudgetExceeded { .. })
+    ));
+    assert_eq!(b.used(), 0, "kein Fehlschlag darf etwas verbuchen");
+}
