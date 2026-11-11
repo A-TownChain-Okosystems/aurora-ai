@@ -51,9 +51,11 @@ Bewusste Grenzen: die Gewichte sind **deterministisch initialisiert, nicht
 trainiert** — B-19 und B-20 pruefen Rechnung und Grenzen, nicht Sprachqualitaet.
 Kein KV-Cache, kein Batching, kein Sampler (gehoert zu P8/`atc-aurora-runtime`).
 `ROPE_BASE` ist 10 000 und **noch nicht normativ festgelegt**; die Spezifikation
-nennt nur "RoPE". B-20 kostet im Debug-Build etwa 22 Sekunden.
+nennt nur "RoPE". Er ist damit ein expliziter Implementierungsparameter, kein
+Normwert, und steht im Artefaktformat als deklariertes Feld (`ATC-AI-LLM-002` §3,
+offener Punkt K6). B-20 kostet im Debug-Build etwa 22 Sekunden.
 
 ## Nicht enthalten
 
-Training (M-06), KV-Cache, Sampler, Dateiformat `.atcm` (B-21), Gewichte als
-Artefakt. Diese Teile sind hier weder angefangen noch vorgetaeuscht.
+Training (M-06), KV-Cache, Sampler, die Implementierung des Dateiformats `.atcm`
+(der Vertrag steht in `ATC-AI-LLM-002`, der Code fehlt noch). Diese Teile sind hier weder angefangen noch vorgetaeuscht.
