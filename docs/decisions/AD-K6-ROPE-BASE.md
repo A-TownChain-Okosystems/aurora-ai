@@ -2,7 +2,7 @@
 document_id: ATC-AI-AD-K6
 title: Entscheidungsvorlage K6 — `rope_base` normativ festlegen
 version: 0.1.0
-status: proposed
+status: accepted
 owner: A-TownChain-Okosystems
 created: 2026-11-11
 updated: 2026-11-11
@@ -12,7 +12,10 @@ evidence_gate: AURORA-001
 
 # K6 — `rope_base` normativ festlegen
 
-**Status: zur Entscheidung.** Drei Optionen, eine Empfehlung, keine Vorwegnahme.
+**Status: ENTSCHIEDEN — Option A, `rope_base = 10 000` ist Normwert.**
+Entscheidung des Owners am 11.11.2026. Umsetzung: `ATC-AI-LLM-001` 1.5.0,
+Blueprint-Zeile K6, Kommentar an `ROPE_BASE` im Crate. Drei Optionen waren
+vorgelegt, die Empfehlung wurde angenommen.
 
 ## 1. Stand
 
@@ -94,4 +97,11 @@ ein eigener Bauabschnitt, kein Nebenprodukt.
 
 ## 7. Entscheidung
 
-Offen. Erwartet: `A`, `B` (mit Wert) oder `C`.
+**Option A — entschieden am 11.11.2026.** `rope_base = 10 000` gilt normativ für
+das bestehende Aurora-Modellprofil. Das ATCM-Artefakt deklariert den Wert
+weiterhin, der Leser prüft ihn gegen das erwartete Profil und lehnt Abweichungen
+ab. Andere RoPE-Konfigurationen werden nur über eine neue Architekturversion
+eingeführt, nicht durch stille Änderung.
+
+Folge für die Reifeklasse: K6 ist geschlossen. B-19 und B-20 rechnen ab jetzt
+gegen einen Normwert, nicht gegen eine Crate-Konstante.
