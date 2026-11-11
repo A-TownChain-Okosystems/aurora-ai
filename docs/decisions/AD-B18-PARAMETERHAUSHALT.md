@@ -1,7 +1,7 @@
 ---
 document_id: ATC-DOC-AI-AD-001
 title: B-18 Parameterzahl Ref-1 — Sollwert und Ableitung
-version: 0.2.0
+version: 0.3.0
 status: proposed
 owner: A-TownChain-Okosystems
 created: 2026-11-11
@@ -10,7 +10,10 @@ standard: atc-standards
 
 # AD-B18-PARAMETERHAUSHALT — Parameterzahl von Ref-1: Sollwert gegen Ableitung
 
-> **Status:** OFFEN — Owner-Entscheidung ausstehend. Diese Vorlage entscheidet nichts; sie legt den Widerspruch, den Rechenweg, die Belegstellen und die Optionen vor.
+> **Status:** ENTSCHIEDEN am 11.11.2026 — **A + F1** durch den Owner bestätigt. Sollwert B-18 = **5 868 800**; Formel `P = L·(4d² + 3·d·d_ff + 2d) + V·d + d`. K5 (`d_ff` 704) bleibt bestehen, die abschliessende Norm bleibt bestehen. Die historische Rechnung bleibt dokumentiert.
+> **Fassung 0.3.0 (11.11.2026):** Entscheidung eingetragen. A: B-18 auf 5 868 800 nachgezogen.
+> F1: Formel um `+ d` korrigiert. Umgesetzt in `ATC-AI-LLM-001-A` Revision 1.4.0, in
+> `ATC-AI-LLM-001-B` (Anmerkung zu B-18) und in `modules/atc-aurora-model` (Test auf Abweichung 0).
 > **Fassung 0.2.0 (11.11.2026):** Belegstellen zu K5 ergänzt (Blueprint §6, Modellspezifikation §7.1.1). Damit ist die Herkunft von 5.771.776 erklärt. Neuer zweiter Befund: die Formel in §7.1.1 zählt die abschliessende Norm nicht mit.
 > **Geltung:** `modules/atc-aurora-model`, Blueprint `ATC-AI-LLM-001-B` §3.5, Prüfung B-18 (Bezug T3.2)
 > **Betroffene Artefakte:** Crate `atc-aurora-model`, Blueprint-Fassung, Mirror in `a-townchain-ecosystem`
@@ -136,3 +139,28 @@ korrekt mitgezählt — es fehlt genau die eine Zeile, die ausserhalb der Blöck
 Attention, Kausalmaske, RoPE, Gewichte, Initialisierung, Dateiformat und Training. Diese Teile
 gehören zu M-05 (Rest), M-06 und zur Artefaktschicht; sie sind hier weder angefangen noch
 vorgetäuscht.
+
+## Entscheidung vom 11.11.2026
+
+Der Owner hat **A + F1** bestätigt. Damit ist der Widerspruch geschlossen, und zwar
+ohne Architekturänderung:
+
+| Festlegung | Wert |
+|---|---|
+| Sollwert B-18 | **5 868 800** |
+| K5 `d_ff` | 704, unverändert |
+| Abschliessende RMSNorm | bleibt Bestandteil der Architektur |
+| Parameterformel | `P = L·(4d² + 3·d·d_ff + 2d) + V·d + d` |
+| 5 771 776 | historischer Stand vor K5, keine gültige Anforderung |
+| 5 868 544 | Zwischenrechnung nach K5 ohne abschliessende Norm |
+
+Umgesetzt an vier Stellen, damit Crate und Spezifikation dieselbe Rechengrundlage
+haben: `ATC-AI-LLM-001-A` Revision 1.4.0 (Formel, Sollwert, Herkunftstabelle),
+`ATC-AI-LLM-001-B` (B-18-Sollwert und Anmerkung), dieses Dokument (Status), und
+`modules/atc-aurora-model/src/tests.rs` (B-18 prüft Abweichung 0; ein zweiter Test
+hält 97 024 = 96 768 + 256 als Herkunftsnachweis fest).
+
+Nicht entschieden und nicht Teil dieser Entscheidung: `ROPE_BASE`, das Verhalten
+bei späteren Architekturänderungen (Upgrade-Regeln des Storage- und
+Artefaktformats) und die Frage der Authentizität von Artefakten. Das
+Artefaktformat selbst wird in `ATC-AI-LLM-002` spezifiziert.
