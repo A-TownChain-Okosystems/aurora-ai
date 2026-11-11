@@ -1,5 +1,36 @@
 # Changelog
 
+## 2026-11-11 — M-03 Autograd und B-08 bis B-13
+
+- `atc-aurora-tensor`: M-03 implementiert. Neuer Rechengraph (`Autograd`-Modul)
+  mit zehn ableitungsfähigen Operationen, Rückwärtspass, Gradientenakkumulation,
+  Budgetprüfung vor jeder Zuteilung und transaktionalem Fehlerverhalten: schlägt
+  der Pass fehl, ist keine Byte verbucht und kein Gradient übernommen.
+  53 Tests grün aus frischem Klon, clippy und fmt sauber, Bare-Metal-Build für
+  `thumbv7em-none-eabihf` grün.
+- B-08 bis B-13 aus den Contracts abgeleitet und umgesetzt, Referenz ist die
+  zentrale Finitedifferenz in f64 mit `h = 1e-5` im Test. Messwerte: B-09 4,6e-8,
+  B-10 1,3e-7, B-11 1,6e-6, B-13 5,0e-6 (jeweils relative Abweichung, alle
+  innerhalb der Contract-Grenzen).
+- `modules/atc-aurora-tensor/AUTOGRAD-CONTRACT.md`: Abgleich vor der
+  Implementierung. Zehn Operationen mit Ableitung, begründete Ausschlüsse,
+  verbindliche Ableitungen, Speicherlebensdauer, fünf Festlegungen bei
+  Contract-Lücken, offener Punkt K6.
+- Zwei Contract-Befunde, beide korrigiert und als Mutation geprüft: der
+  Softmax-Gradient braucht den **Ausgang** der Operation, nicht den Eingang, und
+  die Kreuzentropie ist eine **Summe** über die Zeilen, weil B-08 den Gradienten
+  wörtlich als `softmax − target` festlegt.
+- Fünf Mutationen am Rückwärtspfad geprüft, jede von den erwarteten Tests
+  erkannt. Einschränkung dokumentiert: die Akkumulations-Mutation wird nur von
+  der Raute erkannt, nicht vom Test der zwei Rückwärtspässe.
+- Blueprint `ATC-AI-LLM-001-B` auf 1.1.1: P2-Status auf
+  `IMPLEMENTATION_COMPLETE` und `TESTED` (lokal) gezogen,
+  `P2_PERFORMANCE_VERIFIED` bleibt `BLOCKED_EXTERNAL`, `P2_ACCEPTED` offen;
+  Anmerkung zur Zuordnung von B-08 ergänzt, Testfall unverändert.
+- Offen und nicht stillschweigend übergangen: **K6** — LayerNorm, GELU, Dropout
+  und Einbettungs-Lookup stehen im P2-Absatz, aber nicht in der API-Fläche und in
+  keinem Testfall. Sie sind nicht gebaut; Entscheidung des Owners.
+
 ## 2026-11-11 — B-05 bis B-07 und Register-Invariante
 
 - `atc-aurora-tensor`: Vertragstests B-05, B-06, B-07 aus dem Blueprint
