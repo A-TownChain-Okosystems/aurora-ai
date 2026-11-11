@@ -16,6 +16,13 @@ pub enum TensorError {
     SizeOverflow,
     /// Das Budget reicht nicht. Wird vor der Zuteilung zurückgegeben.
     BudgetExceeded { requested: usize, limit: usize },
+    /// Ein Argument verletzt eine Voraussetzung der Operation, zum Beispiel
+    /// `eps <= 0` bei der RMS-Norm. Typisiert statt NaN, damit ein
+    /// Vorzeichenfehler nicht als Rechenergebnis durchläuft.
+    InvalidArgument { what: &'static str },
+    /// Der Rechengraph kennt den Knoten nicht. Tritt auf, wenn eine Knotennummer
+    /// aus einem anderen Graphen oder nach `clear` verwendet wird.
+    UnknownNode,
 }
 
 impl fmt::Display for TensorError {
@@ -32,6 +39,8 @@ impl fmt::Display for TensorError {
                     "BudgetExceeded: requested {requested} bytes, limit {limit} bytes"
                 )
             }
+            TensorError::InvalidArgument { what } => write!(f, "InvalidArgument: {what}"),
+            TensorError::UnknownNode => write!(f, "UnknownNode"),
         }
     }
 }
