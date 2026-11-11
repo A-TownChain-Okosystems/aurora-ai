@@ -7,7 +7,7 @@
 | Lokale technische Prüfung | nachgewiesen | clippy 0 Warnungen, rustfmt sauber, Bare-Metal-Build grün, Register-Invariante Exit 0 |
 | `CI_VERIFIED` | **offen** | alle Workflow-Läufe `startup_failure` ohne Job, siehe Abschnitt Nachweise |
 | `E2E_VERIFIED` | **offen** | kein Lauf im Gesamtsystem; M-05/M-06 existieren noch nicht |
-| Mirror-Integration | `IN_SYNC` | Mirror `a-townchain-ecosystem` `5daf7036`, 15 Dateien byte-identisch, `--check` Exit 0 |
+| Mirror-Integration | `IN_SYNC` | `sync_modules.py --check` aus frischem Mirror-Klon: Exit 0, 437 von 437 Scope-Dateien byte-identisch |
 | K6 (LayerNorm, GELU, Dropout, Embedding) | `RESIDUAL` | bewusst nicht in M-03, eigene Contract-Prüfung nötig |
 | Git-Identität | `BLOCKED` | E-Mail des Kontos unbestätigt, `git push` 403, Git-Data-API 403 |
 | Performance-Referenz (T2.6) | `BLOCKED_EXTERNAL` | keine qualifizierte Maschine (K3) |
@@ -106,12 +106,13 @@ F1 bis F5).
 
 | Prüfung | Ergebnis |
 |---|---|
-| Kanon `aurora-ai` | `8f6ccb54` |
-| Mirror `a-townchain-ecosystem` | `5daf7036` |
+| Kanon `aurora-ai` | Stand dieses Commits |
+| Mirror `a-townchain-ecosystem` | IN_SYNC; **keine Nummer gepinnt**, weil jeder Sync den Mirror-HEAD weiterzieht — der Nachweis ist der Blob-Vergleich, nicht eine Nummer |
 | Mirror-Sync über `scripts/sync_modules.py` | `--check` vorher: `diff=2 fehlt=15 orphan=0`; `--sync` kopiert 17 Dateien |
 | Mirror `--check` aus frischem Klon | `IN_SYNC`, 1/1 Komponenten, Exit 0 |
 | Modulvollständigkeit | `components/aurora-ai/modules/atc-aurora-tensor` vorhanden, 14 Dateien |
-| Blob-Vergleich je Datei | 15 von 15 identisch (14 Crate-Dateien + `tools/check_file_register.py`) |
+| Blob-Vergleich je Datei | 437 von 437 Scope-Dateien identisch, 0 abweichend (Vergleich der Blob-Hashes aus dem committeten Stand beider Repos) |
+| Crate-Dateien im engeren Sinn | 15 von 15 identisch (14 Crate-Dateien + `tools/check_file_register.py`) |
 | Tests auf dem gespiegelten Stand | `cargo test` auf den Mirror-Bytes: 53 grün |
 | Keine zweite Aurora-Implementierung im Mirror | die gespiegelten Dateien sind byte-identisch, keine eigene Fassung, keine Orphans |
 
