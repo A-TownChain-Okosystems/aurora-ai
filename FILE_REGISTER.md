@@ -3,7 +3,8 @@
 > **Zweck:** Vollständige Liste aller Dateien (SCR-0082, Matrix-Dim-12).
 > **Neu erzeugt:** 2026-11-11 | Quelle: Git-Trees-API `aurora-ai` main, Zielbaum dieses Commits
 > **Korrektur:** Die Fassung vom 2026-09-10 nannte 425 Dateien und war gegenüber dem Bestand veraltet (`*.rs` 16 statt 31, `*.md` 61 statt 78, `*.ts` 40 statt 43, sechs Workflow-Dateien fehlend).
-> **Zählweise:** Gezählt werden Blobs, also echte Dateien. Verzeichnisse zählen nicht mit. Der Baum enthält 56 Verzeichnisse zusätzlich.
+> **Zählweise:** Gezählt werden Blobs, also echte Dateien. Verzeichnisse zählen nicht mit. Der Baum enthält 59 Verzeichnisse zusätzlich.
+> **Stand-Vermerk 11.11.2026 (B-18):** eine Datei ergänzt — `docs/decisions/AD-B18-PARAMETERHAUSHALT.md` (Entscheidungsvorlage, neues Verzeichnis `docs/decisions`). Damit 501 Dateien, 59 Verzeichnisse, `.md` 86.
 > **Stand-Vermerk 11.11.2026 (M-05):** sieben Dateien ergänzt — Crate `modules/atc-aurora-model` (`Cargo.toml`, `README.md`, `STATUS.md`, `src/{lib,config,params,tests}.rs`). Damit 500 Dateien, 58 Verzeichnisse, `.md` 85, `.rs` 45, `.toml` 7.
 > **Stand-Vermerk 11.11.2026 (M-03):** fünf Dateien ergänzt — `AUTOGRAD-CONTRACT.md` sowie `src/autograd.rs`, `src/layers.rs`, `src/loss.rs`, `src/tests_autograd.rs`. Damit 493 Dateien und `.rs` 41.
 > **Standards:** ATC-STD-201 · Evidence: `.atc/evidence/evidence.yaml`
@@ -14,11 +15,11 @@
 
 | Metrik | Wert |
 |--------|------|
-| **Total Dateien** | 500 |
-| **Verzeichnisse** | 58 |
+| **Total Dateien** | 501 |
+| **Verzeichnisse** | 59 |
 | **.tsx** | 157 |
 | **.atc** | 80 |
-| **.md** | 85 |
+| **.md** | 86 |
 | **.ts** | 43 |
 | **.rs** | 45 |
 | **.js** | 17 |
@@ -83,6 +84,7 @@
 - `docs/audits/AURORA-001-COMPLETENESS.yaml`
 - `docs/audits/AURORA-CHATGPT-SCOPE-SOURCE-AUDIT.md`
 - `docs/aurora-swarm-orchestration.md`
+- `docs/decisions/AD-B18-PARAMETERHAUSHALT.md`
 - `docs/specs/ATC-AI-CAP-001-CAPABILITY-TOKENS.md`
 - `docs/specs/ATC-AI-LLM-001-A-REF1-IMPLEMENTATION-ENVELOPE.md`
 - `docs/specs/ATC-AI-LLM-001-AURORA-FOUNDATION-MODEL.md`
