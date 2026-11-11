@@ -1,5 +1,41 @@
 # Changelog
 
+## 2026-11-11 — Gate-Prüfung G1–G5 des Artefaktvertrags (B-21), Vertrag auf 1.1.0
+
+Der Vertrag `ATC-AI-LLM-002` wurde gegen sich selbst geprüft, nicht gegen Code (es gibt
+keinen). Protokoll: `docs/audits/2026-11-11-ATC-AI-LLM-002-GATE-REVIEW.md`.
+
+**Ergebnis je Gate (Fassung 1.0.0 → nach Nachführung):** G1 BLOCKED → **PASS**,
+G2 **PASS**, G3 **PASS**, G4 **RESIDUAL**, G5 BLOCKED → **PASS**. Gesamt: PASS mit einem
+RESIDUAL. Freigabe für `write` und `read` damit erteilt, Auflagen dokumentiert.
+
+**Zwei blockierende Befunde, beide echt und beide behoben:**
+- **F-01 Header-Arithmetik:** Der Vertrag sagte an vier Stellen „96 Byte", die Feldtabelle
+  summiert sich aber auf **104** (4+2+2+44+4+4+4+8+32), Digest bei 72..104. Ein Leser nach
+  Textangabe hätte acht Byte zu früh die Tabelle begonnen. 104 an allen Stellen, Rechenweg
+  im Text.
+- **F-02 Nicht gebundene Einbettung:** `tensor_count = 2 + 8·n_layers` und die kanonische
+  Folge kannten nur `tok_emb`. Der Parameterhaushalt führt `tied_embedding = false` als
+  zulässig (Test erwartet +1.048.576), ein solches Modell wäre nicht darstellbar gewesen.
+  Jetzt `lm_head (d_model, vocab)` in der Folge und `tensor_count` abhängig von `flags`.
+
+**Vier weitere Befunde:** F-03 Grenze „Elemente je Tensor ≤ 2^28", F-04 Felder sind
+unausgerichtet zu lesen (Alignment-Annahme verboten), F-06 Präzedenz Struktur vor Anker,
+F-08 Testabdeckung.
+
+**Ressourcenerschöpfungsschutz ergänzt (F-05a–e), neuer Abschnitt 8.1:** zwei Grenzen
+(`max_bytes` vor dem Hashen plus `Budget`), keine Vollkopie (Sichten statt Modellkopie),
+linearer Aufwand ohne Rekursion und ohne Allokation je Tabelleneintrag, ausdrückliche
+Nicht-Zusage einer Ratenbegrenzung, und **konsistente Grenzen**: `tensor_count` ≤ 8194, weil
+`n_layers` ≤ 1024 nach der Formel 8194 Tensoren erlaubt (vorher 8192 — ein zulässiges Modell
+wäre am Artefakt gescheitert).
+
+Testfälle steigen von 28 auf **34** (AT-29 bis AT-34: nicht gebundene Einbettung in drei
+Varianten, doppelte Namen, `offset` nahe 2^63, `max_bytes` vor dem Hashen).
+
+Register 507 Dateien, `.md` 88. Kein Code geändert, 16 Tests unverändert grün, clippy und
+fmt sauber. Reifeklasse B-21 bleibt `SPECIFIED`.
+
 ## 2026-11-11 — Owner-Entscheid A + F1 umgesetzt, Artefaktvertrag B-21 spezifiziert
 
 **A und F1 sind entschieden und umgesetzt (11.11.2026).** Sollwert B-18 = **5.868.800**,
