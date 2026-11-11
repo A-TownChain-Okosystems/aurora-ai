@@ -7,7 +7,12 @@ use super::config::{Config, RefusalReason};
 use super::params::{breakdown, param_count, Breakdown, BreakdownError};
 
 /// B-18: die Ableitung fuer die eingefrorene Referenz (K4 Vokabular 4096,
-/// K5 d_ff 704, sechs Bloecke, geteilte Einbettung, keine Bias-Terme).
+/// K5 d_ff 704, sechs Bloecke, geteilte Einbettung, keine Bias-Terme) ergibt
+/// **exakt** den Sollwert 5 868 800, Abweichung 0.
+///
+/// Der Sollwert ist am 11.11.2026 per Owner-Entscheid A nachgezogen worden
+/// (vorher 5 771 776, der Stand vor K5). Die Formel enthaelt seit F1 den Term
+/// `+ d` fuer die abschliessende Norm; ohne ihn waere der Wert 5 868 544.
 #[test]
 fn b_18_parameterzahl_der_referenz_ist_abgeleitet() {
     let cfg = Config::ref1();
@@ -19,6 +24,10 @@ fn b_18_parameterzahl_der_referenz_ist_abgeleitet() {
     assert_eq!(b.block_norms, 3_072, "6 Bloecke mal 2 mal 256");
     assert_eq!(b.final_norm, 256);
     assert_eq!(param_count(&cfg), Ok(5_868_800));
+
+    // Der Sollwert ist der Sollwert: Abweichung 0, nicht "ungefaehr".
+    let sollwert = 5_868_800usize;
+    assert_eq!(param_count(&cfg).unwrap(), sollwert);
 }
 
 /// Ohne die abschliessende Norm sind es 256 weniger. Beide Zahlen sind
@@ -32,17 +41,24 @@ fn b_18_unterschied_mit_und_ohne_abschliessende_norm_ist_256() {
     assert_eq!(ohne_final + b.final_norm, 5_868_800);
 }
 
-/// Der Sollwert aus dem Blueprint weicht ab. Dieser Test haelt die Abweichung
-/// fest, damit sie nicht als Rechenfehler durchgeht: sie ist 97 024 Elemente
-/// gross (96 768 ohne abschliessende Norm) und damit groesser als eine
-/// Rundung.
+/// Drei Zahlen, die nicht verwechselt werden duerfen, und ihre Herkunft.
+///
+/// 5 771 776 ist der Stand vor K5 (`d_ff` 683, ohne abschliessende Norm) und
+/// seit dem Owner-Entscheid A **keine gueltige Anforderung** mehr. Der Test
+/// bleibt trotzdem stehen: er haelt die Herkunft der Differenz fest, damit die
+/// alte Zahl nicht als Rechenfehler zurueckkommt. 97 024 = 96 768 (K5) + 256 (F1).
 #[test]
-fn b_18_blueprint_sollwert_weicht_von_der_ableitung_ab() {
+fn b_18_historischer_stand_ist_dokumentiert() {
     let abgeleitet = param_count(&Config::ref1()).unwrap();
-    let blueprint = 5_771_776usize;
-    assert_ne!(abgeleitet, blueprint);
-    assert_eq!(abgeleitet - blueprint, 97_024);
-    assert_eq!(abgeleitet - 256 - blueprint, 96_768);
+    let vor_k5 = 5_771_776usize;
+    let nach_k5_ohne_final = 5_868_544usize;
+    assert_eq!(abgeleitet, 5_868_800);
+    assert_eq!(abgeleitet - vor_k5, 97_024, "K5 96 768 plus F1 256");
+    assert_eq!(abgeleitet - 256, nach_k5_ohne_final);
+    // K5 allein, ohne abschliessende Norm: 3 * d * (704 - 683) * L.
+    let k5 = 3 * 256 * (704 - 683) * 6;
+    assert_eq!(k5, 96_768);
+    assert_eq!(vor_k5 + k5 + 256, abgeleitet);
 }
 
 /// Nicht geteilte Einbettung verdoppelt die Einbettung und sonst nichts.
