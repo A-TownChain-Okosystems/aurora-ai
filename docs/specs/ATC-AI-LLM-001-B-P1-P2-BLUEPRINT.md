@@ -296,7 +296,7 @@ vorbereitet.
 | K3 | Referenz-CPU für T2.6 benennen | macht aus Annahmen Messwerte |
 | K4 | Vokabular 4096 oder 8192 für Ref-1 | Kompression gegen Trainingszeit |
 | K5 | `d_ff = 683` oder 704 | 1,7 Prozent Parameter gegen SIMD-Ausrichtung |
-| K6 | `rope_base` normativ festlegen (heute Implementierungsparameter 10 000) | ändert die Bedeutung trainierter Gewichte; wird deshalb im Artefakt deklariert (`ATC-AI-LLM-002` §3) |
+| K6 | ~~`rope_base` normativ festlegen~~ — **ENTSCHIEDEN 11.11.2026: 10 000 ist Normwert** (Option A) | ändert die Bedeutung trainierter Gewichte; das Artefakt deklariert den Wert (`ATC-AI-LLM-002` §3), der Leser lehnt Abweichungen ab; andere Basen nur per neuer Architekturversion |
 
 ---
 
