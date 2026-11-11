@@ -1,7 +1,7 @@
 ---
 document_id: ATC-DOC-AI-AD-001
 title: B-18 Parameterzahl Ref-1 — Sollwert und Ableitung
-version: 0.1.0
+version: 0.2.0
 status: proposed
 owner: A-TownChain-Okosystems
 created: 2026-11-11
@@ -10,7 +10,8 @@ standard: atc-standards
 
 # AD-B18-PARAMETERHAUSHALT — Parameterzahl von Ref-1: Sollwert gegen Ableitung
 
-> **Status:** OFFEN — Owner-Entscheidung ausstehend. Diese Vorlage entscheidet nichts; sie legt den Widerspruch, den Rechenweg und die Optionen vor.
+> **Status:** OFFEN — Owner-Entscheidung ausstehend. Diese Vorlage entscheidet nichts; sie legt den Widerspruch, den Rechenweg, die Belegstellen und die Optionen vor.
+> **Fassung 0.2.0 (11.11.2026):** Belegstellen zu K5 ergänzt (Blueprint §6, Modellspezifikation §7.1.1). Damit ist die Herkunft von 5.771.776 erklärt. Neuer zweiter Befund: die Formel in §7.1.1 zählt die abschliessende Norm nicht mit.
 > **Geltung:** `modules/atc-aurora-model`, Blueprint `ATC-AI-LLM-001-B` §3.5, Prüfung B-18 (Bezug T3.2)
 > **Betroffene Artefakte:** Crate `atc-aurora-model`, Blueprint-Fassung, Mirror in `a-townchain-ecosystem`
 
@@ -71,14 +72,48 @@ das entscheidet der Owner.
 
 | Option | Inhalt | Konsequenz | Aufwand |
 |---|---|---|---|
-| **A** | Sollwert korrigieren: B-18 auf 5.868.800 (mit finaler Norm), Nebenzeile 5.868.544 | Blueprint-Fassung +1, Test wird auf exakte Erwartung umgestellt, B-18 wird erfüllbar. Keine Architekturänderung, Crate unverändert | klein |
+| **A** | Sollwert korrigieren: B-18 auf 5.868.544 (Formel nach §7.1.1) beziehungsweise 5.868.800 (mit abschliessender Norm, siehe F1) | Blueprint-Fassung +1, Test wird auf exakte Erwartung umgestellt, B-18 wird erfüllbar. Keine Architekturänderung, Crate unverändert | klein |
 | **B** | Architektur ändern: K4/K5 neu einfrieren mit `d_ff` 683 oder Vokabular 3.717 | Abhängige Größen (Speicherbudget, Tokenizer-Kopplung, Messprotokoll T3.x), Mirror, alle Folgerechnungen neu | groß |
 | **C** | Sollwert stehen lassen, Abweichung dauerhaft als `RESIDUAL` führen | B-18 bleibt dauerhaft nicht erfüllbar, T3.2 bleibt offen, der Widerspruch bleibt in jeder späteren Lesung sichtbar | klein, aber dauerhaft |
 
-**Empfehlung: A**, solange keine Originalrechnung zum Sollwert beigebracht wird. Begründung:
-die Ableitung ist aus den eingefrorenen K-Werten reproduzierbar und im Test festgehalten; für
-5.771.776 gibt es im Repository keine Herleitung. A ändert keine Architektur, sondern nur den
-Sollwert — und macht B-18 erst dadurch zu einer prüfbaren Anforderung.
+## Belegstellen: der Sollwert ist die Zahl vor K5
+
+Die Herkunft von 5.771.776 ist im Dokumentenverbund belegt, es braucht keine Vermutung mehr:
+
+- Blueprint `ATC-AI-LLM-001-B` §6 (Offene Punkte), Zeile K5: „`d_ff = 683` oder 704 |
+  1,7 Prozent Parameter gegen SIMD-Ausrichtung". Der Unterschied zwischen 683 und 704 ist
+  genau 96.768 Parameter, also 1,68 Prozent. **5.771.776 ist die Ableitung mit 683**, also
+  der Stand vor der K5-Entscheidung.
+- Modellspezifikation `ATC-AI-LLM-001-A` §7.1.1 („verbindliche Modellkonfiguration, einzige
+  Quelle") nennt nach K5 **5.868.544** „aus der Formel, nicht gemessen", mit
+  `P = L·(4d² + 3·d·d_ff + 2d) + V·d`.
+
+Damit ist B-18 die einzige Stelle, die K5 nicht mitgezogen hat. Option A ist deshalb nicht
+mehr eine Empfehlung unter drei, sondern die Nachführung einer bereits getroffenen
+Entscheidung. B wäre die Rücknahme von K5 und bräuchte eine neue Entscheidung mit derselben
+Begründung — 704 f32 sind exakt 44 Cache-Lines und 88 AVX2-Vektoren, 683 überquert jede
+Cache-Line.
+
+## Zweiter Befund: die Formel zählt die abschliessende Norm nicht mit
+
+`P = L·(4d² + 3·d·d_ff + 2d) + V·d` ergibt 5.868.544. Ein Pre-Norm-Transformer braucht vor
+dem Ausgabekopf eine abschliessende RMSNorm; ihre `d` Gewichte sind echte Parameter. Mit ihr
+sind es **5.868.800**, und genau diesen Wert leitet das Crate ab. §7.1.1 nennt 5.868.544 als
+„exakt", die Formel lässt also ein `+ d` vermissen.
+
+Zwei Auflösungen, beide eine Owner-Entscheidung:
+
+- **F1** Formel korrigieren auf `P = L·(4d² + 3·d·d_ff + 2d) + d + V·d` = 5.868.800.
+  Die Architektur bleibt, wie das Crate sie rechnet; nur die Zahl in der Spezifikation
+  wird genauer.
+- **F2** Es gibt keine abschliessende Norm. Dann ist 5.868.544 richtig und das Crate muss
+  die finale Norm streichen. Das ist eine Architekturentscheidung mit messbarem Effekt
+  auf die Logitskalierung, keine Zählfrage.
+
+**Empfehlung: A zusammen mit F1.** A ist die Nachführung von K5, F1 die Korrektur einer
+vergessenen Zeile in der Formel. Grund für F1: eine Pre-Norm-Architektur ohne abschliessende
+Norm vor dem Ausgabekopf ist unüblich, und die Block-Normen (`2d`) sind in derselben Formel
+korrekt mitgezählt — es fehlt genau die eine Zeile, die ausserhalb der Blöcke liegt.
 
 ## Was bis zur Entscheidung gilt
 
@@ -87,6 +122,8 @@ Sollwert — und macht B-18 erst dadurch zu einer prüfbaren Anforderung.
   beide Werte und die Differenz fest, damit sie nicht stillschweigend verschwindet.
 - Ändert sich K4 oder K5, ändert sich der Test mit Begründung — nicht durch Anpassen der Zahl.
 - Reifegrad unverändert: M-05 `IMPLEMENTED` und `TESTED`, `CI_VERIFIED` offen.
+- Zwei Entscheidungen sind offen und werden hier nicht vorweggenommen: **A** (B-18 auf
+  den K5-Wert nachziehen) und **F1/F2** (zählt die abschliessende Norm mit).
 
 ## Prüfbarkeit
 
