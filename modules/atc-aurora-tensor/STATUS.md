@@ -3,7 +3,7 @@
 | Dimension | Status | Beleg |
 |---|---|---|
 | Implementierung | `IN_PROGRESS` | M-01 vollständig, M-02 Operationssatz vollständig, Autograd fehlt |
-| Funktionale Prüfung | `TESTED` (lokal) | 36 Tests grün, `cargo test` am 11.11.2026 |
+| Funktionale Prüfung | `TESTED` (lokal) | 37 Tests grün, `cargo test` am 11.11.2026 |
 | Performance-Referenz | `PENDING` | T2.6 nicht Teil dieses Crates |
 | Gesamtabnahme | `PENDING_ACCEPTANCE` | M-03 offen |
 
@@ -40,6 +40,14 @@ Drei Mutationen am Operationssatz, jede von den Contract-Tests erkannt:
 Bemerkenswert: die doppelte Transponierung allein erkennt die dritte Mutation
 nicht, weil zweimal dieselbe falsche Abbildung wieder beim Original landet. Erst
 die Reihenfolgeidentität macht den Fehler sichtbar. Beide Tests bleiben.
+
+## Zuständigkeitsgrenze
+
+`abhaengigkeitsregel_nur_libm` liest das eigene `Cargo.toml` und prüft bei jedem
+Testlauf: als Abhängigkeit ist ausschließlich `libm` zulässig, und kein
+Kernel-Crate, keine zweite Tensor-Bibliothek (torch, candle, burn) darf im
+Manifest auftauchen. Damit ist die Grenze aus AD-026 und AD-028 nicht nur
+dokumentiert, sondern bricht den Testlauf, wenn sie verletzt wird.
 
 ## Offen
 
