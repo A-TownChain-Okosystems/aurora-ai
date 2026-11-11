@@ -4,6 +4,7 @@
 > **Neu erzeugt:** 2026-11-11 | Quelle: Git-Trees-API `aurora-ai` main, Zielbaum dieses Commits
 > **Korrektur:** Die Fassung vom 2026-09-10 nannte 425 Dateien und war gegenüber dem Bestand veraltet (`*.rs` 16 statt 31, `*.md` 61 statt 78, `*.ts` 40 statt 43, sechs Workflow-Dateien fehlend).
 > **Zählweise:** Gezählt werden Blobs, also echte Dateien. Verzeichnisse zählen nicht mit. Der Baum enthält 56 Verzeichnisse zusätzlich.
+> **Stand-Vermerk 11.11.2026 (M-05):** sieben Dateien ergänzt — Crate `modules/atc-aurora-model` (`Cargo.toml`, `README.md`, `STATUS.md`, `src/{lib,config,params,tests}.rs`). Damit 500 Dateien, 58 Verzeichnisse, `.md` 85, `.rs` 45, `.toml` 7.
 > **Stand-Vermerk 11.11.2026 (M-03):** fünf Dateien ergänzt — `AUTOGRAD-CONTRACT.md` sowie `src/autograd.rs`, `src/layers.rs`, `src/loss.rs`, `src/tests_autograd.rs`. Damit 493 Dateien und `.rs` 41.
 > **Standards:** ATC-STD-201 · Evidence: `.atc/evidence/evidence.yaml`
 
@@ -13,13 +14,13 @@
 
 | Metrik | Wert |
 |--------|------|
-| **Total Dateien** | 493 |
-| **Verzeichnisse** | 56 |
+| **Total Dateien** | 500 |
+| **Verzeichnisse** | 58 |
 | **.tsx** | 157 |
 | **.atc** | 80 |
-| **.md** | 83 |
+| **.md** | 85 |
 | **.ts** | 43 |
-| **.rs** | 41 |
+| **.rs** | 45 |
 | **.js** | 17 |
 | **.json** | 11 |
 | **.cjs** | 11 |
@@ -27,7 +28,7 @@
 | **(keine)** | 8 |
 | **.yml** | 7 |
 | **.gitignore** | 7 |
-| **.toml** | 6 |
+| **.toml** | 7 |
 | **.py** | 6 |
 | **.txt** | 3 |
 | **.example** | 1 |
@@ -495,6 +496,13 @@
 - `modules/atc-aurora-memory/src/memory_index.rs`
 - `modules/atc-aurora-memory/src/vector_store.atc`
 - `modules/atc-aurora-memory/src/vector_store.rs`
+- `modules/atc-aurora-model/Cargo.toml`
+- `modules/atc-aurora-model/README.md`
+- `modules/atc-aurora-model/STATUS.md`
+- `modules/atc-aurora-model/src/config.rs`
+- `modules/atc-aurora-model/src/lib.rs`
+- `modules/atc-aurora-model/src/params.rs`
+- `modules/atc-aurora-model/src/tests.rs`
 - `modules/atc-aurora-runtime/.gitignore`
 - `modules/atc-aurora-runtime/ARCHITECTURE.md`
 - `modules/atc-aurora-runtime/CHANGELOG.md`
