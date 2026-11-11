@@ -1,5 +1,28 @@
 # Changelog
 
+## 2026-11-11 — Entscheidungsvorlage B-18: Sollwert gegen Ableitung
+
+- **Neues Dokument `docs/decisions/AD-B18-PARAMETERHAUSHALT.md`** (ATC-DOC-AI-AD-001,
+  Status offen, neues Verzeichnis `docs/decisions`). Inhalt: der Widerspruch zwischen
+  B-18 und der Ableitung, der Rechenweg aus K4/K5, die Zerlegung der Differenz, zwei
+  arithmetisch exakte Auflösungen, der durchsuchte Raum, drei Optionen mit Folgen und
+  Aufwand, eine Empfehlung, was bis zur Entscheidung gilt, und was ausdrücklich nicht
+  Teil der Frage ist. Das Dokument entscheidet nichts.
+- **Differenz zerlegt.** 97 024 = 379 × 256, ohne die abschliessende Norm
+  96 768 = 6 × 63 Zeilen. Die Abweichung ist damit genau die abschliessende Norm plus
+  63 Zeilen je Block, also `d_ff` 683 statt 704 — und 683 ist aufgerundetes 8/3 × 256.
+  Zweite exakte Auflösung: Vokabular 3.717 mit finaler Norm (3² × 7 × 59, unplausibel).
+  **Gegenprobe mit dem Crate selbst:** `param_count` auf `Config { d_ff: 683, ..ref1() }`
+  abzüglich `Breakdown::final_norm` ergibt 5 771 776, `d_ff` 683 mit finaler Norm
+  5 772 032. Für den Sollwert selbst existiert im Repository keine Herleitung, nur die
+  Tabellenzeile B-18.
+- **Empfehlung A** (Sollwert auf 5 868 800 korrigieren), solange keine Originalrechnung
+  beigebracht wird. B (Architektur neu einfrieren) und C (dauerhaftes `RESIDUAL`) sind
+  mit Folgen und Aufwand dokumentiert. Die Entscheidung liegt beim Owner.
+- **README und STATUS** verweisen auf die Vorlage. Keine Zahl, kein Status und keine
+  Reifeklasse geändert: M-05 bleibt `IMPLEMENTED` und `TESTED`, `CI_VERIFIED` offen.
+- **Register** auf 501 Dateien und 59 Verzeichnisse nachgezogen (`.md` 86).
+
 ## 2026-11-11 — M-05 begonnen: Parameterhaushalt, B-18 mit Befund
 
 - **Neues Crate `modules/atc-aurora-model`** (Blueprint Abschnitt 3.5, M-05).
