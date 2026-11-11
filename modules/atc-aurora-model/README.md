@@ -23,6 +23,26 @@ Finale Norm            256                   256
 gesamt                                 5 868 800
 ```
 
+## Vorwaertslauf
+
+`forward(&cfg, &weights, &tokens, &mut budget)` rechnet Tokens zu Logits `(T, vocab)`.
+Der Pfad ist: Einbettung ziehen, je Block RMSNorm -> Q/K/V -> RoPE -> kausale
+Multi-Head-Attention (`j <= i`, sonst `-inf`) -> Ausgabeprojektion -> Restpfad,
+dann RMSNorm -> SwiGLU (`wgu` haelt Gate und Up in einer Matrix) -> Down ->
+Restpfad. Am Ende abschliessende Norm und gebundener Ausgabekopf.
+
+`Weights::from_seed(&cfg, seed)` erzeugt Gewichte deterministisch (splitmix64,
+kein `rand`, keine Betriebssystemzufall). `Weights::param_count()` muss
+`param_count(&cfg)` entsprechen; ein Test haelt diese Invariante fuer die kleine
+Konfiguration und fuer Ref-1 fest.
+
+Gerechnet wird ausschliesslich mit `atc-aurora-tensor`; dieses Crate enthaelt
+keine eigene Tensor-, Norm- oder Attention-Mathematik, nur die Verdrahtung.
+
+Grenzen: initialisierte, nicht trainierte Gewichte. Die Tests pruefen Rechnung
+und Grenzen (B-19 Kausalitaet, B-20 512 Token mit endlichen Werten), nicht
+Sprachqualitaet. Kein KV-Cache, kein Batching, kein Sampler.
+
 ## Befund zu B-18
 
 Das Blueprint nennt fuer B-18 den Sollwert **5 771 776**. Die Ableitung aus der
