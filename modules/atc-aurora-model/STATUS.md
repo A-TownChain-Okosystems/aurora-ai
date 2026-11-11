@@ -3,7 +3,7 @@
 | Bereich | Status | Beleg |
 |---|---|---|
 | Parameterhaushalt | `IMPLEMENTED` | `Config`, `Breakdown`, `param_count`, gepruefte Arithmetik |
-| Lokale Pruefung | `TESTED` | 61 Tests, `cargo test` gruen, clippy `-D warnings` sauber, fmt sauber |
+| Lokale Pruefung | `TESTED` | 61 Tests (inkl. Messfall, `#[ignore]`), `cargo test` gruen, clippy `-D warnings` sauber, fmt sauber |
 | Vorwaertslauf (B-19, B-20) | `IMPLEMENTED` | `forward`, `Weights`, RoPE, kausale Multi-Head-Attention, gebundener Kopf |
 | Artefakt (B-21) | `IMPLEMENTED` | `write`/`read` gegen `ATC-AI-LLM-002` v1.2.0, AT-01…AT-35 grün |
 | `CI_VERIFIED` | **offen** | Actions starten nicht, solange die Commit-Herkunft unverifiziert ist |
@@ -67,6 +67,22 @@ Integer-Arithmetik, Sichten statt Modellkopie.
 Geprüft sind 35 Fälle: AT-01 bis AT-35, dazu Roundtrip (geteilt und getrennt),
 Determinismus, byte-identisches Neuschreiben eines gelesenen Artefakts und vier
 bekannte SHA-256-Werte. Gesamt 61 Tests im Crate.
+
+**Kosten, gemessen** (`docs/measurements/2026-11-11-artifact-decode-cost.md`):
+eine Ref-1-Datei mit 23,5 MB wird in 65 ms gelesen, davon sind 65 ms SHA-256. Die
+Strukturpruefung kostet unter einer Millisekunde, das Dekodieren aller 50 Tensoren
+5,6 ms, die Vollkopie 13,4 ms. Der Digest ist der Preis, nicht das Format.
+
+**K7 (Signatur)** ist spezifiziert, nicht implementiert:
+`ATC-AI-LLM-003` legt einen externen Behälter `ATCS` (88 Byte + Signatur) neben
+das unveränderte Artefakt, eine kanonische 71-Byte-Nachricht mit Domain-Trennung,
+die Pruefreihenfolge „Struktur vor Signatur", den Vertrauensspeicher mit Rollen,
+Widerruf und Schwelle sowie 12 Testfaelle KT-01…KT-12 fest. Offen sind D1
+(Algorithmus), D2 (Schwelle), D3 (Ort des Vertrauensspeichers) und D4
+(Metadaten).
+
+**K6 (`rope_base`)** liegt als Entscheidungsvorlage
+`docs/decisions/AD-K6-ROPE-BASE.md` vor; Empfehlung Option A (10 000 normativ).
 
 `CI_VERIFIED` bleibt offen: Actions laufen auf diesem Commit wegen der
 unverifizierten Konto-E-Mail nicht an.
