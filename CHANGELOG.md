@@ -1,5 +1,34 @@
 # Changelog
 
+## 2026-11-11 — M-05 Vorwaertslauf (B-19, B-20)
+
+- **Neu `src/weights.rs`**: `Weights`, `BlockWeights` und `SplitMix64`. Gewichte stammen
+  ausschliesslich aus der Konfiguration (Formen aus `params.rs`, Normgewichte starten bei 1),
+  `Weights::param_count()` muss `param_count(&cfg)` entsprechen — als Test festgehalten,
+  für die kleine Konfiguration und für Ref-1. Initialisierung ohne `rand` und ohne
+  Betriebssystemzufall, damit sie auf jedem Rechner identisch ist.
+- **Neu `src/forward.rs`**: Einbettung, je Block RMSNorm → Q/K/V → RoPE → kausale
+  Multi-Head-Attention → Ausgabeprojektion → Restpfad, dann RMSNorm → SwiGLU → Down →
+  Restpfad, abschliessende Norm, gebundener Ausgabekopf. **Keine Operation ist
+  zweitimplementiert**: gerechnet wird ausschliesslich mit `atc-aurora-tensor` (M-01…M-03).
+  Die Maske setzt `j > i` auf `-inf`, damit ein Maskenfehler nicht als kleiner Zahlenwert
+  durchgeht. Fehlerpfade typisiert (`ForwardError`), kein `String`, keine Panik.
+- **Neu `src/tests_forward.rs`, 8 Tests**: B-19 in beiden Richtungen (Änderung an Position
+  `t` bewegt nur Positionen `>= t`; Änderung der letzten Position lässt alles davor
+  unberührt), B-20 (512 Token, Form `(512, 4096)`, alle Werte endlich), Strukturprobe der
+  Maske (bei Gleichstand mittelt die Attention genau über `0..=i`), Reproduzierbarkeit
+  (gleicher Seed identisch, anderer Seed verschieden), Gewichtssumme gleich
+  Parameterhaushalt, Fehlerpfade (leer, zu lang, Token ausserhalb, Budget zu klein,
+  unzulässige Konfiguration).
+- **Grenzen, die im Dokument stehen und nicht versteckt sind**: initialisierte, nicht
+  trainierte Gewichte — die Tests prüfen Rechnung und Grenzen, nicht Sprachqualität;
+  kein KV-Cache, kein Batching, kein Sampler (P8); `ROPE_BASE` ist 10 000 und noch nicht
+  normativ festgelegt, die Spezifikation nennt nur „RoPE". B-20 kostet im Debug-Build
+  rund 22 Sekunden.
+- **16 Tests im Crate** (8 alt, 8 neu), clippy `-D warnings` sauber, fmt sauber.
+  Register auf 504 Dateien nachgezogen (`.rs` 48). Reifegrad: B-19 und B-20 `IMPLEMENTED`
+  und `TESTED`; `CI_VERIFIED` und `E2E_VERIFIED` bleiben offen, ebenso B-21 (Artefakt).
+
 ## 2026-11-11 — B-18: Herkunft des Sollwerts belegt (Fassung 0.2.0)
 
 - **Der Sollwert 5.771.776 ist die Zahl vor K5.** Belegstelle im Blueprint selbst:
