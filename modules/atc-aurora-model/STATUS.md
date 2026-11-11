@@ -73,16 +73,32 @@ eine Ref-1-Datei mit 23,5 MB wird in 65 ms gelesen, davon sind 65 ms SHA-256. Di
 Strukturpruefung kostet unter einer Millisekunde, das Dekodieren aller 50 Tensoren
 5,6 ms, die Vollkopie 13,4 ms. Der Digest ist der Preis, nicht das Format.
 
-**K7 (Signatur)** ist spezifiziert, nicht implementiert:
-`ATC-AI-LLM-003` legt einen externen Behälter `ATCS` (88 Byte + Signatur) neben
-das unveränderte Artefakt, eine kanonische 71-Byte-Nachricht mit Domain-Trennung,
-die Pruefreihenfolge „Struktur vor Signatur", den Vertrauensspeicher mit Rollen,
-Widerruf und Schwelle sowie 12 Testfaelle KT-01…KT-12 fest. Offen sind D1
-(Algorithmus), D2 (Schwelle), D3 (Ort des Vertrauensspeichers) und D4
-(Metadaten).
+**K7 (Signatur)** ist als vollständiger Vertrag spezifiziert, nicht implementiert:
+`ATC-AI-LLM-003` **v1.0.0**. Externer Behälter `ATCS` (152 Byte, genau 88 +
+`sig_len`) neben dem unveraenderten Artefakt, kanonische 71-Byte-Nachricht mit
+Domain-Trennung, secp256k1 mit RFC 6979, Low-S, fester Kodierung `r||s` (kein DER)
+und strikter Schluesselvalidierung, dedizierte `model-release`-Schluessel getrennt
+von DID-/Wallet-/Transaktionsschluesseln, Schwelle **2 von 3** als zwei unabhaengig
+gueltige Signaturen (ausdruecklich **keine** Threshold-Signatur), versionierter
+und signierter Vertrauensspeicher mit monotoner `store_version` und extern
+verankertem Trust-Root, separat signiertes Metadatenmanifest. Entscheidungen D1
+bis D4 sind am 11.11.2026 entschieden und im Vertrag festgehalten.
 
-**K6 (`rope_base`)** liegt als Entscheidungsvorlage
-`docs/decisions/AD-K6-ROPE-BASE.md` vor; Empfehlung Option A (10 000 normativ).
+Die Selbstpruefung der Gates K7-G1 bis K7-G5 ergab fuenf PASS und ein PASS mit
+Auflagen; sieben Befunde wurden dabei gefunden und eingearbeitet (F-01 doppelte
+`key_id` erfuellte die Schwelle mit einem Schluessel, F-02 ECDSA-Malleabilitaet
+ohne Low-S, F-03 unsignierte Etiketten als Beweis gelesen, F-04 Rollback eines
+Speichers belebt widerrufene Schluessel, F-05 Selbstautorisierung neuer
+root-Schluessel, F-06 gueltiges ATCM ohne Signatur als Release missverstanden,
+F-07 `alg` ausserhalb der Nachricht erlaubt Algorithmusverwechslung). Eine
+**unabhaengige** Pruefung des Vertrags steht aus; die Implementierung beginnt
+erst danach.
+
+**K6 ist ENTSCHIEDEN** (11.11.2026, Option A): `rope_base = 10 000` ist Normwert
+fuer das bestehende Modellprofil (`ATC-AI-LLM-001` 1.5.0). Das Artefakt deklariert
+den Wert weiterhin, der Leser lehnt Abweichungen ab; andere Basen nur ueber eine
+neue Architekturversion. Kein Gewicht, kein Byte und kein Test hat sich dadurch
+geaendert.
 
 `CI_VERIFIED` bleibt offen: Actions laufen auf diesem Commit wegen der
 unverifizierten Konto-E-Mail nicht an.
