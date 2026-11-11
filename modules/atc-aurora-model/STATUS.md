@@ -3,8 +3,8 @@
 | Bereich | Status | Beleg |
 |---|---|---|
 | Parameterhaushalt | `IMPLEMENTED` | `Config`, `Breakdown`, `param_count`, gepruefte Arithmetik |
-| Lokale Pruefung | `TESTED` | 8 Tests, `cargo test` gruen, clippy `-D warnings` sauber, fmt sauber |
-| Vorwaertslauf (B-19, B-20) | **offen** | braucht Attention, RoPE, Einbettung, SwiGLU-Verdrahtung |
+| Lokale Pruefung | `TESTED` | 16 Tests, `cargo test` gruen, clippy `-D warnings` sauber, fmt sauber |
+| Vorwaertslauf (B-19, B-20) | `IMPLEMENTED` | `forward`, `Weights`, RoPE, kausale Multi-Head-Attention, gebundener Kopf |
 | Artefakt (B-21) | **offen** | braucht Format, Digest und Zustandsschreiben |
 | `CI_VERIFIED` | **offen** | Actions starten nicht, solange die Commit-Herkunft unverifiziert ist |
 | `E2E_VERIFIED` | **offen** | kein Lauf im Gesamtsystem |
@@ -31,8 +31,29 @@ Zwei offene Owner-Entscheidungen: **A** B-18 auf den K5-Wert nachziehen,
 **F1/F2** ob die abschliessende Norm mitzaehlt. Vorlage mit Belegstellen, Rechenweg
 und Folgen: [`docs/decisions/AD-B18-PARAMETERHAUSHALT.md`](../../docs/decisions/AD-B18-PARAMETERHAUSHALT.md).
 
+## Vorwaertslauf
+
+Der Pfad ist vollstaendig verdrahtet: Einbettung ziehen, je Block RMSNorm, Q/K/V,
+RoPE, kausale Attention (`j <= i`, alles darueber `-inf`), Ausgabeprojektion,
+Restpfad, RMSNorm, SwiGLU-Gate und Down-Projektion, Restpfad; danach
+abschliessende Norm und gebundener Ausgabekopf. **Keine Operation ist
+zweitimplementiert** — gerechnet wird ausschliesslich mit `atc-aurora-tensor`
+(M-01 bis M-03).
+
+Tests: B-19 (Aenderung an Position `t` bewegt nur Positionen `>= t`; zweite
+Richtung ueber die letzte Position), B-20 (512 Token, Form `(512, 4096)`, alle
+Werte endlich), eine Strukturprobe der Maske (bei Gleichstand mittelt die
+Attention genau ueber `0..=i`), Reproduzierbarkeit bei gleichem Startwert,
+Gewichtssumme gleich Parameterhaushalt, und vier Fehlerpfade (leer, zu lang,
+Token ausserhalb, Budget zu klein, unzulaessige Konfiguration).
+
+Bewusste Grenzen: die Gewichte sind **deterministisch initialisiert, nicht
+trainiert** — B-19 und B-20 pruefen Rechnung und Grenzen, nicht Sprachqualitaet.
+Kein KV-Cache, kein Batching, kein Sampler (gehoert zu P8/`atc-aurora-runtime`).
+`ROPE_BASE` ist 10 000 und **noch nicht normativ festgelegt**; die Spezifikation
+nennt nur "RoPE". B-20 kostet im Debug-Build etwa 22 Sekunden.
+
 ## Nicht enthalten
 
-Attention, Kausalmaske, RoPE, Gewichte, Initialisierung, Dateiformat, Training.
-Diese Teile gehoeren zu M-05 (Rest), M-06 und zur Artefaktschicht; sie sind hier
-weder angefangen noch vorgetaeuscht.
+Training (M-06), KV-Cache, Sampler, Dateiformat `.atcm` (B-21), Gewichte als
+Artefakt. Diese Teile sind hier weder angefangen noch vorgetaeuscht.
