@@ -1,7 +1,7 @@
 ---
 document_id: ATC-AI-LLM-001-B
 title: P1/P2 Blueprint: sechs Module, sechsundzwanzig Anforderungen, 24 Testfälle
-version: 1.1.0
+version: 1.1.1
 status: proposed
 owner: A-TownChain-Okosystems
 created: 2026-11-11
@@ -50,6 +50,14 @@ Abhängigkeiten, zyklusfrei: `M-01 → M-02 → M-03`, `M-03 → M-05`, `M-05 �
 
 Der Grund für diese Reihenfolge: Ein Autograd ohne geprüfte Vorwärtsoperationen
 prüft den Fehler der Vorwärtsoperationen mit.
+
+**Anmerkung zur Zuordnung von B-08 (11.11.2026, ohne Änderung des Testfalls):**
+B-08 ist hier bei M-02 geführt, geprüft wird aber der Gradient der Kreuzentropie.
+Der Testfall wurde deshalb zusammen mit M-03 abgeschlossen, also nach der
+Gradientenseite. Die Erwartung ist unverändert: Gradient exakt `softmax − target`,
+bei Zielwahrscheinlichkeit 0 kein `NaN` und kein `Inf`. Der Gradient ist die
+Summe über die Zeilen, nicht ihr Mittelwert; nur so gilt die Bedingung für
+beliebige Stapelgrößen, und die Mittelung bleibt Sache der Trainingsschleife.
 
 ---
 
@@ -245,10 +253,14 @@ unerreichbar, unabhängig vom Implementierungsstand.
 
 | Dimension | Status | Beleg |
 |---|---|---|
-| Implementierung | `NOT_STARTED`, 0 von 3 P2-Modulen | keine der Crates `atc-aurora-tensor`, `atc-aurora-tokenizer`, `atc-aurora-model`, `atc-aurora-train` existiert im Repository |
-| Funktionale Prüfung | `NOT_TESTED` | kein Testfall ausführbar, weil kein Modul existiert |
+| Implementierung | `IMPLEMENTATION_COMPLETE`, 3 von 3 P2-Modulen | `atc-aurora-tensor` enthält M-01, M-02 und M-03; `cargo build` sowie `cargo check --lib --target thumbv7em-none-eabihf` grün |
+| Funktionale Prüfung | `TESTED` (lokal) | B-01 bis B-13 grün, 53 Tests im Crate. `CI_VERIFIED` bleibt offen, weil push-getriggerte Workflows am unbestätigten Konto scheitern |
 | Performance-Referenz | `BLOCKED_EXTERNAL` | keine qualifizierte Maschine, Protokoll `ATC-AI-LLM-001-C` ohne Eintrag |
-| Gesamtabnahme | `PENDING_ACCEPTANCE` | drei Bedingungen offen |
+| Gesamtabnahme | `PENDING_ACCEPTANCE` | `P2_PERFORMANCE_VERIFIED` offen, also nur eine der drei Bedingungen |
+
+Die Crates für M-04 bis M-06 (`atc-aurora-tokenizer`, `-model`, `-train`)
+existieren weiterhin nicht; ihre Phase ist P1, P3 und P4 und von diesem Status
+nicht berührt. `REF1_IMPLEMENTATION_COMPLETE` bleibt deshalb offen.
 
 ### Nicht Teil der Austrittsbedingung
 
