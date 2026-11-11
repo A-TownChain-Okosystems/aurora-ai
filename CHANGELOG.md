@@ -7,6 +7,11 @@ Alle wesentlichen Änderungen an diesem Projekt werden in dieser Datei dokumenti
 ### Added
 - `docs/specs/ATC-AI-LLM-001-AURORA-FOUNDATION-MODEL.md`: P0 specification for the native Aurora Foundation Model (Aurora LLM). Covers verified baseline inventory, numeric and determinism contract, crate layout, artifact format `.atcm`, parameter and compute sizing, phase plan P0-P10, test matrix, and the three-level learning acceptance criterion.
 
+### Changed (Blueprint ATC-AI-LLM-001-B v1.1.0, Abschlusszustand getrennt)
+- Neuer Abschnitt "P2: Implementation Completion vs. Verification Completion" im Blueprint: vier Statusdimensionen (Implementierung, Funktionale Prüfung, Performance-Referenz, Gesamtabnahme) statt eines pauschalen P2-Status.
+- P2-Austrittsbedingung in vier einzeln prüfbare Bedingungen zerlegt: P2_IMPLEMENTATION_COMPLETE, P2_FUNCTIONALLY_TESTED, P2_PERFORMANCE_VERIFIED, P2_ACCEPTED. Inhaltlich unverändert, die 24 Testfälle bleiben unangetastet.
+- Governance: BLOCKED_EXTERNAL wird nie automatisch zu VERIFIED, CI_VERIFIED oder E2E_VERIFIED. Eine fehlende Messumgebung ist kein Implementierungsfehler und rechtfertigt keine Absenkung von Prüfungen. Keine Gesamtfreigabe ohne alle drei Bedingungen. Nach der Hardwarequalifikation wird die Performance-Verifikation ohne erneute Implementierungsarbeit nachgeholt.
+
 ### Added (Revision 1.3.0, K3 entschieden)
 - Referenzregel First Qualified Hardware in Abschnitt 14.3: die erste Maschine, die das vollständige Qualifikationsprofil erfüllt und exklusiv messen darf, wird die verbindliche CPU-Referenz. Keine CPU wird auf Verdacht benannt.
 - Neues Dokument `ATC-AI-LLM-001-C`, T2.6-Messprotokoll: Qualifikationsprofil, Pflichtfelder der Umgebung, Messablauf mit fünf Aufwärm- und drei Messläufen, Median, Streuungsgrenze 5 Prozent, Rohdatenpflicht.
