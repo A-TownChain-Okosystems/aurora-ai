@@ -39,3 +39,13 @@ damit sie nicht stillschweigend verschwindet.
 Bis der Owner entscheidet, gilt: die Implementierung folgt der Architektur, nicht
 dem Sollwert. Ein Test, der 5 771 776 erzwingen wuerde, waere entweder falsch
 oder wuerde eine unbekannte Architekturaenderung verstecken.
+
+Die Differenz laesst sich zerlegen: 97 024 = 379 x 256, ohne die abschliessende
+Norm 96 768 = 6 x 63 Zeilen. Sie entspricht damit genau der abschliessenden Norm
+plus 63 Zeilen je Block, also `d_ff` 683 statt 704. Mit `d_ff` 683 und ohne
+abschliessende Norm ergibt die Ableitung exakt 5 771 776, und 683 ist gerade
+aufgerundetes 8/3 x 256. Der Sollwert sieht damit nach einer Rechnung aus, die vor
+der Einfrierung von K5 und vor der Aufnahme der finalen Norm entstanden ist.
+
+Entscheidungsvorlage mit Rechenweg, Suchraum, zwei exakten Aufloesungen und drei
+Optionen: [`docs/decisions/AD-B18-PARAMETERHAUSHALT.md`](../../docs/decisions/AD-B18-PARAMETERHAUSHALT.md).
