@@ -55,6 +55,17 @@ nennt nur "RoPE". Er ist damit ein expliziter Implementierungsparameter, kein
 Normwert, und steht im Artefaktformat als deklariertes Feld (`ATC-AI-LLM-002` §3,
 offener Punkt K6). B-20 kostet im Debug-Build etwa 22 Sekunden.
 
+## Artefaktvertrag, Prüfstand
+
+Der Vertrag ist am 11.11.2026 gegen sich selbst geprüft worden (Protokoll
+[`docs/audits/2026-11-11-ATC-AI-LLM-002-GATE-REVIEW.md`](../../docs/audits/2026-11-11-ATC-AI-LLM-002-GATE-REVIEW.md)):
+G1, G2, G3 und G5 **PASS**, G4 **RESIDUAL** (Signatur fehlt, offener Punkt K7).
+Zwei blockierende Befunde sind dabei aufgefallen und im Vertrag geschlossen: der
+Header ist 104 Byte statt der behaupteten 96, und ein Modell mit nicht gebundener
+Einbettung braucht einen eigenen Ausgabekopf `lm_head`. Dazu kommen der
+Ressourcenerschöpfungsschutz (Abschnitt 8.1) und sechs zusätzliche Testfälle
+(AT-29 bis AT-34, zusammen 34).
+
 ## Nicht enthalten
 
 Training (M-06), KV-Cache, Sampler, die Implementierung des Dateiformats `.atcm`
