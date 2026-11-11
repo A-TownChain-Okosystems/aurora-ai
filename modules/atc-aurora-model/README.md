@@ -43,6 +43,22 @@ Grenzen: initialisierte, nicht trainierte Gewichte. Die Tests pruefen Rechnung
 und Grenzen (B-19 Kausalitaet, B-20 512 Token mit endlichen Werten), nicht
 Sprachqualitaet. Kein KV-Cache, kein Batching, kein Sampler.
 
+## Artefakt (B-21)
+
+Der Artefaktvertrag ist spezifiziert, aber **nicht implementiert**:
+[`ATC-AI-LLM-002`](../../docs/specs/ATC-AI-LLM-002-ATCM-ARTIFACT-CONTRACT.md) legt
+Byte-Layout (96-Byte-Header, 64-Byte-Tabelleneinträge), die kanonische
+Tensor-Reihenfolge, den Digest über die ganze Datei mit genulltem Digest-Feld,
+die fail-closed Lesereihenfolge, Größengrenzen vor Allokation, die
+Fehlertaxonomie und 28 adversariale Parser-Tests fest. Kern des
+Vertrauensmodells: ein gültiger Digest belegt **Integrität, nicht
+Authentizität** — ohne externen Anker ist ein Artefakt nicht vertrauenswürdig.
+
+`ROPE_BASE` und `NORM_EPS` sind heute explizite Implementierungsparameter des
+Crates (10 000 und 1e-8) und **noch nicht normativ**. Sie stehen deshalb im
+Artefaktformat als Felder, damit ein Modell seine eigene Numerik deklariert; die
+normative Festlegung ist offener Punkt K6.
+
 ## Befund zu B-18
 
 Das Blueprint nennt fuer B-18 den Sollwert **5 771 776**. Die Ableitung aus der
