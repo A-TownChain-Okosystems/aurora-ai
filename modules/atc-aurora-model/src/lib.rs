@@ -9,10 +9,16 @@
 #![forbid(unsafe_code)]
 
 pub mod config;
+pub mod forward;
 pub mod params;
+pub mod weights;
 
 #[cfg(test)]
 mod tests;
+#[cfg(test)]
+mod tests_forward;
 
 pub use config::{Config, RefusalReason};
+pub use forward::{forward, ForwardError, NORM_EPS, ROPE_BASE};
 pub use params::{breakdown, param_count, Breakdown, BreakdownError};
+pub use weights::{BlockWeights, SplitMix64, Weights};
