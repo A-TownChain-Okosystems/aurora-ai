@@ -1,7 +1,7 @@
 ---
 document_id: ATC-AI-LLM-002
 title: Artefaktvertrag ATC Model Artifact v1 (.atcm) — Layout, Digest, Vertrauensmodell, adversarial getestete Parser-Grenzen
-version: 1.1.0
+version: 1.2.0
 status: proposed
 owner: A-TownChain-Okosystems
 created: 2026-11-11
@@ -17,6 +17,31 @@ evidence_gate: AURORA-001
 **Status: SPECIFIED, Implementierung 0 Zeilen.** Dieses Dokument legt den
 Vertrag fest, nicht seine Umsetzung. Es enthält keine Behauptung, dass ein
 Leser oder Schreiber existiert.
+
+## Revision 1.2.0 vom 2026-11-11 — Präzisierungen aus der Implementierung
+
+Die Implementierung (`modules/atc-aurora-model/src/artifact/`) wurde gegen genau
+diese Fassung geschrieben. Drei Stellen waren zu ungenau formuliert und sind
+präzisiert; **kein** Layout, keine Grenze und keine Regel ändert sich:
+
+| Stelle | vorher | jetzt |
+|---|---|---|
+| AT-01 | „Datei um 1 Byte gekürzt" → `Truncated` | Schnitt **im Header** → `Truncated`; Schnitt im Datenbereich ist `LengthMismatch` (neuer Fall AT-35) |
+| AT-09 | `d_model` verstellt → `DigestMismatch` | struktureller Fehler (`InvalidArgument`/`ArchMismatch`), weil Struktur vor Digest geprüft wird (Abschnitt 7) |
+| Abschnitt 10 | `read(bytes, anchor, max_bytes, budget, expected_cfg)` | Grenzen und Modus in `ReadOptions { max_bytes, strict_anchor, check_finite }`; `max_bytes` bleibt Pflichtfeld |
+
+**Zur Sichtbarkeit der Gewichte (Folge von F-04):** In `unsafe`-freiem Rust gibt
+es keine ausgerichtete `f32`-Sicht auf einen Bytepuffer. Das Artefakt hält
+deshalb die Bytes und die Tensorbeschreibungen (Name, Form, Offset, Länge) und
+liefert je Tensor eine byteweise Sicht (`tensor_bytes`) sowie auf Anforderung
+eine Kopie **eines** Tensors (`tensor_f32`). Die Modellkopie entsteht nur im
+expliziten Aufruf `to_weights()` und liegt damit ausserhalb des Lesers. Das ist
+die Umsetzung von Abschnitt 8.1 Regel 2, nicht ihre Aufweichung: der Lesevorgang
+selbst belegt O(Tensoren), nicht O(Modellgröße).
+
+Testfälle: 35 (AT-01 bis AT-35).
+
+---
 
 ## Revision 1.1.0 vom 2026-11-11 — Gate-Prüfung G1 bis G5
 
@@ -306,8 +331,10 @@ Endlichkeit ist eine Eigenschaft der Gewichte, keine Eigenschaft des Containers.
 
 ```
 write(cfg: &Config, weights: &Weights, out: &mut Vec<u8>) -> Result<[u8; 32], WriteError>
-read(bytes: &[u8], anchor: TrustAnchor, max_bytes: usize, budget: &mut Budget,
-     expected_cfg: Option<&Config>) -> Result<Artifact, ReadError>
+ReadOptions { max_bytes: usize, strict_anchor: bool, check_finite: bool }
+TrustAnchor  = { None | ExpectedDigest([u8;32]) | SignatureVerified }
+read(bytes: &[u8], anchor: TrustAnchor, options: &ReadOptions, budget: &mut Budget,
+     expected_cfg: Option<&Config>) -> Result<Artifact<'_>, ReadError>
 Artifact { config: Config, weights: Weights, digest: [u8; 32], trustworthy: bool }
 TrustAnchor = { ExpectedDigest([u8;32]) | SignatureVerified | None }
 ```
@@ -333,7 +360,7 @@ Artefakts; erwartet wird der genannte Fehler, **kein Panik, keine Allokation
 
 | ID | Mutation | Erwartung |
 |---|---|---|
-| AT-01 | Datei um 1 Byte gekürzt | `Truncated` |
+| AT-01 | Datei mitten im Header gekürzt (50 Byte) | `Truncated` |
 | AT-02 | Datei am Ende um 1 Byte verlängert | `TrailingBytes` |
 | AT-03 | `magic` verändert | `BadMagic` |
 | AT-04 | `format_version` = 2 | `UnsupportedVersion` |
@@ -341,7 +368,7 @@ Artefakts; erwartet wird der genannte Fehler, **kein Panik, keine Allokation
 | AT-06 | `tensor_count` + 1 | `TensorCountMismatch` |
 | AT-07 | `tensor_count` = 2^31 | `TensorCountMismatch` (vor jeder Zuteilung) |
 | AT-08 | `tensor_data_bytes` = 2^40 | `TooLarge` |
-| AT-09 | `d_model` geändert, Rest konsistent | `DigestMismatch` |
+| AT-09 | `d_model` verstellt (Architektur inkonsistent) | `InvalidArgument`/`ArchMismatch` — Struktur vor Digest |
 | AT-10 | `rope_base` = 0 | `InvalidArgument` (bei Prüfung der Architektur) |
 | AT-11 | `norm_eps` = 0 | `InvalidArgument` |
 | AT-12 | `reserved` = 1 | `ReservedNotZero` |
@@ -366,6 +393,7 @@ Artefakts; erwartet wird der genannte Fehler, **kein Panik, keine Allokation
 | AT-32 | zwei Einträge mit identischem Namen in kanonischen Positionen | `TensorOrderInvalid` |
 | AT-33 | `offset` des letzten Tensors = 2^63 | `OffsetNotContiguous` (kein `usize`-Überlauf) |
 | AT-34 | `max_bytes` kleiner als die Dateilänge | `TooLarge`, **ohne** dass gehasht wurde |
+| AT-35 | letztes Byte entfernt (Datenbereich zu kurz) | `LengthMismatch` |
 | AT-28 | 1000 zufällige Einzelbit-Mutationen | jeder Fall endet in einem typisierten Fehler oder einem erfolgreichen Lesevorgang mit korrektem Digest; **nie** Panik, **nie** Überallokation |
 
 AT-28 ist der einzige Fall mit Zufall: er prüft, dass der Parser an **keiner**
