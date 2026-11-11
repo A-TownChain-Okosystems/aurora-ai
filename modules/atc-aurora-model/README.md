@@ -39,13 +39,38 @@ Konfiguration und fuer Ref-1 fest.
 Gerechnet wird ausschliesslich mit `atc-aurora-tensor`; dieses Crate enthaelt
 keine eigene Tensor-, Norm- oder Attention-Mathematik, nur die Verdrahtung.
 
+### Artefakt schreiben und lesen
+
+```rust
+let mut bytes = Vec::new();
+let digest = artifact::write(&cfg, &weights, &mut bytes)?;   // Anker fuer spaeter
+
+let opts = artifact::ReadOptions::strict(1 << 30);           // max_bytes ist Pflicht
+let a = artifact::read(&bytes, artifact::TrustAnchor::ExpectedDigest(digest),
+                       &opts, &mut budget, Some(&cfg))?;
+assert!(a.trustworthy());
+let w = a.to_weights()?;                                     // die einzige Vollkopie
+```
+
+`read` prueft in der Reihenfolge des Vertrags: `max_bytes` (vor dem Hashen),
+Kennung, Version, Flags, reservierte Felder, Typ, Layout, Architektur,
+Dateilaenge, Datenmenge gegen Budget, Tabelle (Namen, Formen, Laengen,
+lueckenlose Offsets), Digest, Anker, optionale Architekturpruefung, optionale
+Endlichkeitspruefung. Ein Strukturfehler wird immer vor einem Ankerfehler
+gemeldet.
+
+Zwei Dinge, die leicht falsch verstanden werden: der Digest belegt **Integritaet,
+nicht Authentizitaet** (ohne externen Anker ist `trustworthy = false`), und
+`tensor_bytes` liefert Bytes, keine `f32`-Sicht — in `unsafe`-freiem Rust gibt es
+keine ausgerichtete Sicht, deshalb dekodiert `tensor_f32` bewusst je Tensor.
+
 Grenzen: initialisierte, nicht trainierte Gewichte. Die Tests pruefen Rechnung
 und Grenzen (B-19 Kausalitaet, B-20 512 Token mit endlichen Werten), nicht
 Sprachqualitaet. Kein KV-Cache, kein Batching, kein Sampler.
 
 ## Artefakt (B-21)
 
-Der Artefaktvertrag ist spezifiziert, aber **nicht implementiert**:
+Der Vertrag ist spezifiziert **und umgesetzt**:
 [`ATC-AI-LLM-002`](../../docs/specs/ATC-AI-LLM-002-ATCM-ARTIFACT-CONTRACT.md) legt
 Byte-Layout (96-Byte-Header, 64-Byte-Tabelleneinträge), die kanonische
 Tensor-Reihenfolge, den Digest über die ganze Datei mit genulltem Digest-Feld,
