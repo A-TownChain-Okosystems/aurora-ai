@@ -235,9 +235,40 @@ unterscheiden:
 
 | ID | Punkt | Wirkung |
 |---|---|---|
-| **K6** | LayerNorm, GELU, Dropout, Embedding-Lookup: im P2-Absatz genannt, in API-Fläche und Testfällen nicht vorhanden | Entscheidung des Owners: nachziehen mit Testfällen oder P2-Absatz auf die API-Fläche einengen |
+| **K6 `RESIDUAL`** | LayerNorm, GELU, Dropout, Embedding-Lookup: im P2-Absatz genannt, in API-Fläche und Testfällen nicht vorhanden | Owner-Entscheidung 11.11.2026: **nicht** pauschal in M-03 nachziehen. Je Operator eigener Contract-Abgleich vor jeder Zeile Code, siehe Abschnitt 7.1 |
 | – | f64-Pfad im Crate | B-13 nennt 1e-4 „in f64"; das Crate führt f32 als einzigen Puffer. Die Zahl ist als Messwert erreicht (5,0e-6), nicht als Bedingung geprüft |
 | – | T2.6 Durchsatz | `BLOCKED_EXTERNAL` bis zur qualifizierten Maschine (K3), unabhängig von M-03 |
+
+### 7.1 K6 im Einzelnen: was vor einer Implementierung entschieden sein muss
+
+Die vier Operatoren sind nicht vergleichbar schwer, und sie haben ein gemeinsames
+Problem: sie stehen im P2-Absatz, aber in keiner API-Fläche und in keinem der 24
+Testfälle. Ohne Testfall ist eine Ableitung eine Behauptung. Deshalb gilt für
+jeden der vier derselbe Ablauf, bevor Code entsteht:
+
+| Prüfpunkt | Frage, die beantwortet sein muss |
+|---|---|
+| Definition | Gilt eine Norm über die letzte Achse, über eine Gruppe, über die ganze Zeile? Welcher Epsilon-Begriff, welcher Wertebereich? |
+| Vorwärts-API | Signatur, Rang, Formen, Fehlerfälle; verträgt sich der Name mit Abschnitt 8? |
+| Rückwärts-API | Geschlossene Ableitung oder Zwischenspeicher; welche Aktivierung wird gebraucht? |
+| Speicher | Welche Zwischenwerte hält der Graph, welche entstehen neu; wie hoch ist die Buchung? |
+| Determinismus | Ist das Ergebnis bei gleicher Eingabe bitgleich? |
+| Tests | Mindestens ein Vertragstest gegen die zentrale Finitedifferenz in f64, plus Grenzfälle. |
+| Mutationsnachweis | Mindestens eine Mutation je Operator, die genau der zuständige Test erkennt. |
+
+**Je Operator, mit dem, was heute entschieden ist:**
+
+| Operator | Stand | Kernfrage vor der Implementierung |
+|---|---|---|
+| LayerNorm | nicht implementiert | RMSNorm ist die Norm der Ref-1-Konfiguration. Zwei Normen im Kern sind zwei Semantiken: braucht das Modell LayerNorm überhaupt, oder ist das ein Rest aus dem P2-Absatz? Vorher zu entscheiden, sonst entsteht ein Operator ohne Nutzer |
+| GELU | nicht implementiert | Die Konfiguration nutzt SwiGLU. Wenn GELU nur als Alternative geführt wird, gehört es hinter einen Contract mit Testfall, nicht in den Kern auf Verdacht. Exakte Erf-Form oder tanh-Näherung ist eine zusätzliche Entscheidung mit anderer Ableitung |
+| Dropout | nicht implementiert | Die Referenz führt 0,0, also Identität. Ein Gradient für die Identität wäre eine leere Zusage. Eine echte Implementierung braucht eine **Randomness- und Reproduzierbarkeitsstrategie**: Quelle des Zufalls ohne std, feste Seed-Führung, gleiche Maske im Vorwärts- und Rückwärtspass, Verhalten bei Wiederaufnahme eines Trainingsschritts. Das ist ein eigener Beschluss, kein Anhängsel |
+| Embedding-Lookup | nicht implementiert | Ohne Modellschicht (M-05, P3) gibt es keinen sinnvollen Testfall: der Operator ist eine Indextabelle mit sparsamem Gradienten (nur die gezogenen Zeilen bekommen Beitrag). Sinnvoll erst mit dem Modell, das ihn benutzt |
+
+**Entscheidung des Owners vom 11.11.2026:** M-03 wird nicht erneut aufgebrochen.
+Der bestehende Contract wird stabilisiert, K6 bleibt `RESIDUAL` und wird als
+eigene Entscheidung geführt. Damit ist klar, was fehlt, und es ist nicht
+stillschweigend verschwunden.
 
 ---
 
