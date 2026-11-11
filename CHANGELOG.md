@@ -1,4 +1,17 @@
-# Changelog — aurora-ai
+# Changelog
+
+## 2026-11-11 — B-05 bis B-07 und Register-Invariante
+
+- `atc-aurora-tensor`: Vertragstests B-05, B-06, B-07 aus dem Blueprint
+  abgeleitet und umgesetzt (sechs neue Tests), dazu ein Test, der für alle
+  zuteilenden Operationen prüft, dass das Budget vor der Zuteilung greift.
+  36 Tests grün, clippy und fmt sauber, `no_std`-Profil baut.
+- Wirksamkeitsnachweis durch drei Mutationen am Operationssatz; jede wurde von
+  den Contract-Tests erkannt, die doppelte Transponierung allein erkennt die
+  Transponierungs-Mutation nicht.
+- `tools/check_file_register.py`: Invarianten-Test für das Dateiregister
+  (Mengengleichheit gegen `git ls-files`, Sortierung, Verzeichniszahl,
+  Standvermerk, Vollständigkeit von `docs/specs/`, Zahlen je Endung).
 
 Alle wesentlichen Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
