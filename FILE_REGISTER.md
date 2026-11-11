@@ -4,6 +4,7 @@
 > **Neu erzeugt:** 2026-11-11 | Quelle: Git-Trees-API `aurora-ai` main, Zielbaum dieses Commits
 > **Korrektur:** Die Fassung vom 2026-09-10 nannte 425 Dateien und war gegenüber dem Bestand veraltet (`*.rs` 16 statt 31, `*.md` 61 statt 78, `*.ts` 40 statt 43, sechs Workflow-Dateien fehlend).
 > **Zählweise:** Gezählt werden Blobs, also echte Dateien. Verzeichnisse zählen nicht mit. Der Baum enthält 59 Verzeichnisse zusätzlich.
+> **Stand-Vermerk 11.11.2026 (M-05 Vorwaertslauf):** vier Dateien ergänzt — `modules/atc-aurora-model/src/{weights,forward,tests_forward}.rs` und `modules/atc-aurora-model/Cargo.lock` (Pfadabhängigkeit auf `atc-aurora-tensor`). Damit 505 Dateien, `.rs` 48, `.lock` 2.
 > **Stand-Vermerk 11.11.2026 (B-18):** eine Datei ergänzt — `docs/decisions/AD-B18-PARAMETERHAUSHALT.md` (Entscheidungsvorlage, neues Verzeichnis `docs/decisions`). Damit 501 Dateien, 59 Verzeichnisse, `.md` 86.
 > **Stand-Vermerk 11.11.2026 (M-05):** sieben Dateien ergänzt — Crate `modules/atc-aurora-model` (`Cargo.toml`, `README.md`, `STATUS.md`, `src/{lib,config,params,tests}.rs`). Damit 500 Dateien, 58 Verzeichnisse, `.md` 85, `.rs` 45, `.toml` 7.
 > **Stand-Vermerk 11.11.2026 (M-03):** fünf Dateien ergänzt — `AUTOGRAD-CONTRACT.md` sowie `src/autograd.rs`, `src/layers.rs`, `src/loss.rs`, `src/tests_autograd.rs`. Damit 493 Dateien und `.rs` 41.
@@ -15,13 +16,13 @@
 
 | Metrik | Wert |
 |--------|------|
-| **Total Dateien** | 501 |
+| **Total Dateien** | 505 |
 | **Verzeichnisse** | 59 |
 | **.tsx** | 157 |
 | **.atc** | 80 |
 | **.md** | 86 |
 | **.ts** | 43 |
-| **.rs** | 45 |
+| **.rs** | 48 |
 | **.js** | 17 |
 | **.json** | 11 |
 | **.cjs** | 11 |
@@ -35,7 +36,7 @@
 | **.example** | 1 |
 | **.html** | 1 |
 | **.css** | 1 |
-| **.lock** | 1 |
+| **.lock** | 2 |
 
 ---
 
@@ -498,13 +499,17 @@
 - `modules/atc-aurora-memory/src/memory_index.rs`
 - `modules/atc-aurora-memory/src/vector_store.atc`
 - `modules/atc-aurora-memory/src/vector_store.rs`
+- `modules/atc-aurora-model/Cargo.lock`
 - `modules/atc-aurora-model/Cargo.toml`
 - `modules/atc-aurora-model/README.md`
 - `modules/atc-aurora-model/STATUS.md`
 - `modules/atc-aurora-model/src/config.rs`
+- `modules/atc-aurora-model/src/forward.rs`
 - `modules/atc-aurora-model/src/lib.rs`
 - `modules/atc-aurora-model/src/params.rs`
 - `modules/atc-aurora-model/src/tests.rs`
+- `modules/atc-aurora-model/src/tests_forward.rs`
+- `modules/atc-aurora-model/src/weights.rs`
 - `modules/atc-aurora-runtime/.gitignore`
 - `modules/atc-aurora-runtime/ARCHITECTURE.md`
 - `modules/atc-aurora-runtime/CHANGELOG.md`
