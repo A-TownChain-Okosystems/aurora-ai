@@ -1,12 +1,12 @@
 ---
 document_id: ATC-AI-LLM-001-B
 title: P1/P2 Blueprint: sechs Module, sechsundzwanzig Anforderungen, 24 Testfälle
-version: 1.0.0
+version: 1.1.0
 status: proposed
 owner: A-TownChain-Okosystems
 created: 2026-11-11
 updated: 2026-11-11
-parent: ATC-AI-LLM-001 v1.1.0, Anhang ATC-AI-LLM-001-A
+parent: ATC-AI-LLM-001 v1.3.0, Anhang ATC-AI-LLM-001-A, Messprotokoll ATC-AI-LLM-001-C
 layer: L2 (aurora-ai)
 security_class: S3
 evidence_gate: AURORA-001
@@ -168,11 +168,87 @@ Sampler (T8.1), KV-Cache (T8.2), Backend-Toleranz (T9.1, T9.2), Isolation
 B-14 bis B-17 grün, dazu messbarer Kompressionswert auf dem Zielkorpus, damit
 die Vokabularwahl 4096 gegen 8192 entschieden werden kann (K4).
 
-### P2 (Tensor und Autograd)
+### P2 (Tensor und Autograd), technische Austrittsbedingung
 
 B-01 bis B-13 grün **und** ein dokumentierter Durchsatzmesswert (T2.6) für
 Ref-1 auf der Referenz-CPU (K3). Ohne den Messwert bleiben die Zeitangaben in
 ATC-AI-LLM-001-A Annahmen.
+
+### P2: Implementation Completion vs. Verification Completion
+
+Implementierungsfortschritt und Verifikation sind zwei verschiedene Größen. Eine
+fachlich abgeschlossene Implementierung darf nicht als unfertig gelten, weil eine
+externe Referenzmessung blockiert ist. Sie darf umgekehrt ohne Messnachweis nicht
+als verifiziert gelten. Dieser Abschnitt trennt beides und ändert keine einzige
+Prüfung und keine Erwartung.
+
+#### Statusdimensionen
+
+| Dimension | Werte | Bedeutung |
+|---|---|---|
+| Implementierung | `NOT_STARTED`, `IN_PROGRESS`, `IMPLEMENTATION_COMPLETE` | alle vorgesehenen Module des Abschnitts sind implementiert und im Workspace baubar |
+| Funktionale Prüfung | `NOT_TESTED`, `TESTED` | die zugehörigen Testfälle sind bestanden |
+| Performance-Referenz | `PENDING`, `BLOCKED_EXTERNAL`, `VERIFIED` | T2.6 ist nach `ATC-AI-LLM-001-C` abgeschlossen |
+| Gesamtabnahme | `PENDING_ACCEPTANCE`, `ACCEPTED` | alle verbindlichen Austrittsbedingungen sind erfüllt |
+
+#### Austrittsbedingungen
+
+Die bisherige Austrittsbedingung für P2 wird in vier einzeln prüfbare Bedingungen
+zerlegt. Inhaltlich bleibt sie unverändert.
+
+| Bedingung | Erfüllt, wenn |
+|---|---|
+| `P2_IMPLEMENTATION_COMPLETE` | M-01, M-02 und M-03 implementiert und im Workspace baubar |
+| `P2_FUNCTIONALLY_TESTED` | B-01 bis B-13 grün |
+| `P2_PERFORMANCE_VERIFIED` | T2.6 nach `ATC-AI-LLM-001-C` abgeschlossen, Streuung der drei Messläufe höchstens 5 Prozent |
+| `P2_ACCEPTED` | alle drei vorgenannten Bedingungen erfüllt |
+
+#### Reichweite, und warum P2 nicht sechs Module umfasst
+
+P2 umfasst die Module M-01 bis M-03, also Tensor-Kern, Tensor-Operationen und
+Autograd. Die sechs Module und die 24 Testfälle verteilen sich auf P1 bis P4:
+M-04 und B-14 bis B-17 gehören zu P1, M-05 zu P3, M-06 zu P4. Die blueprintweiten
+Zustände heißen deshalb getrennt `REF1_IMPLEMENTATION_COMPLETE` (alle sechs
+Module) und `REF1_FUNCTIONALLY_TESTED` (alle 24 Testfälle). Sie sind keine
+P2-Bedingungen und werden nicht mit ihnen vermischt.
+
+Die 24 Testfälle und ihre Erwartungen bleiben unverändert.
+
+#### Externe Blockierung
+
+Die Performance-Referenz ist derzeit `BLOCKED_EXTERNAL`. Ursache ist nicht die
+Implementierung, sondern die fehlende qualifizierte Maschine für T2.6 nach
+`ATC-AI-LLM-001` Abschnitt 14.3 und Protokoll `ATC-AI-LLM-001-C`. Solange keine
+Maschine das Qualifikationsprofil erfüllt, bleibt `P2_PERFORMANCE_VERIFIED`
+unerreichbar, unabhängig vom Implementierungsstand.
+
+#### Governance
+
+1. `BLOCKED_EXTERNAL` wird niemals automatisch zu `VERIFIED`, `CI_VERIFIED` oder
+   `E2E_VERIFIED` überführt. Ein Statuswechsel braucht einen Beleg nach Protokoll
+   `ATC-AI-LLM-001-C`.
+2. Eine fehlende externe Messumgebung ist kein Implementierungsfehler. Sie darf
+   nicht rückwirkend als solcher gewertet werden und rechtfertigt keine Absenkung
+   von Prüfungen.
+3. Keine vorzeitige Gesamtfreigabe: `P2_ACCEPTED` ist erst zulässig, wenn alle drei
+   Bedingungen erfüllt sind. `P2_IMPLEMENTATION_COMPLETE` und
+   `P2_FUNCTIONALLY_TESTED` allein ergeben keine Abnahme.
+4. Nachträgliche Fortsetzung: nach der Qualifikation einer Maschine wird die
+   Performance-Verifikation ohne erneute Implementierungsarbeit nachgeholt. Der
+   erreichte Implementierungs- und Teststand bleibt gültig und wird nicht
+   wiederholt.
+5. Die Stabilitätsgrenze von 5 Prozent aus Protokoll `ATC-AI-LLM-001-C` bleibt
+   verbindlich. Eine Messung außerhalb der Grenze ist keine Verifikation, sondern
+   eine Wiederholung.
+
+#### Status am 11.11.2026
+
+| Dimension | Status | Beleg |
+|---|---|---|
+| Implementierung | `NOT_STARTED`, 0 von 3 P2-Modulen | keine der Crates `atc-aurora-tensor`, `atc-aurora-tokenizer`, `atc-aurora-model`, `atc-aurora-train` existiert im Repository |
+| Funktionale Prüfung | `NOT_TESTED` | kein Testfall ausführbar, weil kein Modul existiert |
+| Performance-Referenz | `BLOCKED_EXTERNAL` | keine qualifizierte Maschine, Protokoll `ATC-AI-LLM-001-C` ohne Eintrag |
+| Gesamtabnahme | `PENDING_ACCEPTANCE` | drei Bedingungen offen |
 
 ### Nicht Teil der Austrittsbedingung
 
