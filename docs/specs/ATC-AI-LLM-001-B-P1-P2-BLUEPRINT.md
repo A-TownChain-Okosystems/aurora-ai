@@ -1,7 +1,7 @@
 ---
 document_id: ATC-AI-LLM-001-B
 title: P1/P2 Blueprint: sechs Module, sechsundzwanzig Anforderungen, 24 Testfälle
-version: 1.1.1
+version: 1.1.2
 status: proposed
 owner: A-TownChain-Okosystems
 created: 2026-11-11
@@ -133,10 +133,18 @@ Die Spalte Bezug nennt die Nummer aus der Testmatrix des Anhangs A.
 
 | ID | Prüfung | Erwartung | Bezug |
 |---|---|---|---|
-| B-18 | Parameterzahl von Ref-1 | exakt 5.771.776, Abweichung 0 | T3.2 |
+| B-18 | Parameterzahl von Ref-1 | exakt 5.868.800, Abweichung 0 | T3.2 |
 | B-19 | Kausalmaske, Änderung an Position `t` | Logits an Position `< t` unverändert, an Position `≥ t` verändert | T3.1 |
 | B-20 | Vorwärtslauf über 512 Token | Form `(512, 4096)`, alle Werte endlich | T3.3 |
 | B-21 | Artefakt schreiben, lesen, prüfen | Digest stimmt; manipulierter Tensor `DigestMismatch`; unbekannte `format_version` `InvalidArtifact` | T3.3 |
+
+**Anmerkung zu B-18 (11.11.2026, Sollwert nachgezogen, Testfall unverändert):**
+Der Sollwert war 5 771 776 und ist auf **5 868 800** nachgezogen (Owner-Entscheid A,
+dokumentiert in `ATC-AI-LLM-001-A` Revision 1.4.0). 5 771 776 ist der Stand vor K5,
+also `d_ff` = 683 ohne abschliessende Norm; K5 hat 704 entschieden, und die Formel
+zählt nach F1 die abschliessende Norm mit `+ d` mit. Die Erwartung des Testfalls
+bleibt „Abweichung 0", nur die Zahl ist die gültige. Zwischenstand nach K5 ohne
+abschliessende Norm: 5 868 544. Kein anderer Testfall dieses Blueprints ändert sich.
 
 ### 3.6 M-06 `train`
 
@@ -288,6 +296,7 @@ vorbereitet.
 | K3 | Referenz-CPU für T2.6 benennen | macht aus Annahmen Messwerte |
 | K4 | Vokabular 4096 oder 8192 für Ref-1 | Kompression gegen Trainingszeit |
 | K5 | `d_ff = 683` oder 704 | 1,7 Prozent Parameter gegen SIMD-Ausrichtung |
+| K6 | `rope_base` normativ festlegen (heute Implementierungsparameter 10 000) | ändert die Bedeutung trainierter Gewichte; wird deshalb im Artefakt deklariert (`ATC-AI-LLM-002` §3) |
 
 ---
 
