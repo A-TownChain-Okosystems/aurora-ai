@@ -1,5 +1,24 @@
 # Changelog
 
+## 2026-11-11 — CI-Blockade eingegrenzt
+
+- **Abrechnung als Ursache ausgeschlossen.** Alle betroffenen Repositories sind
+  öffentlich (Actions-Minuten frei), und im Mirror-Repo sind am 11.11. um 07:18
+  Läufe bis auf Job-Ebene gelaufen, mit `success` und `failure`. Ein
+  Kontingent- oder Spending-Limit-Problem kann das nicht erzeugen.
+- **Muster gefunden.** Jeder Lauf mit `startup_failure` sitzt auf einem Commit mit
+  Autor `michael.worob@gmail.com` und `verification.verified = false`. Läufe, die
+  starten, sitzen auf einem Commit des zweiten Kontos
+  (`alexander.gregwood@gmail.com`) oder auf einem signierten Commit
+  (`verified = true`), zum Beispiel einem Web-UI-Commit.
+- **Gegenprobe im Verbund:** `a-townchain-os` hat einen `push`-Erfolg auf
+  `91905a86` (`verified=true`), während `aurora-ai` und `a-townchain` auf
+  unsignierten Commits desselben Kontos bei null Jobs stehen bleiben.
+- **Konsequenz:** Es ist kein Repository-, Workflow- oder Triggerproblem, sondern
+  eine Frage der Commit-Herkunft. Zwei Wege: E-Mail des Kontos bestätigen, oder
+  als sofortige Gegenprobe eine Datei über die Web-Oberfläche ändern (GitHub
+  signiert solche Commits selbst). `CI_VERIFIED` bleibt offen.
+
 ## 2026-11-11 — Integrations- und Evidenzphase M-03
 
 - **Mirror integriert.** `scripts/sync_modules.py --check` zeigte vorher
