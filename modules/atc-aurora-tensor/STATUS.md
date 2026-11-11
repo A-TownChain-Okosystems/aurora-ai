@@ -131,9 +131,32 @@ Contents-API, weil `git push` am unbestätigten Konto scheitert (siehe unten).
 | Push-getriggerte Läufe | ebenfalls `startup_failure` |
 
 Damit ist belegt: die Ursache liegt **nicht** am Trigger und **nicht** am
-Workflow-Inhalt; die Läufe kommen über den Startpunkt nicht hinaus. Bis das
-Konto verifiziert ist, gibt es keine CI-Evidenz, und ein grüner lokaler Build
-ersetzt sie nicht.
+Workflow-Inhalt; die Läufe kommen über den Startpunkt nicht hinaus.
+
+**Ursache eingegrenzt am 11.11.2026 (zwei Kandidaten getrennt geprüft):**
+
+| Kandidat | Befund | Bewertung |
+|---|---|---|
+| Abrechnung / Kontingent | alle betroffenen Repositories sind **öffentlich**, dort sind Actions-Minuten frei; im Mirror-Repo sind am 11.11. um 07:18 Läufe **tatsächlich gestartet** (Job-Ebene, mit `success` und `failure`) | **ausgeschlossen** |
+| Konto-/Commit-Identität | jeder `startup_failure` sitzt auf einem Commit, dessen Autor `michael.worob@gmail.com` ist und dessen `verification.verified` **false** ist. Läufe, die starten, sitzen entweder auf einem Commit des zweiten Kontos (`alexander.gregwood@gmail.com`) oder auf einem **signierten** Commit (`verified=true`, z. B. Web-UI-Commit) | **bestätigt als Muster** |
+
+Belegt durch Gegenprobe im selben Repository-Verbund: `a-townchain-os` hat einen
+`push`-**Erfolg** auf `91905a86` (`verified=true`), während `a-townchain` und
+`aurora-ai` auf unsignierten Commits desselben Kontos bei null Jobs stehen
+bleiben. Es ist damit kein Repository-, Workflow- oder Triggerproblem, sondern
+eine Frage der Commit-Herkunft.
+
+**Zwei Wege zu CI-Evidenz:**
+
+1. Die E-Mail des Kontos bestätigen, dann tragen die Commits dieses Kontos eine
+   verifizierte Identität und die Läufe starten. Das ist der saubere Weg.
+2. Sofort nutzbar als Gegenprobe: eine Datei über die **Web-Oberfläche** auf
+   `main` ändern. Solche Commits signiert GitHub selbst (`verified=true`); die
+   Läufe sollten dann starten. Startet der Lauf, ist die Diagnose bestätigt;
+   startet er nicht, ist der Kandidat widerlegt und die Suche geht weiter.
+
+Ein grüner lokaler Build ersetzt keine CI-Evidenz. `CI_VERIFIED` bleibt offen,
+bis ein Lauf mit Jobs vorliegt.
 
 ## Offen
 
