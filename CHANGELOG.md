@@ -4,10 +4,10 @@
 
 - **Mirror integriert.** `scripts/sync_modules.py --check` zeigte vorher
   `diff=2 fehlt=15 orphan=0`; `--sync` hat 17 Dateien kopiert, danach ist
-  `--check` aus frischem Klon `IN_SYNC` (1/1 Komponenten, Exit 0, Mirror
-  `a-townchain-ecosystem` `5daf7036`). `atc-aurora-tensor` liegt mit 14 Dateien
-  im Mirror, alle 15 Blobs byte-identisch zum Kanon `aurora-ai` `8f6ccb54`,
-  keine Orphans, keine zweite Aurora-Implementierung. Die Übertragung ins
+  `--check` aus frischem Klon `IN_SYNC` (1/1 Komponenten, Exit 0, 437 von 437
+  Scope-Dateien byte-identisch). Der Mirror-HEAD wird bewusst nicht gepinnt:
+  jeder Sync zieht ihn weiter, der Nachweis ist der Blob-Vergleich. `atc-aurora-tensor` liegt mit 14 Dateien
+  im Mirror, alle 15 Blobs byte-identisch zum keine Orphans, keine zweite Aurora-Implementierung. Die Übertragung ins
   Mirror-Repo lief über die Contents-API, weil `git push` am unbestätigten
   Konto scheitert; kopiert wurde ausschließlich über den vorgesehenen
   Mechanismus, nichts von Hand.
