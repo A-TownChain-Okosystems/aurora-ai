@@ -1,4 +1,4 @@
-// atc-aurora-tensor — nativer Tensor-Kern, M-01 und M-02
+// atc-aurora-tensor — nativer Tensor-Kern, M-01, M-02 und M-03
 // Copyright (c) 2026 Michael Wroblewski / ShivaCore / A-TownChain-Okosystems. All Rights Reserved.
 //
 // Eigentümer der KI-Rechenoperationen. Keine Abhängigkeit auf Kernel, Geräte
@@ -14,14 +14,21 @@
 
 extern crate alloc;
 
+pub mod autograd;
 pub mod budget;
 pub mod error;
+pub mod layers;
+pub mod loss;
 pub mod ops;
 pub mod tensor;
 
+pub use autograd::{Graph, NodeId};
 pub use budget::Budget;
 pub use error::{Result, TensorError};
+pub use loss::cross_entropy;
 pub use tensor::{Dtype, Tensor, BYTES_PER_ELEMENT, DTYPE};
 
 #[cfg(test)]
 mod tests;
+#[cfg(test)]
+mod tests_autograd;
