@@ -79,10 +79,12 @@ Fehlertaxonomie und 28 adversariale Parser-Tests fest. Kern des
 Vertrauensmodells: ein gültiger Digest belegt **Integrität, nicht
 Authentizität** — ohne externen Anker ist ein Artefakt nicht vertrauenswürdig.
 
-`ROPE_BASE` und `NORM_EPS` sind heute explizite Implementierungsparameter des
-Crates (10 000 und 1e-8) und **noch nicht normativ**. Sie stehen deshalb im
-Artefaktformat als Felder, damit ein Modell seine eigene Numerik deklariert; die
-normative Festlegung ist offener Punkt K6.
+`ROPE_BASE` ist mit 10 000 **normativ** festgelegt (`ATC-AI-LLM-001` 1.5.0, K6
+entschieden am 11.11.2026); andere Basen gelten nur mit einer neuen
+Architekturversion. `NORM_EPS` (1e-8) ist weiterhin Implementierungsparameter.
+Beide stehen im Artefaktformat als Felder, damit ein Modell seine Numerik selbst
+deklariert: der Leser prüft sie gegen das erwartete Profil und lehnt Abweichungen
+ab, statt still falsch zu rechnen.
 
 ## Befund zu B-18
 
