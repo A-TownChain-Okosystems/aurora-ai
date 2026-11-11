@@ -1,11 +1,16 @@
 # STATUS: atc-aurora-tensor
 
-| Dimension | Status | Beleg |
+| Bereich | Status | Beleg |
 |---|---|---|
-| Implementierung | `IMPLEMENTATION_COMPLETE` für P2 | M-01, M-02 und M-03 implementiert und baubar |
-| Funktionale Prüfung | `TESTED` (lokal) | B-01 bis B-13 grün, 53 Tests, `cargo test` am 11.11.2026 |
-| Performance-Referenz | `PENDING` | T2.6 nicht Teil dieses Crates, global `BLOCKED_EXTERNAL` |
-| Gesamtabnahme | `PENDING_ACCEPTANCE` | T2.6 fehlt (K3) |
+| M-03 Implementierung | `IMPLEMENTED` | Rechengraph, Rückwärtspass, Akkumulation, transaktionaler Fehlerpfad |
+| Frischer Klon / Tests | `TESTED` | 53 Tests grün aus frischem Klon am 11.11.2026 |
+| Lokale technische Prüfung | nachgewiesen | clippy 0 Warnungen, rustfmt sauber, Bare-Metal-Build grün, Register-Invariante Exit 0 |
+| `CI_VERIFIED` | **offen** | alle Workflow-Läufe `startup_failure` ohne Job, siehe Abschnitt Nachweise |
+| `E2E_VERIFIED` | **offen** | kein Lauf im Gesamtsystem; M-05/M-06 existieren noch nicht |
+| Mirror-Integration | `IN_SYNC` | Mirror `a-townchain-ecosystem` `5daf7036`, 15 Dateien byte-identisch, `--check` Exit 0 |
+| K6 (LayerNorm, GELU, Dropout, Embedding) | `RESIDUAL` | bewusst nicht in M-03, eigene Contract-Prüfung nötig |
+| Git-Identität | `BLOCKED` | E-Mail des Kontos unbestätigt, `git push` 403, Git-Data-API 403 |
+| Performance-Referenz (T2.6) | `BLOCKED_EXTERNAL` | keine qualifizierte Maschine (K3) |
 
 `CI_VERIFIED` wird ausdrücklich nicht beansprucht: push-getriggerte Workflows
 scheitern derzeit am unbestätigten GitHub-Konto. `TESTED` heißt hier lokal
@@ -65,11 +70,19 @@ Fünf Mutationen am Rückwärtspfad, jede von den erwarteten Tests erkannt:
 | Softmax-Gradient aus dem Eingang statt aus dem Ausgang | B-10 Softmax-JVP |
 | Kreuzentropie-Gradient mit `1/n` statt Summe | B-08, B-10 |
 | RMSNorm ohne den zweiten Term der Ableitung | B-11 |
-| Akkumulation überschreibt statt addiert | B-12 Raute |
+| Akkumulation in der Verteilung überschreibt statt addiert | B-12 zwei Pässe **und** B-12 Raute |
+| Akkumulation im Parameterspeicher überschreibt statt addiert | B-12 zwei Pässe |
 
-Ehrlich dazu: die Akkumulations-Mutation wird nur von der Raute erkannt, nicht vom
-Test der zwei Rückwärtspässe, weil dieser die Addition im dauerhaften
-Parameterspeicher prüft und nicht die Verteilung im Pass. Beide Tests bleiben.
+**Lücke geschlossen (11.11.2026).** Bis zum 11.11. erkannte nur die Raute die
+Akkumulations-Mutation, nicht der Test der zwei Rückwärtspässe. Der Test prüft
+jetzt beide Akkumulationsstellen in einem Fall: eine Raute (zweiter Beitrag auf
+denselben Parameter innerhalb eines Passes) **und** zwei Rückwärtspässe. Die
+Erwartungswerte sind von Hand gerechnet und dyadisch exakt: `W1 = [[1,2],[3,4]]`
+ergibt Zeilensummen `[3,7]`, `W2 = [[0.5,-0.5],[2,1]]` ergibt `[0,3]`, also ein
+Pass `[3,10]`, zwei Pässe `[6,20]`, drei Pässe `[9,30]`. Beide Mutationen lassen
+genau diesen Test fehlschlagen, die Verteilungs-Mutation zusätzlich die Raute.
+Die Asymmetrie ist damit erklärt und nicht mehr offen: die Raute kann die
+Addition über Pässe nicht sehen, weil sie nur einen Pass fährt.
 
 Drei Mutationen am Operationssatz aus Phase A bleiben gültig (Matmul ohne letzten
 Summanden, Softmax ohne Maximum-Subtraktion, Transponierung ohne Indexvertauschung).
@@ -89,11 +102,51 @@ warum die übrigen keine bekommen, welche Ableitung verbindlich ist, welche
 Speicherlebensdauer der Graph verlangt und wo der Contract schweigt (Festlegungen
 F1 bis F5).
 
+## Integrations- und Evidenzphase (11.11.2026)
+
+| Prüfung | Ergebnis |
+|---|---|
+| Kanon `aurora-ai` | `8f6ccb54` |
+| Mirror `a-townchain-ecosystem` | `5daf7036` |
+| Mirror-Sync über `scripts/sync_modules.py` | `--check` vorher: `diff=2 fehlt=15 orphan=0`; `--sync` kopiert 17 Dateien |
+| Mirror `--check` aus frischem Klon | `IN_SYNC`, 1/1 Komponenten, Exit 0 |
+| Modulvollständigkeit | `components/aurora-ai/modules/atc-aurora-tensor` vorhanden, 14 Dateien |
+| Blob-Vergleich je Datei | 15 von 15 identisch (14 Crate-Dateien + `tools/check_file_register.py`) |
+| Tests auf dem gespiegelten Stand | `cargo test` auf den Mirror-Bytes: 53 grün |
+| Keine zweite Aurora-Implementierung im Mirror | die gespiegelten Dateien sind byte-identisch, keine eigene Fassung, keine Orphans |
+
+Der Sync lief ausschließlich über den vorgesehenen Mechanismus; keine Datei wurde
+von Hand kopiert. Die Übertragung in das Mirror-Repository erfolgte über die
+Contents-API, weil `git push` am unbestätigten Konto scheitert (siehe unten).
+
+## CI-Lage (11.11.2026, reproduziert)
+
+| Beobachtung | Ergebnis |
+|---|---|
+| `workflow_dispatch` auf `code-quality.yml` und `test-suite.yml` | beide gestartet, beide `startup_failure` |
+| Jobs je Lauf | **keine** (`jobs: []`), keine Logs, keine Artefakte |
+| Check-Runs zum Commit | keine |
+| Repo-Zustand | Actions `enabled: true`, `allowed_actions: all`, beide Workflows `state: active` |
+| Push-getriggerte Läufe | ebenfalls `startup_failure` |
+
+Damit ist belegt: die Ursache liegt **nicht** am Trigger und **nicht** am
+Workflow-Inhalt; die Läufe kommen über den Startpunkt nicht hinaus. Bis das
+Konto verifiziert ist, gibt es keine CI-Evidenz, und ein grüner lokaler Build
+ersetzt sie nicht.
+
 ## Offen
 
-- **K6**: LayerNorm, GELU, Dropout und Einbettungs-Lookup nennt der P2-Absatz,
-  die API-Fläche und die 24 Testfälle nennen sie nicht. Entscheidung des Owners:
-  nachziehen mit Testfällen oder den P2-Absatz auf die API-Fläche einengen.
+- **K6 `RESIDUAL`**: LayerNorm, GELU, Dropout und Einbettungs-Lookup nennt der
+  P2-Absatz, die API-Fläche und die 24 Testfälle nennen sie nicht. Owner-Entscheidung
+  vom 11.11.2026: **nicht** pauschal in M-03 nachziehen, sondern je Operator einen
+  eigenen Contract prüfen (Definition, Vorwärts-API, Rückwärts-API, Speicher,
+  Determinismus, Tests, Mutationsnachweis). Dropout braucht zusätzlich eine
+  Randomness- und Reproduzierbarkeitsstrategie. Einzelheiten in
+  `AUTOGRAD-CONTRACT.md` Abschnitt 7.
+- **CI und Git-Identität `BLOCKED`**: nur der Owner kann die E-Mail-Adresse
+  bestätigen. Ohne sie kein regulärer Push und kein Workflow-Start.
+- **M-06**: Trainingsschleife mit Mittelwertbildung baut auf dem M-03-Contract auf;
+  die Reduktionsstrategie bleibt dort, nicht im Operator.
 - **T2.6 / K3**: Durchsatzmessung braucht die qualifizierte Maschine.
 - SIMD und Ausrichtung: bewusst nicht Teil von P2. Der Kern bleibt die einzige
   semantische Implementierung.
