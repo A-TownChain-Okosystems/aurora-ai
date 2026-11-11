@@ -1,5 +1,43 @@
 # Changelog
 
+## 2026-11-11 — Owner-Entscheid A + F1 umgesetzt, Artefaktvertrag B-21 spezifiziert
+
+**A und F1 sind entschieden und umgesetzt (11.11.2026).** Sollwert B-18 = **5.868.800**,
+Formel `P = L·(4d² + 3·d·d_ff + 2d) + V·d + d`, K5 (`d_ff` 704) und die abschliessende
+Norm bleiben bestehen.
+
+- `docs/specs/ATC-AI-LLM-001-AURORA-FOUNDATION-MODEL.md` **1.4.0**: Revisionseintrag mit
+  den drei Zahlen und ihrer Herkunft (5.771.776 vor K5, 5.868.544 nach K5 ohne finale Norm,
+  5.868.800 verbindlich), Formel um `+ d` korrigiert, Sollwert in §7.1 und §7.1.1 angepasst.
+- `docs/specs/ATC-AI-LLM-001-B-P1-P2-BLUEPRINT.md` **1.1.2**: B-18 erwartet 5.868.800
+  (Abweichung 0), Anmerkung zur Nachführung, offener Punkt K6 (`rope_base`) ergänzt.
+- `docs/decisions/AD-B18-PARAMETERHAUSHALT.md` **0.3.0**: Status ENTSCHIEDEN, Entscheidungstabelle,
+  Umstellungsorte, was ausdrücklich **nicht** entschieden ist.
+- `modules/atc-aurora-model/src/tests.rs`: B-18 prüft Abweichung 0 gegen 5.868.800; ein zweiter
+  Test hält die Herkunft fest (97.024 = 96.768 K5 + 256 F1, `3·d·21·L` = 96.768), damit die alte
+  Zahl nicht als Rechenfehler zurückkommt. 16 Tests grün.
+
+**B-21 Artefaktvertrag spezifiziert, nicht implementiert:**
+`docs/specs/ATC-AI-LLM-002-ATCM-ARTIFACT-CONTRACT.md` v1.0.0 (status `proposed`) legt
+- einen 96-Byte-Header mit Magic `ATCM`, Formatversion, Architekturparametern, `rope_base`,
+  `norm_eps`, `reserved` und `tensor_data_bytes`,
+- 64-Byte-Tabelleneinträge (Name, Rang, Form, Offset, `byte_len`),
+- die **kanonische** Tensor-Reihenfolge (tok_emb, je Block acht Tensoren, final_norm) mit
+  Offsetgleichheit zur laufenden Summe,
+- SHA-256 über die ganze Datei mit genulltem Digest-Feld, Determinismus ohne Zeitstempel,
+- eine fail-closed Lesereihenfolge (erst Struktur, dann Digest, dann optionaler Anker),
+- Größengrenzen **vor** jeder Allokation (1 GiB Datenbereich, 8192 Tensoren, Dimension ≤ 2^20,
+  geprüfte Produkte),
+- 21 typisierte Fehler und 28 adversariale Testfälle AT-01…AT-28 (darunter 1000 zufällige
+  Bitmutationen),
+- das Vertrauensmodell: **Integrität ≠ Authentizität**; ohne externen Anker
+  (`expected_digest` oder Signatur) ist ein Artefakt `trustworthy = false` (Fehler
+  `TrustAnchorMissing` im strengen Modus).
+
+Reifegrad: B-18 `IMPLEMENTED` + `TESTED`, B-19/B-20 unverändert, B-21 `SPECIFIED`
+(0 Zeilen Code). `CI_VERIFIED` und `E2E_VERIFIED` bleiben offen. Keine Trainingspipeline vor
+stabilem Artefaktvertrag.
+
 ## 2026-11-11 — M-05 Vorwaertslauf (B-19, B-20)
 
 - **Neu `src/weights.rs`**: `Weights`, `BlockWeights` und `SplitMix64`. Gewichte stammen
