@@ -1,7 +1,7 @@
 ---
 document_id: ATC-AI-LLM-001
 title: Aurora Foundation Model (Aurora LLM): P0 Architektur und Spezifikation
-version: 1.4.0
+version: 1.5.0
 status: accepted
 owner: A-TownChain-Okosystems
 created: 2026-11-10
@@ -20,6 +20,22 @@ Dieses Dokument ist P0 des Entwicklungsfahrplans. Es legt Architektur, Numerik,
 Determinismus, Artefaktformat, Phasengrenzen und Abnahmekriterien fest. Es
 enthält keinen Produktivcode und behauptet keine Implementierung.
 
+
+## Revision 1.5.0 vom 2026-11-11: `rope_base` normativ festgelegt (K6 entschieden)
+
+K6 ist entschieden (Owner, 11.11.2026, Option A der Vorlage
+`docs/decisions/AD-K6-ROPE-BASE.md`):
+
+- **Für das bestehende Aurora-Modellprofil ist `rope_base = 10 000` Normwert.**
+- Das ATCM-Artefakt speichert weiterhin den tatsächlich verwendeten Wert
+  (`ATC-AI-LLM-002` §3), damit ein Modell seine Numerik selbst deklariert.
+- Der Leser prüft den Artefaktwert gegen das erwartete Architekturprofil und
+  lehnt Abweichungen ab (`ArchMismatch`).
+- Andere RoPE-Konfigurationen werden **nur** über eine neue Architekturversion
+  eingeführt, niemals durch stillschweigende Änderung am bestehenden Profil.
+
+Kein Gewicht, kein Byte und kein Test ändert sich dadurch: der Wert galt bereits,
+er ist ab jetzt normativ statt implizit.
 
 ## Revision 1.4.0 vom 2026-11-11 (F1): die abschliessende Norm gehört in die Formel
 
@@ -366,7 +382,7 @@ er fehlte bis Revision 1.4.0 (Entscheidung F1, 11.11.2026).
 | Kontext | 512 |
 | Präzision | f32 |
 | Norm | RMSNorm, Pre-Norm |
-| Position | RoPE |
+| Position | RoPE, θ = 10 000 (Normwert, K6 entschieden 11.11.2026) |
 | Aktivierung | SwiGLU |
 | Bias | keine |
 
