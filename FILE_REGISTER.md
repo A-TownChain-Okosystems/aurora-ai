@@ -4,6 +4,7 @@
 > **Neu erzeugt:** 2026-11-11 | Quelle: Git-Trees-API `aurora-ai` main, Zielbaum dieses Commits
 > **Korrektur:** Die Fassung vom 2026-09-10 nannte 425 Dateien und war gegenüber dem Bestand veraltet (`*.rs` 16 statt 31, `*.md` 61 statt 78, `*.ts` 40 statt 43, sechs Workflow-Dateien fehlend).
 > **Zählweise:** Gezählt werden Blobs, also echte Dateien. Verzeichnisse zählen nicht mit. Der Baum enthält 56 Verzeichnisse zusätzlich.
+> **Stand-Vermerk 11.11.2026 (M-03):** fünf Dateien ergänzt — `AUTOGRAD-CONTRACT.md` sowie `src/autograd.rs`, `src/layers.rs`, `src/loss.rs`, `src/tests_autograd.rs`. Damit 493 Dateien und `.rs` 41.
 > **Standards:** ATC-STD-201 · Evidence: `.atc/evidence/evidence.yaml`
 
 ---
@@ -12,13 +13,13 @@
 
 | Metrik | Wert |
 |--------|------|
-| **Total Dateien** | 488 |
+| **Total Dateien** | 493 |
 | **Verzeichnisse** | 56 |
 | **.tsx** | 157 |
 | **.atc** | 80 |
-| **.md** | 82 |
+| **.md** | 83 |
 | **.ts** | 43 |
-| **.rs** | 37 |
+| **.rs** | 41 |
 | **.js** | 17 |
 | **.json** | 11 |
 | **.cjs** | 11 |
@@ -508,15 +509,20 @@
 - `modules/atc-aurora-runtime/src/sandbox.atc`
 - `modules/atc-aurora-runtime/src/task_scheduler.atc`
 - `modules/atc-aurora-runtime/src/tool_executor.atc`
+- `modules/atc-aurora-tensor/AUTOGRAD-CONTRACT.md`
 - `modules/atc-aurora-tensor/Cargo.toml`
 - `modules/atc-aurora-tensor/README.md`
 - `modules/atc-aurora-tensor/STATUS.md`
+- `modules/atc-aurora-tensor/src/autograd.rs`
 - `modules/atc-aurora-tensor/src/budget.rs`
 - `modules/atc-aurora-tensor/src/error.rs`
+- `modules/atc-aurora-tensor/src/layers.rs`
 - `modules/atc-aurora-tensor/src/lib.rs`
+- `modules/atc-aurora-tensor/src/loss.rs`
 - `modules/atc-aurora-tensor/src/ops.rs`
 - `modules/atc-aurora-tensor/src/tensor.rs`
 - `modules/atc-aurora-tensor/src/tests.rs`
+- `modules/atc-aurora-tensor/src/tests_autograd.rs`
 - `schemas/aurora-action-request.schema.yaml`
 - `schemas/memory/capability.schema.json`
 - `schemas/memory/federation_handshake.schema.json`
