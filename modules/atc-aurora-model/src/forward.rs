@@ -15,7 +15,11 @@ use atc_aurora_tensor::{Budget, Tensor, TensorError};
 /// Epsilon der RMSNorm (B-11).
 pub const NORM_EPS: f32 = 1e-8;
 
-/// Basis der Rotationsfrequenzen. Noch nicht normativ festgelegt, siehe STATUS.
+/// Basis der Rotationsfrequenzen.
+///
+/// **Normwert** (`ATC-AI-LLM-001` 1.5.0, K6 entschieden 11.11.2026). Andere
+/// Basen gelten nur mit einer neuen Architekturversion; das Artefakt deklariert
+/// den Wert und der Leser lehnt Abweichungen mit `ArchMismatch` ab.
 pub const ROPE_BASE: f32 = 10_000.0;
 
 /// Fehler des Vorwaertslaufs. Kein `String`, damit ein Fehler keine Zuteilung
