@@ -1,7 +1,7 @@
 # 📋 File Register — aurora-ai
 
 > **Zweck:** Vollständige Liste aller Dateien (SCR-0082, Matrix-Dim-12).
-> **Neu erzeugt:** 2026-11-10 | Quelle: Git-Trees-API `aurora-ai` main, Zielbaum dieses Commits
+> **Neu erzeugt:** 2026-11-11 | Quelle: Git-Trees-API `aurora-ai` main, Zielbaum dieses Commits
 > **Korrektur:** Die Fassung vom 2026-09-10 nannte 425 Dateien und war gegenüber dem Bestand veraltet (`*.rs` 16 statt 31, `*.md` 61 statt 78, `*.ts` 40 statt 43, sechs Workflow-Dateien fehlend).
 > **Zählweise:** Gezählt werden Blobs, also echte Dateien. Verzeichnisse zählen nicht mit. Der Baum enthält 53 Verzeichnisse zusätzlich.
 > **Standards:** ATC-STD-201 · Evidence: `.atc/evidence/evidence.yaml`
@@ -12,13 +12,13 @@
 
 | Metrik | Wert |
 |--------|------|
-| **Total Dateien** | 476 |
-| **Verzeichnisse** | 53 |
+| **Total Dateien** | 487 |
+| **Verzeichnisse** | 55 |
 | **.tsx** | 157 |
 | **.atc** | 80 |
-| **.md** | 78 |
+| **.md** | 82 |
 | **.ts** | 43 |
-| **.rs** | 31 |
+| **.rs** | 37 |
 | **.js** | 17 |
 | **.json** | 11 |
 | **.cjs** | 11 |
@@ -26,7 +26,7 @@
 | **(keine)** | 8 |
 | **.yml** | 7 |
 | **.gitignore** | 7 |
-| **.toml** | 5 |
+| **.toml** | 6 |
 | **.py** | 5 |
 | **.txt** | 3 |
 | **.example** | 1 |
@@ -84,6 +84,8 @@
 - `docs/specs/ATC-AI-CAP-001-CAPABILITY-TOKENS.md`
 - `docs/specs/ATC-AI-LLM-001-A-REF1-IMPLEMENTATION-ENVELOPE.md`
 - `docs/specs/ATC-AI-LLM-001-AURORA-FOUNDATION-MODEL.md`
+- `docs/specs/ATC-AI-LLM-001-B-P1-P2-BLUEPRINT.md`
+- `docs/specs/ATC-AI-LLM-001-C-T2.6-MESSPROTOKOLL.md`
 - `docs/specs/ATC-AI-LOC-001-LOCALIZATION.md`
 - `docs/specs/ATC-AI-MEM-001-MEMORY-SECURITY.md`
 - `docs/specs/ATC-AI-S2-001-S2-CONTROLS.md`
@@ -506,6 +508,15 @@
 - `modules/atc-aurora-runtime/src/sandbox.atc`
 - `modules/atc-aurora-runtime/src/task_scheduler.atc`
 - `modules/atc-aurora-runtime/src/tool_executor.atc`
+- `modules/atc-aurora-tensor/Cargo.toml`
+- `modules/atc-aurora-tensor/README.md`
+- `modules/atc-aurora-tensor/STATUS.md`
+- `modules/atc-aurora-tensor/src/budget.rs`
+- `modules/atc-aurora-tensor/src/error.rs`
+- `modules/atc-aurora-tensor/src/lib.rs`
+- `modules/atc-aurora-tensor/src/ops.rs`
+- `modules/atc-aurora-tensor/src/tensor.rs`
+- `modules/atc-aurora-tensor/src/tests.rs`
 - `schemas/aurora-action-request.schema.yaml`
 - `schemas/memory/capability.schema.json`
 - `schemas/memory/federation_handshake.schema.json`
