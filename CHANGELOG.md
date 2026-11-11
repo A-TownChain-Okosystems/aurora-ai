@@ -1,5 +1,43 @@
 # Changelog
 
+## 2026-11-11 — B-21 implementiert: `.atcm`-Writer und -Reader gegen Vertrag 1.2.0
+
+Neu `modules/atc-aurora-model/src/artifact/` (fünf Dateien, keine Abhängigkeit, `forbid(unsafe_code)`):
+
+- **`mod.rs`** — alle Feldpositionen als Konstanten (Header **104** Byte, Tabelle 64 Byte,
+  Digest 72..104), Grenzen (`MAX_TENSOR_BYTES` 1 GiB, `MAX_TENSORS` 8194, `MAX_DIM` 2^20,
+  `MAX_ELEMENTS` 2^28), `Header`, `TensorDesc`, die Fehlertaxonomie als `ReadError`/`WriteError`
+  und die kanonische Namensfolge, die den Blockindex selbst formatiert (keine Allokation je
+  Eintrag, kein Alignment-Cast — Befund F-04).
+- **`sha256.rs`** — SHA-256 nach FIPS 180-4 selbst umgesetzt, ein Durchlauf, vier bekannte
+  Werte als Test (leer, „abc", Zwei-Block-Nachricht, 1 Mio. `a`).
+- **`write.rs`** — kanonischer Pfad: Reihenfolge aus `Weights`, Namen aus `expected_name`,
+  lückenlose Offsets, Digest zuletzt über die ganze Datei mit genulltem Digest-Feld, Rückgabe
+  des Digests als Anker. Nicht endliche Gewichte werden beim Schreiben abgelehnt.
+- **`read.rs`** — fail-closed: `max_bytes` **vor** dem Hashen, dann Kennung, Version, Flags,
+  `reserved`, Typ, Layout, Architektur, exakte Dateilänge, Datenmenge gegen Budget, Tabelle
+  (Name, Form, Länge, lückenlose Offsets), Digest, Anker, optionale Architektur- und
+  Endlichkeitsprüfung. Strukturfehler werden immer vor Ankerfehlern gemeldet. `Artifact` hält
+  Bytes und Beschreibungen; `to_weights()` ist die einzige Vollkopie.
+- **`tests.rs`** — AT-01 bis AT-35 plus Roundtrip (gebunden und **nicht gebunden**),
+  Determinismus, byte-identisches Neuschreiben eines gelesenen Artefakts und 1000 zufällige
+  Bitmutationen ohne Panik.
+
+**Nebenbefund, der dabei behoben wurde:** `Weights` hatte keinen eigenen Ausgabekopf. Der
+Parameterhaushalt zählt bei `tied_embedding = false` die Ausgabeprojektion mit, `Weights`
+materialisierte sie aber nie. Jetzt gibt es `lm_head: Option<Tensor>`, `param_count()` zählt ihn
+mit, `forward` benutzt ihn direkt als Projektionsmatrix `(d_model, vocab)` und `check_weights`
+prüft die Kopplung an das Flag. Die Ref-1-Gewichte bleiben unverändert (bei gebundener
+Einbettung wird nichts zusätzlich gezogen).
+
+Vertrag auf **1.2.0** präzisiert (drei Formulierungen aus der Implementierung: AT-01
+Schnittstelle im Header, AT-09 Struktur vor Digest, `ReadOptions` in der API). Kein Layout,
+keine Grenze und keine Regel geändert.
+
+**61 Tests grün**, clippy `-D warnings` sauber, fmt sauber, Register 512 Dateien / 60
+Verzeichnisse / `.rs` 53. Reifegrad: B-21 `IMPLEMENTED` + `TESTED`; `CI_VERIFIED` und
+`E2E_VERIFIED` offen (Actions laufen wegen der unverifizierten Konto-E-Mail nicht an).
+
 ## 2026-11-11 — Gate-Prüfung G1–G5 des Artefaktvertrags (B-21), Vertrag auf 1.1.0
 
 Der Vertrag `ATC-AI-LLM-002` wurde gegen sich selbst geprüft, nicht gegen Code (es gibt
