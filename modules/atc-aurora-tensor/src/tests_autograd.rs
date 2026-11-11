@@ -472,6 +472,8 @@ fn b_11_eps_null_wird_abgelehnt() {
 
 #[test]
 fn b_12_zwei_rueckwaertspaesse_summe_statt_ueberschreiben() {
+    // Teil 1: ein Pfad, zwei Pässe, Erwartung von Hand.
+    // L = sum(p ∘ w) => dL/dp = w, nach zwei Pässen 2·w.
     let p: [f32; 2] = [0.8, -1.3];
     let w: [f32; 2] = [0.5, 2.0];
 
@@ -488,11 +490,12 @@ fn b_12_zwei_rueckwaertspaesse_summe_statt_ueberschreiben() {
 
     for i in 0..2 {
         assert_eq!(once[i], w[i], "erster Pass: {} gegen {}", once[i], w[i]);
-        assert!(
-            (twice[i] - 2.0 * once[i]).abs() < 1e-7,
+        assert_eq!(
+            twice[i],
+            2.0 * w[i],
             "zweiter Pass: {} gegen {}",
             twice[i],
-            2.0 * once[i]
+            2.0 * w[i]
         );
     }
 
@@ -503,8 +506,49 @@ fn b_12_zwei_rueckwaertspaesse_summe_statt_ueberschreiben() {
     g.backward(l, None, &mut budget()).unwrap();
     let again = g.grad(np).unwrap().to_vec();
     for i in 0..2 {
-        assert!((again[i] - once[i]).abs() < 1e-7);
+        assert_eq!(
+            again[i], w[i],
+            "nach zero_grads: {} gegen {}",
+            again[i], w[i]
+        );
     }
+
+    // Teil 2: Raute **und** zwei Pässe in einem Test. Damit deckt derselbe Test
+    // beide Akkumulationsstellen ab: die Verteilung innerhalb eines Passes
+    // (zweiter Beitrag auf denselben Parameter) und die Addition über Pässe.
+    //
+    // Erwartung unabhängig von der Implementierung, von Hand:
+    //   u = p·W1, v = p·W2, L = sum(u + v)
+    //   dL/dp_i = Σ_j (W1[i,j] + W2[i,j])  = Zeilensummen von W1 plus W2
+    // W1 = [[1,2],[3,4]] => [3,7];  W2 = [[0.5,-0.5],[2,1]] => [0,3]
+    // ein Pass: [3,10];  zwei Pässe: [6,20]. Alles dyadisch, also exakt in f32.
+    let w1: [f32; 4] = [1.0, 2.0, 3.0, 4.0];
+    let w2: [f32; 4] = [0.5, -0.5, 2.0, 1.0];
+
+    let mut g = Graph::new();
+    let np = g.parameter(t2([1, 2], &p));
+    let n1 = g.leaf(t2([2, 2], &w1));
+    let n2 = g.leaf(t2([2, 2], &w2));
+    let u = g.matmul(np, n1, &mut budget()).unwrap();
+    let v = g.matmul(np, n2, &mut budget()).unwrap();
+    let sum = g.add(u, v, &mut budget()).unwrap();
+    let l2 = g.sum(sum, &mut budget()).unwrap();
+
+    g.backward(l2, None, &mut budget()).unwrap();
+    let nach_einem = g.grad(np).unwrap().to_vec();
+    assert_eq!(nach_einem, vec![3.0, 10.0], "ein Pass, Raute");
+
+    g.backward(l2, None, &mut budget()).unwrap();
+    let nach_zwei = g.grad(np).unwrap().to_vec();
+    assert_eq!(nach_zwei, vec![6.0, 20.0], "zwei Paesse, Raute");
+
+    // Dritter Durchlauf: die Addition ist fortlaufend, nicht abgeschnitten.
+    g.backward(l2, None, &mut budget()).unwrap();
+    assert_eq!(
+        g.grad(np).unwrap().as_slice(),
+        &[9.0, 30.0],
+        "drei Paesse, Raute"
+    );
 }
 
 #[test]
