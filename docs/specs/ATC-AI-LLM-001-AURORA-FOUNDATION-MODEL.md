@@ -1,7 +1,7 @@
 ---
 document_id: ATC-AI-LLM-001
 title: Aurora Foundation Model (Aurora LLM): P0 Architektur und Spezifikation
-version: 1.3.0
+version: 1.4.0
 status: accepted
 owner: A-TownChain-Okosystems
 created: 2026-11-10
@@ -20,6 +20,49 @@ Dieses Dokument ist P0 des Entwicklungsfahrplans. Es legt Architektur, Numerik,
 Determinismus, Artefaktformat, Phasengrenzen und Abnahmekriterien fest. Es
 enthält keinen Produktivcode und behauptet keine Implementierung.
 
+
+## Revision 1.4.0 vom 2026-11-11 (F1): die abschliessende Norm gehört in die Formel
+
+Der Owner hat am 11.11.2026 zwei Entscheidungen bestätigt, **A** und **F1**.
+
+**F1 — Formel korrigiert.** Die Parameterformel lautet ab hier verbindlich
+
+    P = L·(4d² + 3·d·d_ff + 2d) + V·d + d
+
+Der letzte Term `d` sind die Gewichte der abschliessenden RMSNorm vor dem
+Ausgabekopf. Die bisherige Formel zählte die beiden Normen **innerhalb** eines
+Blocks (`2d`) mit, die eine Norm **ausserhalb** der Blöcke aber nicht, obwohl
+eine Pre-Norm-Architektur sie braucht. Das war ein Fehlbetrag von `d` = 256
+Elementen, kein Architekturunterschied. Die abschliessende Norm bleibt
+Bestandteil der Architektur; es wird nichts entfernt.
+
+**A — Sollwert nachgezogen.** B-18 nennt bisher 5 771 776. Diese Zahl ist der
+Parameterstand **vor** der K5-Entscheidung: sie entspricht `d_ff` = 683 ohne
+abschliessende Norm. K5 hat `d_ff` = 704 festgelegt (96 768 Parameter, 1,68
+Prozent, Cache-Line-Ausrichtung), die Formel ergibt danach 5 868 544 und mit der
+abschliessenden Norm, also nach F1, **5 868 800**. B-18 wird auf 5 868 800
+nachgezogen; K5 bleibt unverändert bestehen.
+
+Drei Zahlen, die nicht verwechselt werden dürfen:
+
+| Zahl | Bedeutung |
+|---|---|
+| 5 771 776 | Stand **vor** K5: `d_ff` 683, ohne abschliessende Norm. Historisch, keine gültige Anforderung mehr |
+| 5 868 544 | Stand **nach** K5 (`d_ff` 704), ohne abschliessende Norm. Nur als Zwischenrechnung gültig |
+| **5 868 800** | Stand **nach** K5 **mit** abschliessender Norm. **Verbindlicher Sollwert** |
+
+Die historische Rechnung wird nicht gelöscht: sie steht im Entscheidungsdokument
+`docs/decisions/AD-B18-PARAMETERHAUSHALT.md` (Fassung 0.3.0) und in der
+Anmerkung zu B-18 im Blueprint `ATC-AI-LLM-001-B`. Ein Test in
+`modules/atc-aurora-model/src/tests.rs` hält die Differenz 97 024 = 96 768 + 256
+fest, damit die Herkunft nachprüfbar bleibt und nicht als Rechenfehler
+wiederkommt.
+
+Auswirkung auf andere Dokumente: `ATC-AI-LLM-001-B` §3.5 B-18 (Sollwert) und die
+Register- und Statusangaben in `modules/atc-aurora-model`. Kein anderer
+Parameter, keine andere Formel, keine Phase ändert sich.
+
+---
 
 ## Revision 1.1.0 vom 2026-11-10
 
@@ -306,15 +349,17 @@ Verbindlich:
 ## 7. Modellkonfigurationen
 
 Alle Parameterzahlen sind aus der Formel
-`P = L·(4d² + 3·d·d_ff + 2d) + V·d` berechnet (Pre-Norm, SwiGLU mit drei
-Matrizen, gebundene Ein- und Ausgabeeinbettung), nicht gemessen.
+`P = L·(4d² + 3·d·d_ff + 2d) + V·d + d` berechnet (Pre-Norm, SwiGLU mit drei
+Matrizen, gebundene Ein- und Ausgabeeinbettung, abschliessende RMSNorm vor dem
+Ausgabekopf), nicht gemessen. Der letzte Term `d` ist die abschliessende Norm;
+er fehlte bis Revision 1.4.0 (Entscheidung F1, 11.11.2026).
 
 ### 7.1 Aurora-Ref-1, das eigentliche erste Ziel
 
 | Feld | Wert |
 |---|---|
 | Rolle | Referenzmodell für Korrektheit und Lernnachweis, kein Produktmodell |
-| Parameter | 5.868.544 (5,87 Mio) |
+| Parameter | 5.868.800 (5,87 Mio) |
 | `d_model` / Schichten / Köpfe | 256 / 6 / 8 (KV-Köpfe = 8) |
 | `d_ff` | 704 |
 | Vokabular | 4.096 |
@@ -338,7 +383,7 @@ abweichendem Wert ist ein Konfigurationsfehler, kein zulässiger Default.
 
 | Feld | Wert | Herkunft |
 |---|---|---|
-| Parameter, exakt | 5.868.544 | aus der Formel, nicht gemessen |
+| Parameter, exakt | 5.868.800 | aus der Formel, nicht gemessen; F1 (abschliessende Norm) entschieden 11.11.2026 |
 | `d_model` | 256 | Abschnitt 7.1 |
 | Schichten `L` | 6 | Abschnitt 7.1 |
 | Köpfe / KV-Köpfe | 8 / 8 | Abschnitt 7.1 |
