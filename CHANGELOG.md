@@ -1,5 +1,39 @@
 # Changelog
 
+## 2026-11-11 — Integrations- und Evidenzphase M-03
+
+- **Mirror integriert.** `scripts/sync_modules.py --check` zeigte vorher
+  `diff=2 fehlt=15 orphan=0`; `--sync` hat 17 Dateien kopiert, danach ist
+  `--check` aus frischem Klon `IN_SYNC` (1/1 Komponenten, Exit 0, Mirror
+  `a-townchain-ecosystem` `5daf7036`). `atc-aurora-tensor` liegt mit 14 Dateien
+  im Mirror, alle 15 Blobs byte-identisch zum Kanon `aurora-ai` `8f6ccb54`,
+  keine Orphans, keine zweite Aurora-Implementierung. Die Übertragung ins
+  Mirror-Repo lief über die Contents-API, weil `git push` am unbestätigten
+  Konto scheitert; kopiert wurde ausschließlich über den vorgesehenen
+  Mechanismus, nichts von Hand.
+- **Tests auf dem gespiegelten Stand:** `cargo test` auf den Mirror-Bytes,
+  53 grün. Damit ist nicht nur die Dateiidentität belegt, sondern dass der
+  gespiegelte Code läuft.
+- **Testlücke bei der Akkumulation geschlossen.** `b_12` prüft jetzt beide
+  Akkumulationsstellen in einem Fall: Raute plus zwei Rückwärtspässe, mit von
+  Hand gerechneten, dyadisch exakten Werten (`[3,10]` nach einem Pass, `[6,20]`
+  nach zwei, `[9,30]` nach drei). Beide Akkumulations-Mutationen lassen genau
+  diesen Test fehlschlagen; die Verteilungs-Mutation zusätzlich die Raute.
+- **CI-Lage reproduziert und dokumentiert.** `workflow_dispatch` auf
+  `code-quality.yml` und `test-suite.yml` gestartet: beide `startup_failure`,
+  null Jobs, keine Logs, keine Check-Runs, keine Artefakte. Actions ist
+  `enabled`, beide Workflows `active`. Die Ursache liegt damit nicht am Trigger
+  und nicht am Workflow-Inhalt. `CI_VERIFIED` bleibt offen.
+- **Statusführung** in `modules/atc-aurora-tensor/STATUS.md` getrennt nach
+  Implementierung, lokaler Prüfung, `CI_VERIFIED`, `E2E_VERIFIED`,
+  Mirror-Integration, K6 (`RESIDUAL`), Git-Identität (`BLOCKED`) und
+  Performance-Referenz (`BLOCKED_EXTERNAL`).
+- **K6 als eigene Entscheidung geführt.** `AUTOGRAD-CONTRACT.md` Abschnitt 7.1
+  legt je Operator (LayerNorm, GELU, Dropout, Embedding-Lookup) die sieben
+  Prüfpunkte fest, die vor einer Implementierung beantwortet sein müssen.
+  Dropout braucht danach eine eigene Randomness- und
+  Reproduzierbarkeitsstrategie. M-03 wird dafür nicht aufgebrochen.
+
 ## 2026-11-11 — M-03 Autograd und B-08 bis B-13
 
 - `atc-aurora-tensor`: M-03 implementiert. Neuer Rechengraph (`Autograd`-Modul)
