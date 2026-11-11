@@ -4,6 +4,7 @@
 > **Neu erzeugt:** 2026-11-11 | Quelle: Git-Trees-API `aurora-ai` main, Zielbaum dieses Commits
 > **Korrektur:** Die Fassung vom 2026-09-10 nannte 425 Dateien und war gegenüber dem Bestand veraltet (`*.rs` 16 statt 31, `*.md` 61 statt 78, `*.ts` 40 statt 43, sechs Workflow-Dateien fehlend).
 > **Zählweise:** Gezählt werden Blobs, also echte Dateien. Verzeichnisse zählen nicht mit. Der Baum enthält 59 Verzeichnisse zusätzlich.
+> **Stand-Vermerk 11.11.2026 (K7/K6/Messung):** drei Dateien ergänzt — `docs/specs/ATC-AI-LLM-003-ARTIFACT-PROVENANCE.md`, `docs/decisions/AD-K6-ROPE-BASE.md`, `docs/measurements/2026-11-11-artifact-decode-cost.md`; ein Verzeichnis (`docs/measurements`). Damit 515 Dateien, 61 Verzeichnisse, `.md` 91.
 > **Stand-Vermerk 11.11.2026 (B-21 implementiert):** fünf Dateien ergänzt — `modules/atc-aurora-model/src/artifact/{mod,sha256,write,read,tests}.rs`. Damit 512 Dateien, 60 Verzeichnisse, `.rs` 53.
 > **Stand-Vermerk 11.11.2026 (Gate-Prüfung G1–G5):** eine Datei ergänzt — `docs/audits/2026-11-11-ATC-AI-LLM-002-GATE-REVIEW.md`. Damit 507 Dateien, `.md` 88.
 > **Stand-Vermerk 11.11.2026 (ATC-AI-LLM-002):** eine Datei ergänzt — `docs/specs/ATC-AI-LLM-002-ATCM-ARTIFACT-CONTRACT.md`. Damit 506 Dateien, `.md` 87.
@@ -19,11 +20,11 @@
 
 | Metrik | Wert |
 |--------|------|
-| **Total Dateien** | 512 |
-| **Verzeichnisse** | 60 |
+| **Total Dateien** | 515 |
+| **Verzeichnisse** | 61 |
 | **.tsx** | 157 |
 | **.atc** | 80 |
-| **.md** | 88 |
+| **.md** | 91 |
 | **.ts** | 43 |
 | **.rs** | 53 |
 | **.js** | 17 |
@@ -90,12 +91,15 @@
 - `docs/audits/AURORA-CHATGPT-SCOPE-SOURCE-AUDIT.md`
 - `docs/aurora-swarm-orchestration.md`
 - `docs/decisions/AD-B18-PARAMETERHAUSHALT.md`
+- `docs/decisions/AD-K6-ROPE-BASE.md`
+- `docs/measurements/2026-11-11-artifact-decode-cost.md`
 - `docs/specs/ATC-AI-CAP-001-CAPABILITY-TOKENS.md`
 - `docs/specs/ATC-AI-LLM-001-A-REF1-IMPLEMENTATION-ENVELOPE.md`
 - `docs/specs/ATC-AI-LLM-001-AURORA-FOUNDATION-MODEL.md`
 - `docs/specs/ATC-AI-LLM-001-B-P1-P2-BLUEPRINT.md`
 - `docs/specs/ATC-AI-LLM-001-C-T2.6-MESSPROTOKOLL.md`
 - `docs/specs/ATC-AI-LLM-002-ATCM-ARTIFACT-CONTRACT.md`
+- `docs/specs/ATC-AI-LLM-003-ARTIFACT-PROVENANCE.md`
 - `docs/specs/ATC-AI-LOC-001-LOCALIZATION.md`
 - `docs/specs/ATC-AI-MEM-001-MEMORY-SECURITY.md`
 - `docs/specs/ATC-AI-S2-001-S2-CONTROLS.md`
