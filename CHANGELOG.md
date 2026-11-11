@@ -1,5 +1,41 @@
 # Changelog
 
+## 2026-11-11 — K7-Vertrag 1.0.0, K6 normativ entschieden, wöchentlicher Sicherheitscheck
+
+Entscheidungen des Owners vom 11.11.2026 umgesetzt:
+
+- **K7-Vertrag vollständig: `ATC-AI-LLM-003` v1.0.0.** D1 secp256k1 mit RFC 6979,
+  Low-S, fester Kodierung `r||s` (kein DER) und strikter Schlüsselvalidierung;
+  **dedizierte `model-release`-Schlüssel**, DID-/Wallet-/Transaktionsschlüssel
+  dürfen Modelle nicht signieren. D2 **2 von 3** als zwei unabhängig gültige
+  Signaturen, ausdrücklich **keine** kryptografische Threshold-Signatur.
+  D3 versionierter, signierter Vertrauensspeicher mit monotoner `store_version`,
+  Rollback-Schutz, Widerrufsliste und **extern verankertem Trust-Root**
+  (SHA-256 des Trust-Roots als Konstante im Prüfer), keine Selbstautorisierung.
+  D4 separat signiertes Metadatenmanifest; `issued_at` und `signer` bleiben
+  unsignierte Etiketten und dürfen keine Entscheidung tragen.
+  Dazu: Prüfreihenfolge Struktur vor Herkunft, Ressourcengrenzen (152 Byte je
+  Behälter, ≤ 8 Behälter, kein Netzwerkzugriff), 17 typisierte Fehler und
+  Testfälle KT-01 bis KT-25.
+- **Selbstprüfung der Gates K7-G1 bis K7-G5:** fünf PASS, ein PASS mit Auflagen,
+  **sieben Befunde** gefunden und im Vertrag behoben — darunter, dass zwei
+  Behälter mit derselben `key_id` die Schwelle mit einem einzigen Schlüssel
+  erfüllt hätten, und dass ein Rollback des Vertrauensspeichers einen
+  widerrufenen Schlüssel wiederbelebt hätte. Eine unabhängige Prüfung steht aus
+  und ist vor der Implementierung vorgesehen.
+- **K6 entschieden (Option A):** `rope_base = 10 000` ist Normwert
+  (`ATC-AI-LLM-001` 1.5.0, Blueprint-Zeile K6, Kommentar an `ROPE_BASE`).
+  Kein Gewicht, kein Byte, kein Test geändert: der Wert galt bereits, er ist ab
+  jetzt normativ statt implizit. Andere Basen nur über eine neue
+  Architekturversion.
+- **Wöchentlicher Aurora-Sicherheitscheck eingerichtet** (Workflow, montags 08:00
+  Europe/Berlin): Register, Tests, clippy/fmt, Mirror-Status, CI-Evidenz für den
+  HEAD-SHA, Release-Vertrauensstruktur und offene Punkte, als kurze Ampel an den
+  Owner. ATCM bleibt unverändert; keine Signaturimplementierung vor der Freigabe
+  des Vertrags.
+
+61 Tests grün, clippy und fmt sauber. Register 515 Dateien / 61 Verzeichnisse.
+
 ## 2026-11-11 — K7 spezifiziert, K6 als Entscheidungsvorlage, Dekodierkosten gemessen
 
 Nach der Abnahme von B-21 (`IMPLEMENTED` + `TESTED`, `CI_VERIFIED` offen) die drei
