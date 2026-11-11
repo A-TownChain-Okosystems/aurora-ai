@@ -1,5 +1,30 @@
 # Changelog
 
+## 2026-11-11 — K7 spezifiziert, K6 als Entscheidungsvorlage, Dekodierkosten gemessen
+
+Nach der Abnahme von B-21 (`IMPLEMENTED` + `TESTED`, `CI_VERIFIED` offen) die drei
+Folgeprüfungen des Owners, soweit sie ohne Entscheidung erledigbar sind:
+
+- **Performance (gemessen, nicht geschätzt):** `docs/measurements/2026-11-11-artifact-decode-cost.md`.
+  Ref-1, 23,5 MB, 50 Tensoren: `read` 65 ms (davon SHA-256 allein 65 ms, also rund
+  360 MB/s), `tensor_f32` für alle Tensoren 5,6 ms, `to_weights()` 13,4 ms.
+  Ergebnis: der **Digest** dominiert die Lesezeit, nicht das Format — die messbare
+  Begründung für `max_bytes` vor dem Hashen. Die Messung liegt als
+  `#[ignore]`-Test im Crate und ist reproduzierbar.
+- **K7 spezifiziert (Entwurf):** `docs/specs/ATC-AI-LLM-003-ARTIFACT-PROVENANCE.md`
+  v0.1.0, status `proposed`. Externer Signaturbehälter `ATCS` (88 Byte +
+  Signatur) **neben** dem unveränderten Artefakt, kanonische 71-Byte-Nachricht mit
+  Domain-Trennung, Prüfreihenfolge Struktur vor Signatur, Vertrauensspeicher mit
+  Rollen, Widerruf und 2-von-3-Schwelle, ausdrücklich kein Selbstvertrauen und
+  keine PKI. 12 Testfälle KT-01…KT-12, Gates K7-G1…K7-G5. Reifeklasse RESEARCH,
+  kein Code.
+- **K6 als Entscheidungsvorlage:** `docs/decisions/AD-K6-ROPE-BASE.md` v0.1.0 mit
+  drei Optionen und der Empfehlung, 10 000 normativ festzuschreiben (ändert keine
+  Gewichte, keine Bytes, keine Testzahl).
+
+Kein Format geändert, kein Byte der Referenzgewichte geändert. 61 Tests grün,
+clippy und fmt sauber. Register 515 Dateien / 61 Verzeichnisse / `.md` 91.
+
 ## 2026-11-11 — B-21 implementiert: `.atcm`-Writer und -Reader gegen Vertrag 1.2.0
 
 Neu `modules/atc-aurora-model/src/artifact/` (fünf Dateien, keine Abhängigkeit, `forbid(unsafe_code)`):
