@@ -31,8 +31,15 @@ pub struct BlockWeights {
 /// Alle Gewichte der Referenz. Keine Bias-Terme (ATC-AI-LLM-001 Abschnitt 5.1).
 #[derive(Debug, Clone)]
 pub struct Weights {
-    /// Einbettungstabelle `(vocab, d_model)`, zugleich Ausgabekopf (gebunden).
+    /// Einbettungstabelle `(vocab, d_model)`. Bei gebundener Einbettung ist sie
+    /// zugleich der Ausgabekopf.
     pub tok_emb: Tensor,
+    /// Eigener Ausgabekopf `(d_model, vocab)`, nur bei `tied_embedding = false`.
+    ///
+    /// Ohne dieses Feld waere ein nicht gebundenes Modell nicht darstellbar: der
+    /// Parameterhaushalt zaehlt die Ausgabeprojektion mit, und das Artefaktformat
+    /// fuehrt sie als eigenen Tensor (`ATC-AI-LLM-002` Befund F-02).
+    pub lm_head: Option<Tensor>,
     /// Ein Block je Schicht.
     pub blocks: Vec<BlockWeights>,
     /// Abschliessende RMSNorm vor dem Ausgabekopf.
@@ -104,8 +111,17 @@ impl Weights {
         let blocks = (0..cfg.n_layers)
             .map(|_| BlockWeights::new(cfg, &mut rng, scale))
             .collect();
+        let tok_emb = tensor(vec![cfg.vocab, cfg.d_model], &mut rng, scale);
+        // Nur bei nicht gebundener Einbettung wird der Kopf gezogen. Damit
+        // bleiben die Referenzgewichte fuer Ref-1 unveraendert.
+        let lm_head = if cfg.tied_embedding {
+            None
+        } else {
+            Some(tensor(vec![cfg.d_model, cfg.vocab], &mut rng, scale))
+        };
         Weights {
-            tok_emb: tensor(vec![cfg.vocab, cfg.d_model], &mut rng, scale),
+            tok_emb,
+            lm_head,
             blocks,
             final_norm: Tensor::from_vec(vec![1.0; cfg.d_model]),
         }
@@ -120,6 +136,9 @@ impl Weights {
     /// Summe aller Gewichtselemente. Muss `param_count(cfg)` entsprechen.
     pub fn param_count(&self) -> usize {
         let mut n = self.tok_emb.size() + self.final_norm.size();
+        if let Some(head) = &self.lm_head {
+            n += head.size();
+        }
         for b in &self.blocks {
             n += b.attn_norm.size()
                 + b.wq.size()
