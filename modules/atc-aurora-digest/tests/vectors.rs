@@ -43,7 +43,9 @@ fn streaming_ergibt_denselben_digest_wie_ein_stueck() {
     // Unregelmaessige Portionen, inklusive Portionen groesser als ein Block und
     // einer leeren Portion: der Zustand darf daran nichts aendern.
     let schrittweiten = [1usize, 3, 7, 32, 63, 64, 65, 100, 127, 128, 255];
-    for laenge in [0usize, 1, 55, 56, 57, 63, 64, 65, 119, 120, 127, 128, 129, 300] {
+    for laenge in [
+        0usize, 1, 55, 56, 57, 63, 64, 65, 119, 120, 127, 128, 129, 300,
+    ] {
         let daten = muster(laenge);
         let erwartet = hex(&digest(&daten));
         for schritt in schrittweiten {
@@ -55,7 +57,11 @@ fn streaming_ergibt_denselben_digest_wie_ein_stueck() {
                 h.update(&rest[..take]);
                 rest = &rest[take..];
             }
-            assert_eq!(hex(&h.finish()), erwartet, "Laenge {laenge}, Schritt {schritt}");
+            assert_eq!(
+                hex(&h.finish()),
+                erwartet,
+                "Laenge {laenge}, Schritt {schritt}"
+            );
         }
     }
 }
@@ -81,5 +87,7 @@ fn fips_180_4_beispiele() {
 fn hex_ist_kleingeschrieben_und_64_stellen() {
     let wert = sha256_hex(b"aurora");
     assert_eq!(wert.len(), 64);
-    assert!(wert.bytes().all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b)));
+    assert!(wert
+        .bytes()
+        .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b)));
 }
