@@ -5,6 +5,7 @@ Status: IMPLEMENTED (core); model-provider integration: PENDING
 Canonical module: modules/atc-aurora-localization
 
 ## Contract
+
 1. Localization is an Aurora AI service and remains outside the ShivaCore TCB.
 2. Locale identifiers are validated before use.
 3. Exact locale resolution precedes language fallback.
@@ -16,6 +17,7 @@ Canonical module: modules/atc-aurora-localization
 9. The core remains deterministic and testable without network access.
 
 ## Roadmap
+
 - v0.1 deterministic core — implemented.
 - v0.2 .loc/.locpack serialization.
 - v0.3 provider adapters and confidence metadata.
