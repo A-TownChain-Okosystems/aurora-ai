@@ -2,34 +2,29 @@
 
 | Bereich | Status | Beleg |
 |---|---|---|
-| Parameterhaushalt | `IMPLEMENTED` | `Config`, `Breakdown`, `param_count`, gepruefte Arithmetik |
+| Parameterhaushalt | `IMPLEMENTED` | `Config`, `Breakdown`, `param_count`, gepruefte Arithmetik; Sollwert 5 868 800 (B-18, A + F1 vom 11.11.2026) |
 | Lokale Pruefung | `TESTED` | 61 Tests (inkl. Messfall, `#[ignore]`), `cargo test` gruen, clippy `-D warnings` sauber, fmt sauber |
 | Vorwaertslauf (B-19, B-20) | `IMPLEMENTED` | `forward`, `Weights`, RoPE, kausale Multi-Head-Attention, gebundener Kopf |
 | Artefakt (B-21) | `IMPLEMENTED` | `write`/`read` gegen `ATC-AI-LLM-002` v1.2.0, AT-01…AT-35 grün |
 | `CI_VERIFIED` | **offen** | Actions starten nicht, solange die Commit-Herkunft unverifiziert ist |
 | `E2E_VERIFIED` | **offen** | kein Lauf im Gesamtsystem |
 
-## Offene Entscheidung
+## Parameterhaushalt (B-18) — entschieden
 
-B-18 nennt 5 771 776, die Ableitung ergibt 5 868 800 (mit abschliessender Norm)
-beziehungsweise 5 868 544 (ohne). Differenz 97 024 beziehungsweise 96 768. Der
-Widerspruch ist dokumentiert und getestet, nicht geglaettet. Entweder ist der
-Sollwert veraltet, oder die Referenz hat eine andere Architektur als K4/K5
-beschreiben. Beides ist eine Owner-Entscheidung, keine Implementierungsfrage.
+**B-18 ist geschlossen** (11.11.2026, **A + F1** durch den Owner bestaetigt): Sollwert
+**5 868 800**, K5 bleibt (`d_ff` 704), die abschliessende Norm zaehlt mit. Die
+verbindliche Formel lautet `P = L(4d^2 + 3 d d_ff + 2d) + V d + d`; sie steht in dieser
+Fassung in `ATC-AI-LLM-001-A` Revision 1.4.0.
 
-Zerlegung: 97 024 = 379 x 256, ohne abschliessende Norm 96 768 = 6 x 63 Zeilen.
-Die Differenz ist damit genau die abschliessende Norm plus 63 Zeilen je Block,
-also `d_ff` 683 statt 704; mit `d_ff` 683 und ohne abschliessende Norm ergibt die
-Ableitung exakt 5 771 776 (mit dem Crate nachgerechnet).
+Die historische Rechnung bleibt als Beleg stehen und wird nicht geglaettet: 5 771 776
+ist der Stand **vor** K5. Die Differenz betraegt 97 024 = 379 x 256, davon 96 768
+= 6 x 63 Zeilen je Block (256 je Zeile) und 256 fuer die abschliessende Norm; das
+entspricht `d_ff` 683 ohne abschliessende Norm. Mit `d_ff` 704 und abschliessender Norm
+ergibt die Ableitung exakt 5 868 800 (mit dem Crate nachgerechnet).
 
-Belegt: 5 771 776 ist der Stand **vor** K5. Der Blueprint nennt `d_ff` 683 oder 704
-in §6 als offenen Punkt (1,7 Prozent Parameter), die Spezifikation nennt nach K5 in
-§7.1.1 5 868 544 aus der Formel `P = L(4d^2 + 3 d d_ff + 2d) + V d`. Diese Formel
-zaehlt die abschliessende Norm nicht mit (5 868 800 mit ihr).
-
-Zwei offene Owner-Entscheidungen: **A** B-18 auf den K5-Wert nachziehen,
-**F1/F2** ob die abschliessende Norm mitzaehlt. Vorlage mit Belegstellen, Rechenweg
-und Folgen: [`docs/decisions/AD-B18-PARAMETERHAUSHALT.md`](../../docs/decisions/AD-B18-PARAMETERHAUSHALT.md).
+Hier ist damit keine Owner-Entscheidung mehr offen, und es hat sich keine Architektur
+geaendert: kein Gewicht, kein Byte, kein Test. Herleitung, Belegstellen und verworfene
+Alternativen: [`docs/decisions/AD-B18-PARAMETERHAUSHALT.md`](../../docs/decisions/AD-B18-PARAMETERHAUSHALT.md).
 
 ## Vorwaertslauf
 
@@ -50,10 +45,10 @@ Token ausserhalb, Budget zu klein, unzulaessige Konfiguration).
 Bewusste Grenzen: die Gewichte sind **deterministisch initialisiert, nicht
 trainiert** — B-19 und B-20 pruefen Rechnung und Grenzen, nicht Sprachqualitaet.
 Kein KV-Cache, kein Batching, kein Sampler (gehoert zu P8/`atc-aurora-runtime`).
-`ROPE_BASE` ist 10 000 und **noch nicht normativ festgelegt**; die Spezifikation
-nennt nur "RoPE". Er ist damit ein expliziter Implementierungsparameter, kein
-Normwert, und steht im Artefaktformat als deklariertes Feld (`ATC-AI-LLM-002` §3,
-offener Punkt K6). B-20 kostet im Debug-Build etwa 22 Sekunden.
+`ROPE_BASE` ist 10 000 und seit dem 11.11.2026 **normativ festgelegt** (K6, Option A,
+`ATC-AI-LLM-001` 1.5.0). Das Artefakt deklariert den Wert weiterhin als Feld
+(`ATC-AI-LLM-002` §3), der Leser lehnt Abweichungen ab; andere Basen nur ueber eine neue
+Architekturversion. B-20 kostet im Debug-Build etwa 22 Sekunden.
 
 ## Artefakt: Stand der Umsetzung
 
