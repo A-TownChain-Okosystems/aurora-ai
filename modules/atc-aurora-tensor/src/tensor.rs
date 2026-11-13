@@ -159,6 +159,19 @@ impl Tensor {
         &mut self.data
     }
 
+    /// Wendet eine Abbildung elementweise an, ohne Form oder Laenge zu
+    /// veraendern.
+    ///
+    /// Gedacht fuer den Optimierer (M-06), der einen Parameter nach dem
+    /// Rueckwaertspass fortschreibt. Es gibt bewusst keinen Zugriff auf den
+    /// rohen Puffer: die Form bleibt damit unantastbar, und ein Aufrufer kann
+    /// keinen Puffer mit anderer Laenge einsetzen.
+    pub fn map_in_place(&mut self, mut f: impl FnMut(f32) -> f32) {
+        for v in self.data.iter_mut() {
+            *v = f(*v);
+        }
+    }
+
     pub fn to_vec(&self) -> Vec<f32> {
         self.data.clone()
     }
