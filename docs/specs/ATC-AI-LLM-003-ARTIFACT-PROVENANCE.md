@@ -88,7 +88,7 @@ Name sei bewiesen.
 
 Signiert wird eine kanonische Nachricht fester Länge, **nicht** die Datei:
 
-```
+```text
 "ATC-AI-ARTIFACT-SIGNATURE-v1\n"   (29 Byte ASCII)
 alg:u16 || digest:32 || signed_len:u64
 ```
