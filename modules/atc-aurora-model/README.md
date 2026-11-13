@@ -13,7 +13,7 @@ findet keinen.
 
 Die Zahl wird abgeleitet, nicht gesetzt:
 
-```
+```text
 Embedding        4096 x 256            1 048 576
 Attention        6 x 1024 x 256        1 572 864
 SwiGLU           6 x 2112 x 256        3 244 032
