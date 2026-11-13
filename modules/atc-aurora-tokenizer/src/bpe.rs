@@ -378,7 +378,7 @@ fn parse_decimal(field: &str, code: &'static str) -> Result<u32, Error> {
 /// C-10: Hex kleingeschrieben, gerade Stellenzahl, mindestens zwei Stellen.
 fn parse_hex(text: &str) -> Result<Vec<u8>, Error> {
     let bytes = text.as_bytes();
-    if bytes.is_empty() || !bytes.len().is_multiple_of(2) {
+    if bytes.is_empty() || bytes.len() % 2 != 0 {
         return Err(Error::Malformed(E_HEX));
     }
     let mut out: Vec<u8> = Vec::with_capacity(bytes.len() / 2);
