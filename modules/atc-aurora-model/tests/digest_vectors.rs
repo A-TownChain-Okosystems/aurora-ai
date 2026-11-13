@@ -29,10 +29,13 @@ fn fassade_trifft_den_orakel_vektor() {
     assert_eq!(vektoren.len(), 301);
     for (laenge, erwartet) in vektoren {
         let daten = muster(laenge);
-        let hexwert = atc_aurora_model::artifact::sha256::digest(&daten)
-            .iter()
-            .map(|b| format!("{b:02x}"))
-            .collect::<String>();
+        // `write!` statt `format!` je Byte: gleiche Ausgabe, aber clippy
+        // (stable 1.83, `format_collect`) verlangt den Schreibweg.
+        use std::fmt::Write as _;
+        let mut hexwert = String::with_capacity(64);
+        for b in atc_aurora_model::artifact::sha256::digest(&daten) {
+            write!(hexwert, "{b:02x}").unwrap();
+        }
         assert_eq!(hexwert, erwartet, "Laenge {laenge}");
     }
 }
