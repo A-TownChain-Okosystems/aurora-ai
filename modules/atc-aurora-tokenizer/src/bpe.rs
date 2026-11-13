@@ -22,6 +22,27 @@ const MAX_VOCAB_SIZE: usize = 65536;
 /// Kopfzeile der kanonischen Form.
 pub const CANONICAL_MAGIC: &str = "ATC-BPE 1";
 
+/// Fehlerklassen nach `ATC-AI-LLM-004` §10. Die Kennung steht am Anfang des
+/// Textes, damit ein Test die Klasse pruefen kann, ohne den Wortlaut zu binden.
+pub const E_KOPFZEILE: &str = "E-01 Kopfzeile oder Fassung unbekannt";
+pub const E_VOCAB_KOPF: &str = "E-02 vocab-Kopfzeile fehlerhaft";
+pub const E_VOCAB_BEREICH: &str = "E-03 Vokabulargroesse ausserhalb 256..=65536";
+pub const E_TOKEN_ZEILE: &str = "E-04 Token-Zeile fehlerhaft";
+pub const E_TOKEN_ID: &str = "E-05 Token-IDs nicht lueckenlos aufsteigend";
+pub const E_BASIS: &str = "E-06 Basisidentitaet verletzt";
+pub const E_HEX: &str = "E-07 Hex-Feld unzulaessig";
+pub const E_MERGES_KOPF: &str = "E-08 merges-Kopfzeile fehlerhaft";
+pub const E_MERGES_ANZAHL: &str = "E-09 Merge-Anzahl passt nicht zum Vokabular";
+pub const E_MERGE_ZEILE: &str = "E-10 Merge-Zeile fehlerhaft";
+pub const E_MERGE_ID: &str = "E-11 Merge-IDs nicht fortlaufend ab 256";
+pub const E_MERGE_REF: &str = "E-12 Merge verweist auf unbekanntes Token";
+pub const E_MERGE_BYTES: &str = "E-13 Merge-Bytes stimmen nicht";
+pub const E_PAAR_DOPPELT: &str = "E-14 Paar doppelt vorhanden";
+pub const E_UEBERZAEHLIG: &str = "E-15 ueberzaehlige Zeilen";
+pub const E_NICHT_KANONISCH: &str = "E-16 nicht kanonisch";
+pub const E_DIGEST_FORMAT: &str = "E-17 Digestformat unzulaessig";
+pub const E_ZEICHENSATZ: &str = "E-18 Zeichensatz oder Zeilenende unzulaessig";
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Bpe {
     /// `tokens[id]` sind die Bytes, die dieses Token dekodiert.
@@ -200,82 +221,119 @@ impl Bpe {
         sha256::sha256_hex(self.canonical().as_bytes())
     }
 
-    /// Laedt ein Vokabular aus der kanonischen Form und prueft dabei den Digest
-    /// **vor** dem Parsen (fail-closed, B-17). Eine manipulierte Merge-Tabelle
-    /// passiert diese Pruefung nicht.
+    /// Laedt ein Vokabular aus der kanonischen Form nach `ATC-AI-LLM-004` (K-T1).
+    ///
+    /// Pruefreihenfolge nach Klausel C-24, fail-closed: erst das Digestformat,
+    /// dann der Digest gegen die Bytes, dann Zeichensatz, Struktur und zum
+    /// Schluss die Kanonizitaet durch Re-Serialisierung. Eine manipulierte Datei
+    /// wird bei Schritt 2 abgewiesen, ohne dass ihre Struktur interpretiert wurde.
     pub fn from_canonical(bytes: &[u8], expected_digest_hex: &str) -> Result<Bpe, Error> {
+        // C-22 / C-24-1: Digestformat, 64 Zeichen kleingeschriebenes Hex.
+        if !ist_digestformat(expected_digest_hex) {
+            return Err(Error::Malformed(E_DIGEST_FORMAT));
+        }
+        // C-21 / C-23 / C-24-2: Digest ueber genau diese Bytes, exakter Vergleich.
         let actual = sha256::sha256_hex(bytes);
-        if !actual.eq_ignore_ascii_case(expected_digest_hex) {
+        if actual != expected_digest_hex {
             return Err(Error::DigestMismatch);
         }
-        let text = core::str::from_utf8(bytes).map_err(|_| Error::Malformed("kein UTF-8"))?;
-        Self::parse(text)
+        // C-03 / C-24-3: ASCII, nur LF als Zeilenende.
+        if !bytes
+            .iter()
+            .all(|b| *b == b'\n' || (0x20..=0x7E).contains(b))
+        {
+            return Err(Error::Malformed(E_ZEICHENSATZ));
+        }
+        let text = core::str::from_utf8(bytes).map_err(|_| Error::Malformed(E_ZEICHENSATZ))?;
+        // C-24-4 bis C-24-9
+        let bpe = Self::parse(text)?;
+        // C-24-10 / C-05: Sicherheitsnetz, Import akzeptiert nie mehr als Export erzeugt.
+        if bpe.canonical().as_bytes() != bytes {
+            return Err(Error::Malformed(E_NICHT_KANONISCH));
+        }
+        Ok(bpe)
     }
 
     fn parse(text: &str) -> Result<Bpe, Error> {
         let mut lines = text.lines();
         if lines.next() != Some(CANONICAL_MAGIC) {
-            return Err(Error::Malformed("Kopfzeile"));
+            return Err(Error::Malformed(E_KOPFZEILE));
         }
 
-        let vocab_header = lines.next().ok_or(Error::Malformed("vocab fehlt"))?;
-        let vocab_count = parse_count(vocab_header, "vocab ")?;
-        if vocab_count < BASE_VOCAB_SIZE {
-            return Err(Error::Malformed("Vokabular unter 256"));
+        // C-02 / C-20 / C-08
+        let vocab_header = lines.next().ok_or(Error::Malformed(E_VOCAB_KOPF))?;
+        let vocab_field = vocab_header
+            .strip_prefix("vocab ")
+            .ok_or(Error::Malformed(E_VOCAB_KOPF))?;
+        let vocab_count = parse_decimal(vocab_field, E_VOCAB_KOPF)? as usize;
+        if !(BASE_VOCAB_SIZE..=MAX_VOCAB_SIZE).contains(&vocab_count) {
+            return Err(Error::Malformed(E_VOCAB_BEREICH));
         }
 
+        // C-04 bis C-11
         let mut tokens: Vec<Vec<u8>> = Vec::with_capacity(vocab_count);
         for expected_id in 0..vocab_count {
-            let line = lines.next().ok_or(Error::Malformed("Token-Zeile fehlt"))?;
+            let line = lines.next().ok_or(Error::Malformed(E_TOKEN_ZEILE))?;
             let (id_part, hex_part) = line
                 .split_once(' ')
-                .ok_or(Error::Malformed("Token-Zeile ohne Trenner"))?;
-            let id: usize = id_part.parse().map_err(|_| Error::Malformed("Token-ID"))?;
+                .ok_or(Error::Malformed(E_TOKEN_ZEILE))?;
+            let id = parse_decimal(id_part, E_TOKEN_ZEILE)? as usize;
             if id != expected_id {
-                return Err(Error::Malformed("Token-IDs nicht fortlaufend"));
+                return Err(Error::Malformed(E_TOKEN_ID));
             }
-            tokens.push(parse_hex(hex_part)?);
+            let bytes_of_token = parse_hex(hex_part)?;
+            if expected_id < BASE_VOCAB_SIZE && bytes_of_token != alloc::vec![expected_id as u8] {
+                return Err(Error::Malformed(E_BASIS));
+            }
+            tokens.push(bytes_of_token);
         }
 
-        let merges_header = lines.next().ok_or(Error::Malformed("merges fehlt"))?;
-        let merge_count = parse_count(merges_header, "merges ")?;
+        // C-13 / C-14
+        let merges_header = lines.next().ok_or(Error::Malformed(E_MERGES_KOPF))?;
+        let merge_field = merges_header
+            .strip_prefix("merges ")
+            .ok_or(Error::Malformed(E_MERGES_KOPF))?;
+        let merge_count = parse_decimal(merge_field, E_MERGES_KOPF)? as usize;
         if merge_count + BASE_VOCAB_SIZE != vocab_count {
-            return Err(Error::Malformed("merges passen nicht zum Vokabular"));
+            return Err(Error::Malformed(E_MERGES_ANZAHL));
         }
 
+        // C-15 bis C-17
         let mut merges: Vec<(u32, u32, u32)> = Vec::with_capacity(merge_count);
         let mut ranks: BTreeMap<(u32, u32), u32> = BTreeMap::new();
         for step in 0..merge_count {
-            let line = lines.next().ok_or(Error::Malformed("Merge-Zeile fehlt"))?;
-            let parts: Vec<&str> = line.split(' ').collect();
-            if parts.len() != 3 {
-                return Err(Error::Malformed("Merge-Zeile braucht drei Felder"));
+            let line = lines.next().ok_or(Error::Malformed(E_MERGE_ZEILE))?;
+            let felder: Vec<&str> = line.split(' ').collect();
+            if felder.len() != 3 || felder.iter().any(|f| f.is_empty()) {
+                return Err(Error::Malformed(E_MERGE_ZEILE));
             }
-            let left: u32 = parts[0]
-                .parse()
-                .map_err(|_| Error::Malformed("linkes Feld"))?;
-            let right: u32 = parts[1]
-                .parse()
-                .map_err(|_| Error::Malformed("rechtes Feld"))?;
-            let new_id: u32 = parts[2].parse().map_err(|_| Error::Malformed("neue ID"))?;
-            let expected = (BASE_VOCAB_SIZE + step) as u32;
-            if new_id != expected {
-                return Err(Error::Malformed("Merge-IDs nicht fortlaufend"));
+            let left = parse_decimal(felder[0], E_MERGE_ZEILE)?;
+            let right = parse_decimal(felder[1], E_MERGE_ZEILE)?;
+            let new_id = parse_decimal(felder[2], E_MERGE_ZEILE)?;
+
+            let expected_new = (BASE_VOCAB_SIZE + step) as u32;
+            if new_id != expected_new {
+                return Err(Error::Malformed(E_MERGE_ID));
             }
-            if left as usize >= tokens.len() || right as usize >= tokens.len() {
-                return Err(Error::Malformed("Merge verweist auf unbekanntes Token"));
+            let grenze = expected_new;
+            if left >= grenze || right >= grenze {
+                return Err(Error::Malformed(E_MERGE_REF));
+            }
+            if ranks.contains_key(&(left, right)) {
+                return Err(Error::Malformed(E_PAAR_DOPPELT));
             }
             let mut joined = tokens[left as usize].clone();
             joined.extend_from_slice(&tokens[right as usize]);
             if joined != tokens[new_id as usize] {
-                return Err(Error::Malformed("Merge-Bytes stimmen nicht"));
+                return Err(Error::Malformed(E_MERGE_BYTES));
             }
             merges.push((left, right, new_id));
             ranks.insert((left, right), new_id);
         }
 
+        // C-07
         if lines.next().is_some() {
-            return Err(Error::Malformed("ueberzaehlige Zeilen"));
+            return Err(Error::Malformed(E_UEBERZAEHLIG));
         }
 
         Ok(Bpe {
@@ -301,18 +359,28 @@ fn merge_pass(seq: &[u32], left: u32, right: u32, new_id: u32) -> Vec<u32> {
     out
 }
 
-fn parse_count(header: &str, prefix: &str) -> Result<usize, Error> {
-    let rest = header
-        .strip_prefix(prefix)
-        .ok_or(Error::Malformed("Kopfzeile vocab/merges"))?;
-    rest.parse().map_err(|_| Error::Malformed("Anzahl"))
+/// C-20: Dezimalfeld ist `0` oder `[1-9][0-9]*`. Kein Vorzeichen, keine fuehrende
+/// Null, kein Leerzeichen, kein leeres Feld.
+fn parse_decimal(field: &str, code: &'static str) -> Result<u32, Error> {
+    let bytes = field.as_bytes();
+    if bytes.is_empty() || !bytes.iter().all(|b| b.is_ascii_digit()) {
+        return Err(Error::Malformed(code));
+    }
+    if bytes.len() > 1 && bytes[0] == b'0' {
+        return Err(Error::Malformed(code));
+    }
+    if bytes.len() > 5 {
+        return Err(Error::Malformed(code));
+    }
+    field.parse::<u32>().map_err(|_| Error::Malformed(code))
 }
 
+/// C-10: Hex kleingeschrieben, gerade Stellenzahl, mindestens zwei Stellen.
 fn parse_hex(text: &str) -> Result<Vec<u8>, Error> {
-    if !text.len().is_multiple_of(2) || !text.is_ascii() {
-        return Err(Error::Malformed("Hex-Feld"));
-    }
     let bytes = text.as_bytes();
+    if bytes.is_empty() || !bytes.len().is_multiple_of(2) {
+        return Err(Error::Malformed(E_HEX));
+    }
     let mut out: Vec<u8> = Vec::with_capacity(bytes.len() / 2);
     let mut i = 0;
     while i < bytes.len() {
@@ -324,11 +392,19 @@ fn parse_hex(text: &str) -> Result<Vec<u8>, Error> {
     Ok(out)
 }
 
+/// Nur `0-9a-f`. Grossbuchstaben sind kein Stilunterschied, sondern ein Fehler.
 fn hex_value(byte: u8) -> Result<u8, Error> {
     match byte {
         b'0'..=b'9' => Ok(byte - b'0'),
         b'a'..=b'f' => Ok(byte - b'a' + 10),
-        b'A'..=b'F' => Ok(byte - b'A' + 10),
-        _ => Err(Error::Malformed("Hex-Ziffer")),
+        _ => Err(Error::Malformed(E_HEX)),
     }
+}
+
+/// C-22: 64 Zeichen, ausschliesslich `0-9a-f`.
+fn ist_digestformat(text: &str) -> bool {
+    text.len() == 64
+        && text
+            .bytes()
+            .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
 }
