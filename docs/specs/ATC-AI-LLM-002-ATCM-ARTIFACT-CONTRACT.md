@@ -173,7 +173,7 @@ Die Reihenfolge ist Teil des Vertrags, nicht Konvention: sie ist der Grund, waru
 zwei Läufe mit identischen Gewichten identische Bytes ergeben. Erlaubt ist genau
 diese Folge, `b` von `0` bis `n_layers - 1`:
 
-```
+```text
 tok_emb
 lm_head            (nur wenn flags.Bit0 = 0, also nicht gebundene Einbettung)
 für jeden Block b:
@@ -329,7 +329,7 @@ Endlichkeit ist eine Eigenschaft der Gewichte, keine Eigenschaft des Containers.
 
 ## 10. API-Vertrag (verbindlich für die Implementierung)
 
-```
+```text
 write(cfg: &Config, weights: &Weights, out: &mut Vec<u8>) -> Result<[u8; 32], WriteError>
 ReadOptions { max_bytes: usize, strict_anchor: bool, check_finite: bool }
 TrustAnchor  = { None | ExpectedDigest([u8;32]) | SignatureVerified }
