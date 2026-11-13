@@ -24,18 +24,24 @@ festgeschrieben wird:
   Training typisiert ab (`TargetUnreachable`), statt ein Vokabular mit
   Einmal-Paarungen aufzufüllen.
 
-## Artefakt
+## Artefakt und Vertrag
 
 `canonical()` erzeugt eine zeilenweise ASCII-Form ohne Zeitstempel und ohne Pfad;
-`digest_hex()` ist der SHA-256 darüber. `from_canonical(bytes, digest)` prüft den
-Digest **vor** dem Parsen (fail-closed). Eine manipulierte Merge-Tabelle passiert
-diese Prüfung nicht (B-17).
+`digest_hex()` ist der SHA-256 darüber. Das Format ist **normativ** in
+`docs/specs/ATC-AI-LLM-004-TOKENIZER-ARTIFACT-CONTRACT.md` (K-T1) festgelegt: Klauseln
+C-01 bis C-26 mit Zeichenvorrat, Feldreihenfolge, Zahlenformaten, Digest-Eingabe,
+Prüfreihenfolge und Fehlerklassen E-01 bis E-18.
+
+`from_canonical(bytes, digest)` folgt dieser Reihenfolge: Digestformat, Digest,
+Zeichensatz, Struktur, zum Schluss die Kanonizität durch Re-Serialisierung. Der
+Digest wird **vor** dem Parsen geprüft (B-17), und der Import akzeptiert nie mehr als
+der Export erzeugt. Jede Abweichung ist terminal, es gibt kein Reparaturverhalten.
 
 ## Stand
 
 | Punkt | Wert |
 |---|---|
-| Tests | 15 grün, `cargo test` auf stable und nightly |
+| Tests | 33 grün, `cargo test` auf stable und nightly |
 | clippy / fmt | `-D warnings` sauber, `fmt --check` sauber |
 | Abhängigkeiten | keine |
 | `CI_VERIFIED` | offen, Actions startet mit `startup_failure` |
@@ -43,9 +49,8 @@ diese Prüfung nicht (B-17).
 
 ## Offene Punkte
 
-- **K-T1 Artefaktformat:** die kanonische Form ist implementiert, aber nicht als
-  eigener Vertrag spezifiziert (anders als `ATC-AI-LLM-002` für Gewichte). Vor dem
-  ersten eingefrorenen Vokabular braucht sie einen Vertrag mit Testfällen.
+- **K-T1 Artefaktformat:** normativ geschlossen durch `ATC-AI-LLM-004` v1.0.0
+  (Status `proposed`), Konformitätsmatrix dort §12.
 - **F-T1 Digest-Doppelung:** `atc-aurora-model/src/artifact/sha256.rs` enthält eine
   zweite SHA-256-Umsetzung. Vereinheitlichung ist eine Architekturentscheidung
   (gemeinsames Digest-Crate oder Umzug), kein Nebenprodukt von P1.
