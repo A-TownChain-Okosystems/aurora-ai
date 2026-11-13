@@ -29,6 +29,7 @@ standard: atc-standards
 **Canonical implementation owner:** `modules/atc-aurora-core` (Rust crate `atc-aurora-core`).
 
 Relevant existing source symbols:
+
 - `modules/atc-aurora-core/src/aurora_core.rs::AuroraCore::authorize_action`
 - `modules/atc-aurora-core/src/capability_policy.rs`
 - `modules/atc-aurora-core/src/approval.rs`
