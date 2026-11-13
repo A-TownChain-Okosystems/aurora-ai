@@ -7,6 +7,7 @@ This change implements orchestration primitives in the canonical Rust crate at m
 ## Components
 
 ### Agent registry
+
 - Requires non-empty, caller-assigned stable IDs, names and roles.
 - Rejects duplicate IDs rather than silently replacing an existing agent.
 - Stores capability names and descriptive/risk metadata.
@@ -15,6 +16,7 @@ This change implements orchestration primitives in the canonical Rust crate at m
 - Capability metadata is descriptive; authorization remains the responsibility of the existing fail-closed policy engine and downstream OS/kernel enforcement.
 
 ### Task scheduler
+
 - Tracks queued, running and terminal states (completed, failed, cancelled, timed out).
 - Requires dependencies to exist before scheduling and rejects failed/cancelled/timed-out dependencies.
 - Dispatches ready tasks in lexical ID order within a configured concurrency limit.
@@ -23,6 +25,7 @@ This change implements orchestration primitives in the canonical Rust crate at m
 - This is a deterministic in-memory scheduler model; it does not spawn workers, persist state, or preempt an external process.
 
 ### Result collector
+
 - Requires a declared expected-agent set for each task.
 - Rejects results from undeclared agents, empty payloads and duplicate task/agent results.
 - Reports missing agents and returns results sorted by task ID then agent ID, independent of arrival order.
