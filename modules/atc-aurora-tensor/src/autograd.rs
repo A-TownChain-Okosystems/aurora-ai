@@ -25,7 +25,7 @@ use crate::budget::Budget;
 use crate::error::{Result, TensorError};
 use crate::layers::{silu, silu_grad};
 use crate::loss::cross_entropy as cross_entropy_forward;
-use crate::tensor::{byte_len, Tensor};
+use crate::tensor::{alloc_zeroed, byte_len, Tensor};
 
 /// Index eines Knotens im Rechengraphen.
 pub type NodeId = usize;
@@ -44,9 +44,36 @@ enum Op {
     Transpose(NodeId),
     Softmax(NodeId),
     Sum(NodeId),
-    RmsNorm { x: NodeId, w: NodeId, eps: f32 },
+    RmsNorm {
+        x: NodeId,
+        w: NodeId,
+        eps: f32,
+    },
     SwiGlu(NodeId),
-    CrossEntropy { logits: NodeId, targets: Vec<u32> },
+    CrossEntropy {
+        logits: NodeId,
+        targets: Vec<u32>,
+    },
+    /// Einbettungs-Lookup: Zeilen aus einer Tabelle. Der Gradient streut
+    /// zurueck auf die gelesenen Zeilen (M-05 braucht den Pfad, K6).
+    Gather {
+        table: NodeId,
+        tokens: Vec<u32>,
+    },
+    /// Spaltenblock eines Rang-2-Tensors.
+    SliceCols {
+        x: NodeId,
+        start: usize,
+        len: usize,
+    },
+    /// RoPE-Rotation je Kopf; `cos` und `sin` sind Konstanten der Form
+    /// `(T, d_head/2)`.
+    Rope {
+        x: NodeId,
+        cos: NodeId,
+        sin: NodeId,
+        d_head: usize,
+    },
 }
 
 impl Op {
@@ -65,6 +92,11 @@ impl Op {
                 f(*w);
             }
             Op::CrossEntropy { logits, .. } => f(*logits),
+            Op::Gather { table, .. } => f(*table),
+            Op::SliceCols { x, .. } => f(*x),
+            // `cos` und `sin` sind Konstanten ohne Gradientenpflicht; sie
+            // werden nicht durchlaufen und bekommen deshalb keinen Beitrag.
+            Op::Rope { x, .. } => f(*x),
         }
     }
 
@@ -265,13 +297,18 @@ impl Graph {
         budget: &mut Budget,
     ) -> Result<NodeId> {
         let rl = self.node(logits)?.requires_grad;
-        let (loss, _grad) = {
+        let (loss, grad) = {
             let vl = &self.nodes[logits].value;
             cross_entropy_forward(vl, targets, budget)?
         };
         // Der Vorwärtsgradient dient nur der Prüfung von B-08 und wird hier
         // nicht gehalten; der Rückwärtspass rechnet ihn neu, damit Graph und
-        // Einzelfunktion nicht zwei verschiedene Gradienten führen können.
+        // Einzelfunktion nicht zwei verschiedene Gradienten führen können. Die
+        // von ihm reservierten Bytes werden deshalb sofort freigegeben: ohne
+        // diesen Schritt bleibt je Aufruf ein Puffer im Budget stehen und der
+        // Graph gibt beim Aufräumen weniger zurück, als er genommen hat
+        // (Befund der P4-Prüfung, Test `p4_graph_gibt_budget_zurueck`).
+        budget.release(byte_len(grad.shape())?);
         let bytes = byte_len(loss.shape())?;
         Ok(self.push(
             loss,
@@ -280,6 +317,84 @@ impl Graph {
                 targets: targets.to_vec(),
             },
             rl,
+            bytes,
+        ))
+    }
+
+    /// Einbettungs-Lookup: Zeilen `tokens` aus `table` `(V, d)` nach `(T, d)`.
+    ///
+    /// Der Gradient ist die Streuung des Zeilengradienten zurueck auf die
+    /// gelesenen Tabellenzeilen. Mehrfach gelesene Zeilen summieren (B-12);
+    /// genau deshalb ist die Einbettung ein Parameterknoten und kein
+    /// Sonderfall ausserhalb des Graphen.
+    pub fn gather(&mut self, table: NodeId, tokens: &[u32], budget: &mut Budget) -> Result<NodeId> {
+        let rt = self.node(table)?.requires_grad;
+        let out = {
+            let vt = &self.nodes[table].value;
+            gather_forward(vt, tokens, budget)?
+        };
+        let bytes = byte_len(out.shape())?;
+        Ok(self.push(
+            out,
+            Op::Gather {
+                table,
+                tokens: tokens.to_vec(),
+            },
+            rt,
+            bytes,
+        ))
+    }
+
+    /// Spaltenblock `[start, start+len)` eines Rang-2-Tensors.
+    ///
+    /// Der Gradient ist der Block an derselben Stelle in einem sonst
+    /// nullbesetzten Puffer; alles ausserhalb bleibt unberuehrt.
+    pub fn slice_cols(
+        &mut self,
+        x: NodeId,
+        start: usize,
+        len: usize,
+        budget: &mut Budget,
+    ) -> Result<NodeId> {
+        let rx = self.node(x)?.requires_grad;
+        let out = {
+            let vx = &self.nodes[x].value;
+            slice_cols_forward(vx, start, len, budget)?
+        };
+        let bytes = byte_len(out.shape())?;
+        Ok(self.push(out, Op::SliceCols { x, start, len }, rx, bytes))
+    }
+
+    /// RoPE: dreht je Kopf die Paare `(2i, 2i+1)` um `pos * theta_i`.
+    ///
+    /// `cos` und `sin` sind Konstanten der Form `(T, d_head/2)`. Die Ableitung
+    /// ist die Rotation um `-angle`, also die Transponierte derselben
+    /// Drehung; sie braucht keine vierte Winkelfunktion.
+    pub fn rope(
+        &mut self,
+        x: NodeId,
+        cos: NodeId,
+        sin: NodeId,
+        d_head: usize,
+        budget: &mut Budget,
+    ) -> Result<NodeId> {
+        let rx = self.node(x)?.requires_grad;
+        let out = {
+            let vx = &self.nodes[x].value;
+            let vc = &self.nodes[cos].value;
+            let vs = &self.nodes[sin].value;
+            rope_forward(vx, vc, vs, d_head, budget)?
+        };
+        let bytes = byte_len(out.shape())?;
+        Ok(self.push(
+            out,
+            Op::Rope {
+                x,
+                cos,
+                sin,
+                d_head,
+            },
+            rx,
             bytes,
         ))
     }
@@ -601,6 +716,73 @@ impl Graph {
                     }
                     accumulate(grads, charges, *a, ga, budget, outstanding);
                 }
+                Op::Gather { table, tokens } => {
+                    let tv = &self.nodes[*table].value;
+                    let d = tv.shape()[1];
+                    let mut gt = new_buf(tv.shape(), budget, outstanding)?;
+                    {
+                        let gs = g.as_slice();
+                        let os = gt.as_mut_slice();
+                        for (n, &tok) in tokens.iter().enumerate() {
+                            let row = tok as usize * d;
+                            for c in 0..d {
+                                os[row + c] += gs[n * d + c];
+                            }
+                        }
+                    }
+                    accumulate(grads, charges, *table, gt, budget, outstanding);
+                }
+                Op::SliceCols { x, start, len } => {
+                    let xv = &self.nodes[*x].value;
+                    let (rows, cols) = (xv.shape()[0], xv.shape()[1]);
+                    let mut gx = new_buf(xv.shape(), budget, outstanding)?;
+                    {
+                        let gs = g.as_slice();
+                        let os = gx.as_mut_slice();
+                        for r in 0..rows {
+                            let dst = r * cols + start;
+                            let src = r * len;
+                            for c in 0..*len {
+                                os[dst + c] += gs[src + c];
+                            }
+                        }
+                    }
+                    accumulate(grads, charges, *x, gx, budget, outstanding);
+                }
+                Op::Rope {
+                    x,
+                    cos,
+                    sin,
+                    d_head,
+                } => {
+                    let xv = &self.nodes[*x].value;
+                    let (rows, cols) = (xv.shape()[0], xv.shape()[1]);
+                    let heads = cols / d_head;
+                    let half = d_head / 2;
+                    let cs = self.nodes[*cos].value.as_slice();
+                    let sn = self.nodes[*sin].value.as_slice();
+                    let mut gx = new_buf(xv.shape(), budget, outstanding)?;
+                    {
+                        let gs = g.as_slice();
+                        let os = gx.as_mut_slice();
+                        for pos in 0..rows {
+                            for h in 0..heads {
+                                let base = pos * cols + h * d_head;
+                                for i in 0..half {
+                                    let c = cs[pos * half + i];
+                                    let s = sn[pos * half + i];
+                                    let ga = gs[base + 2 * i];
+                                    let gb = gs[base + 2 * i + 1];
+                                    // Ableitung der Drehung: Anwendung der
+                                    // transponierten Matrix, also Winkel -angle.
+                                    os[base + 2 * i] = c * ga + s * gb;
+                                    os[base + 2 * i + 1] = -s * ga + c * gb;
+                                }
+                            }
+                        }
+                    }
+                    accumulate(grads, charges, *x, gx, budget, outstanding);
+                }
                 Op::CrossEntropy { logits, targets } => {
                     let lv = &self.nodes[*logits].value;
                     let mut gl = new_buf(lv.shape(), budget, outstanding)?;
@@ -655,6 +837,113 @@ fn new_buf(shape: &[usize], budget: &mut Budget, outstanding: &mut usize) -> Res
     let t = Tensor::zeros(shape.to_vec(), budget)?;
     *outstanding += byte_len(shape)?;
     Ok(t)
+}
+
+/// Vorwaertspfad des Einbettungs-Lookups.
+fn gather_forward(table: &Tensor, tokens: &[u32], budget: &mut Budget) -> Result<Tensor> {
+    if table.rank() != 2 {
+        return Err(TensorError::UnsupportedRank {
+            got: table.rank(),
+            expected: "rank 2",
+        });
+    }
+    let (rows, d) = (table.shape()[0], table.shape()[1]);
+    if tokens.is_empty() || d == 0 || rows == 0 {
+        return Err(TensorError::ShapeMismatch);
+    }
+    let out_len = tokens
+        .len()
+        .checked_mul(d)
+        .ok_or(TensorError::SizeOverflow)?;
+    for &tok in tokens {
+        if tok as usize >= rows {
+            return Err(TensorError::InvalidArgument {
+                what: "gather: token",
+            });
+        }
+    }
+    let src = table.as_slice();
+    let mut data = alloc_zeroed(out_len, budget)?;
+    for (n, &tok) in tokens.iter().enumerate() {
+        let row = tok as usize * d;
+        data[n * d..(n + 1) * d].copy_from_slice(&src[row..row + d]);
+    }
+    Tensor::new(vec![tokens.len(), d], data)
+}
+
+/// Vorwaertspfad des Spaltenblocks.
+fn slice_cols_forward(x: &Tensor, start: usize, len: usize, budget: &mut Budget) -> Result<Tensor> {
+    if x.rank() != 2 {
+        return Err(TensorError::UnsupportedRank {
+            got: x.rank(),
+            expected: "rank 2",
+        });
+    }
+    let (rows, cols) = (x.shape()[0], x.shape()[1]);
+    if len == 0 {
+        return Err(TensorError::InvalidArgument {
+            what: "slice_cols: len",
+        });
+    }
+    let end = start.checked_add(len).ok_or(TensorError::SizeOverflow)?;
+    if end > cols {
+        return Err(TensorError::ShapeMismatch);
+    }
+    let out_len = rows.checked_mul(len).ok_or(TensorError::SizeOverflow)?;
+    let mut data = alloc_zeroed(out_len, budget)?;
+    let src = x.as_slice();
+    for r in 0..rows {
+        let from = r * cols + start;
+        data[r * len..(r + 1) * len].copy_from_slice(&src[from..from + len]);
+    }
+    Tensor::new(vec![rows, len], data)
+}
+
+/// Vorwaertspfad der RoPE-Rotation.
+fn rope_forward(
+    x: &Tensor,
+    cos: &Tensor,
+    sin: &Tensor,
+    d_head: usize,
+    budget: &mut Budget,
+) -> Result<Tensor> {
+    if x.rank() != 2 {
+        return Err(TensorError::UnsupportedRank {
+            got: x.rank(),
+            expected: "rank 2",
+        });
+    }
+    let (rows, cols) = (x.shape()[0], x.shape()[1]);
+    if d_head == 0 || !d_head.is_multiple_of(2) || !cols.is_multiple_of(d_head) {
+        return Err(TensorError::InvalidArgument {
+            what: "rope: d_head",
+        });
+    }
+    let half = d_head / 2;
+    if cos.shape() != [rows, half] || sin.shape() != [rows, half] {
+        return Err(TensorError::ShapeMismatch);
+    }
+    let heads = cols / d_head;
+    let mut data = alloc_zeroed(x.size(), budget)?;
+    {
+        let src = x.as_slice();
+        let cs = cos.as_slice();
+        let sn = sin.as_slice();
+        for pos in 0..rows {
+            for h in 0..heads {
+                let base = pos * cols + h * d_head;
+                for i in 0..half {
+                    let c = cs[pos * half + i];
+                    let s = sn[pos * half + i];
+                    let a = src[base + 2 * i];
+                    let b = src[base + 2 * i + 1];
+                    data[base + 2 * i] = a * c - b * s;
+                    data[base + 2 * i + 1] = a * s + b * c;
+                }
+            }
+        }
+    }
+    Tensor::new(x.shape().to_vec(), data)
 }
 
 fn copy_of(
