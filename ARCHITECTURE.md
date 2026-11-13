@@ -16,7 +16,7 @@ standard: ATC-STD-MD-001
 **Status:** ARCHITECTURE_ONLY  
 **Normative authority:** atc-standards
 
-# Canonical System Role — GlobusOS AI Control Plane
+## Canonical System Role — GlobusOS AI Control Plane
 
 Aurora AI is the **AI Control / Intelligence Plane of GlobusOS**.
 
