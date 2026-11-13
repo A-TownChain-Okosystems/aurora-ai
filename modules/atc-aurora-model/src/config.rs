@@ -68,7 +68,9 @@ impl Config {
         if self.n_heads * self.d_head != self.d_model {
             return Err(RefusalReason::HeadDimMismatch);
         }
-        if self.n_kv_heads > self.n_heads || !self.n_heads.is_multiple_of(self.n_kv_heads) {
+        // `is_multiple_of` ist bis 1.87 instabil; `%` rechnet dasselbe. Die
+        // Nullpruefung oben schliesst den Teiler 0 vorher aus.
+        if self.n_kv_heads > self.n_heads || self.n_heads % self.n_kv_heads != 0 {
             return Err(RefusalReason::KvHeadMismatch);
         }
         Ok(())
