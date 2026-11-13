@@ -4,7 +4,7 @@
 > Spezifikationsnotizen. Dieses Modul hat kein `Cargo.toml` und keine
 > Rust-Quelle. Der Plan beschreibt die geplante Schnittstelle, nicht
 > implementierten Code.
-
+>
 > **Erstellt:** 2026-08-08 | **Agent:** Aurora
 
 ## 1. `src/agent_runtime.atc`
@@ -14,11 +14,13 @@
 **Status:** 📝 NOTIZ VORHANDEN, nicht ausführbar
 
 **Schnittstellen:**
+
 - Eingabe: —
 - Ausgabe: —
 - Abhängigkeiten: —
 
 **Akzeptanzkriterien:**
+
 1. Datei existiert (erfüllt) und parst mit ATCLang v0.3 Parser (nicht nachgewiesen: kein Parser-Lauf in diesem Repository, kein CI-Schritt)
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
@@ -30,11 +32,13 @@
 **Status:** 📝 NOTIZ VORHANDEN, nicht ausführbar
 
 **Schnittstellen:**
+
 - Eingabe: —
 - Ausgabe: —
 - Abhängigkeiten: —
 
 **Akzeptanzkriterien:**
+
 1. Datei existiert (erfüllt) und parst mit ATCLang v0.3 Parser (nicht nachgewiesen: kein Parser-Lauf in diesem Repository, kein CI-Schritt)
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
@@ -46,11 +50,13 @@
 **Status:** 📝 NOTIZ VORHANDEN, nicht ausführbar
 
 **Schnittstellen:**
+
 - Eingabe: —
 - Ausgabe: —
 - Abhängigkeiten: —
 
 **Akzeptanzkriterien:**
+
 1. Datei existiert (erfüllt) und parst mit ATCLang v0.3 Parser (nicht nachgewiesen: kein Parser-Lauf in diesem Repository, kein CI-Schritt)
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
@@ -62,11 +68,13 @@
 **Status:** 📝 NOTIZ VORHANDEN, nicht ausführbar
 
 **Schnittstellen:**
+
 - Eingabe: —
 - Ausgabe: —
 - Abhängigkeiten: —
 
 **Akzeptanzkriterien:**
+
 1. Datei existiert (erfüllt) und parst mit ATCLang v0.3 Parser (nicht nachgewiesen: kein Parser-Lauf in diesem Repository, kein CI-Schritt)
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
@@ -78,11 +86,13 @@
 **Status:** 📝 NOTIZ VORHANDEN, nicht ausführbar
 
 **Schnittstellen:**
+
 - Eingabe: —
 - Ausgabe: —
 - Abhängigkeiten: —
 
 **Akzeptanzkriterien:**
+
 1. Datei existiert (erfüllt) und parst mit ATCLang v0.3 Parser (nicht nachgewiesen: kein Parser-Lauf in diesem Repository, kein CI-Schritt)
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
