@@ -51,8 +51,9 @@ der Export erzeugt. Jede Abweichung ist terminal, es gibt kein Reparaturverhalte
 
 - **K-T1 Artefaktformat:** normativ geschlossen durch `ATC-AI-LLM-004` v1.0.0
   (Status `proposed`), Konformitätsmatrix dort §12.
-- **F-T1 Digest-Doppelung:** `atc-aurora-model/src/artifact/sha256.rs` enthält eine
-  zweite SHA-256-Umsetzung. Vereinheitlichung ist eine Architekturentscheidung
-  (gemeinsames Digest-Crate oder Umzug), kein Nebenprodukt von P1.
+- **F-T1 Digest-Doppelung:** entschieden (AD-FT1). Die Prüfsumme kommt aus
+  `atc-aurora-digest` (`ATC-AI-DIGEST-001`), die frühere eigene Umsetzung ist ein
+  Re-Export. Cross-Crate-Test: `tests/digest_vectors.rs` gegen denselben
+  unabhängigen Orakel-Vektor wie das Model.
 - **Zielvokabular:** 4096 ist der Zielwert aus K4. Der Benchmark auf dem
   P1-Zielkorpus entscheidet ihn, nicht diese Bibliothek.
