@@ -46,6 +46,11 @@ in CI bestaetigt.
 | Tokenizer | `atc-aurora-tokenizer` | 34 Tests |
 | Digest-Autoritaet | `atc-aurora-digest` | 5 Tests |
 
+Produktionsbasis ist **Stable Rust**, geprueft mit 1.83.0; ein Nightly ist fuer
+diese Kette nicht erforderlich (AD-P4, D6). Zwei Stellen, die bis 1.87 stabil
+nicht verfuegbar waren (`is_multiple_of`, `as_chunks`), sind durch `%` und
+`chunks_exact` ersetzt, ohne Semantikaenderung.
+
 Zwei Befunde sind dabei geschlossen worden: `Graph::cross_entropy` gab sein
 Budget nicht zurueck (jetzt gehalten durch `p4_graph_gibt_budget_zurueck`), und
 der Autograd-Contract fuehrte Einbettungs-Lookup, RoPE und Kopfzerlegung als
