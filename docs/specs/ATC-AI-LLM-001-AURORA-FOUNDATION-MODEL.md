@@ -1,7 +1,7 @@
 ---
 document_id: ATC-AI-LLM-001
 title: Aurora Foundation Model (Aurora LLM): P0 Architektur und Spezifikation
-version: 1.6.0
+version: 1.6.1
 status: accepted
 owner: A-TownChain-Okosystems
 created: 2026-11-10
@@ -20,6 +20,17 @@ Dieses Dokument ist P0 des Entwicklungsfahrplans. Es legt Architektur, Numerik,
 Determinismus, Artefaktformat, Phasengrenzen und Abnahmekriterien fest. Es
 enthält keinen Produktivcode und behauptet keine Implementierung.
 
+
+## Revision 1.6.1 vom 2026-11-13: Modellbezeichnung `Aurora-LLM-1B (Prototyp)`
+
+Der Owner hat die Bezeichnung fuer das Zielmodell der nativen Entwicklung festgelegt:
+**`Aurora-LLM-1B (Prototyp)`**, Entwicklungsstatus **`PROTOTYPE`**. Sie steht ab hier
+in Abschnitt 7.2.1.
+
+Die Bezeichnung `1B` ist ein **Modellname**, kein gerundeter Ersatz fuer die
+Parameterzahl. Die exakte Zahl **1 036 077 056** bleibt Bestandteil des technischen
+Modellprofils und wird nicht durch den Namen ersetzt. K4, K5, K6 und Ref-1 bleiben
+unveraendert; kein Code, keine Parameterzaehlung und kein Test wurde angefasst.
 
 ## Revision 1.6.0 vom 2026-11-13: Zielprofil Aurora-1B als Zielzeile (nicht normativ)
 
@@ -453,13 +464,15 @@ P1-Zielkorpus, kein künstlicher Testkorpus.
 Diese Zahlen sind Entwicklungsziele. Sie sind keine Zusage erreichbarer
 Modellqualität.
 
-### 7.2.1 Zielprofil Aurora-1B (Zielzeile, nicht normativ)
+### 7.2.1 Zielprofil `Aurora-LLM-1B (Prototyp)` (Zielzeile, nicht normativ)
 
 Ein eigenes Profil neben den Größen aus 7.2, nicht deren Ersatz. Es leitet sich aus
 derselben Formel ab und ändert Ref-1 nicht.
 
 | Parameter | Zielwert | Herkunft |
 |---|---|---|
+| Modellname | **`Aurora-LLM-1B (Prototyp)`** | Festlegung des Owners, 13.11.2026 |
+| Entwicklungsstatus | **`PROTOTYPE`** | kein Produktionsmodell, keine zugesagte Sprachqualität |
 | Parameter (Formel aus 7.1) | **1 036 077 056** | nachgerechnet mit den Werten dieser Tabelle |
 | Transformer-Blöcke `L` | 20 | Zielprofil |
 | `d_model` | 2048 | Zielprofil |
@@ -473,6 +486,10 @@ Zerlegung, nachgerechnet: Einbettung 8 388 608; je Block 51 384 320
 1 027 686 400; abschließende Norm 2 048. Summe 1 036 077 056, also 1,036 Milliarden.
 `V` = 4096 trägt davon 8 388 608 bei, 0,81 Prozent: die Vokabulargröße ist im
 Parameterhaushalt fast kostenlos und trotzdem die falsche Frage an dieser Stelle.
+
+`1B` im Namen ist eine Bezeichnung, **keine** Rundung der Parameterzahl: die exakte
+Zahl 1 036 077 056 bleibt die technische Größe des Profils und wird bei jeder
+Profiländerung neu nachgerechnet, nicht aus dem Namen abgeleitet.
 
 ### 7.3 Rechenbedarf, damit die Skalierung eine Entscheidung bleibt und keine Hoffnung
 
