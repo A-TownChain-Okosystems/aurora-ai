@@ -1,5 +1,25 @@
 # Changelog
 
+## 2026-11-13 — 1B-Zielprofil 1 036 077 056, B-18-Dokumentationsdrift geschlossen
+
+- **B-18-Dokumentationsdrift geschlossen.** `modules/atc-aurora-model/STATUS.md`
+  (`d1b5235`) und `modules/atc-aurora-model/README.md` (`22a31fb`) führen B-18 jetzt
+  als entschieden (A + F1 vom 11.11.2026: Sollwert 5 868 800, `d_ff` 704, abschließende
+  Norm zählt mit), statt eine offene Owner-Entscheidung zu behaupten. Die historische
+  Herleitung (5 771 776 = Stand vor K5, `d_ff` 683) bleibt als Beleg stehen. Kein
+  Modellcode, keine Parameterzählung, keine AD geändert; 61 Tests grün.
+- **Zielprofil Aurora-1B** in `ATC-AI-LLM-001` **1.6.0**, neuer Abschnitt 7.2.1:
+  20 Blöcke, `d_model` 2048, 16 Köpfe zu 128, `d_ff` 5632, Vokabular 4096 als
+  **Zielwert**; Parameterzahl **1 036 077 056**, aus der Formel nachgerechnet.
+  Ausdrücklich nicht normativ für Ref-1: K4, K5 und K6 bleiben unverändert.
+- **Umsetzungsreihenfolge bestätigt:** P1 Tokenizer (Architektur, Benchmark,
+  Zielkorpus), P2 Autograd (Backward-Pass, Gradienten, numerische Tests), danach
+  Training. Ein lizenziertes Basismodell wird **nicht** als Beschleunigungsweg
+  verfolgt; die native Aurora-Entwicklung bleibt der Pfad. Bestehende Module werden
+  erweitert, keine zusätzlichen Crates und Root-Ordner.
+- CI-Evidenz gibt es für diese Commits nicht: GitHub Actions endet weiterhin mit
+  `startup_failure` ohne Job, Step und Log. Status ist `TESTED`, nicht `CI_VERIFIED`.
+
 ## 2026-11-11 — K7-Vertrag 1.0.0, K6 normativ entschieden, wöchentlicher Sicherheitscheck
 
 Entscheidungen des Owners vom 11.11.2026 umgesetzt:
