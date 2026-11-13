@@ -16,9 +16,22 @@
   (`tests/digest_vectors.rs`). Dazu FIPS-180-4-Beispiele und Chunking-Invarianz über 11
   Schrittweiten.
 - **P1-C: Rust-Job in `.github/workflows/test-suite.yml`.** Kein Root-Workspace, jedes
-  Crate unter `modules/` einzeln; `cargo fmt --check`, `cargo clippy --all-targets -- -D
-  warnings`, `cargo test` je Crate; Toolchain stable; ein Fehler in einem Crate lässt
+  Crate unter `modules/` einzeln; `cargo clippy --all-targets -- -D warnings` und
+  `cargo test` je Crate blockierend; Toolchain stable; ein Fehler in einem Crate lässt
   den Job scheitern, nachdem alle Crates gelaufen sind.
+- **Befund zum Format-Gate:** drei Crates sind historisch nicht rustfmt-sauber
+  (`agents`, `localization`, `memory`; `core`, `digest`, `model`, `tensor`, `tokenizer`
+  sind es). Ein blockierendes `cargo fmt --check` über alles wäre ab dem ersten Lauf
+  rot. Der Job prüft deshalb blockierend die in diesem Lauf geänderten Rust-Dateien und
+  meldet die Vollprüfung je Crate als Warnung. Dieselbe Entscheidung traf der frühere,
+  inzwischen aus dem Baum verschwundene Workflow `rust-module-validation.yml`
+  (Commit `7f1dcff`).
+- **Befund zu F-T2:** es gab bereits einen Rust-Workflow (`Aurora AI Rust Module
+  Validation`, ID 389679408). Seine Datei fehlt im Baum, der Workflow ist bei GitHub
+  aber weiter als `active` registriert; die letzten Läufe (19.10.2026) endeten mit
+  `failure`. Ebenfalls ohne Datei registriert: `agentpool-authorization`,
+  `aurora-core-exact-sha`, `markdownlint`. Aufräumen oder Wiederherstellen ist eine
+  eigene Entscheidung.
 - **Teststand:** digest 1 + 4, model 61 (1 ignoriert) + 1 Cross-Crate, tokenizer 33 + 1
   Cross-Crate, tensor 53, core 47, memory 9, agents 4, localization 4 = 212 + 2 = 214
   grüne Tests, 0 rot, auf stable und (Tokenizer, Model) nightly.
