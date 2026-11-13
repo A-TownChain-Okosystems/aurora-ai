@@ -1,0 +1,16 @@
+[package]
+name = "atc-aurora-train"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "Trainings-Engine der Aurora-Referenzimplementierung (M-06): Rueckwaertspfad ueber den Modellgraphen, Optimierer, Bewertung, Pruefpunktregister"
+
+# Die Kette ist Tokenizer -> Autograd -> Backpropagation -> Optimizer ->
+# Training -> Evaluation -> Registry. Dieses Crate besitzt genau den Teil ab
+# dem Optimierer; Autograd und Vorwaertslauf kommen aus M-03 und M-05, die
+# Pruefsumme aus der Digest-Autoritaet (AD-FT1). Keine Tensor- oder
+# Attention-Mathematik in diesem Crate.
+[dependencies]
+atc-aurora-tensor = { path = "../atc-aurora-tensor" }
+atc-aurora-model = { path = "../atc-aurora-model" }
+atc-aurora-digest = { path = "../atc-aurora-digest" }
