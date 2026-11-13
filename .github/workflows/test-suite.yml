@@ -92,16 +92,53 @@ jobs:
       # wird einzeln geprueft. Ein Fehler in einem Crate laesst den Job scheitern,
       # aber erst nachdem alle Crates gelaufen sind, damit der Report vollstaendig
       # ist (set +e je Gate, Gesamtergebnis am Ende).
-      - name: cargo fmt --check (jedes Crate)
+      # Formatierung: blockierend fuer die in diesem Lauf geaenderten Rust-Dateien,
+      # informativ fuer den Altbestand. Grund: drei Crates (agents, localization,
+      # memory) sind historisch nicht rustfmt-sauber. Ein blockierendes
+      # `cargo fmt --check` ueber alles waere ab dem ersten Lauf rot, ohne dass eine
+      # dieser Stellen etwas mit dem jeweiligen Auftrag zu tun haette. Dieselbe
+      # Entscheidung wurde im frueheren Workflow `rust-module-validation.yml`
+      # getroffen (Commit 7f1dcff, "ci: scope rustfmt gate to changed Rust files").
+      - name: rustfmt auf geaenderten Rust-Dateien (blockierend)
+        shell: bash
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_BEFORE: ${{ github.event.before }}
         run: |
           set -euo pipefail
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            git fetch origin "$BASE_REF"
+            basis="origin/$BASE_REF...HEAD"
+          elif [ "$EVENT_NAME" = "push" ] && [ -n "${EVENT_BEFORE:-}" ] \
+               && [ "$EVENT_BEFORE" != "0000000000000000000000000000000000000000" ]; then
+            basis="$EVENT_BEFORE...HEAD"
+          else
+            echo "::notice::Kein begrenzter Aenderungsbereich, es werden alle Rust-Dateien geprueft."
+            basis=""
+          fi
+          if [ -n "${basis:-}" ]; then
+            mapfile -t dateien < <(git diff --name-only "$basis" -- '*.rs' | sort -u)
+          else
+            mapfile -t dateien < <(git ls-files '*.rs' | sort)
+          fi
+          if [ ${#dateien[@]} -eq 0 ]; then echo "keine Rust-Dateien geaendert"; exit 0; fi
           FAIL=0
+          for datei in "${dateien[@]}"; do
+            [ -f "$datei" ] || continue
+            rustfmt --edition 2021 --check "$datei" || { echo "FMT FAILED $datei"; FAIL=1; }
+          done
+          exit $FAIL
+      - name: rustfmt Vollpruefung je Crate (informativ, Altbestand)
+        continue-on-error: true
+        run: |
+          set -euo pipefail
           for manifest in modules/*/Cargo.toml; do
             d="$(dirname "$manifest")"
             echo "=== fmt $d"
-            (cd "$d" && cargo fmt --check) || { echo "FMT FAILED in $d"; FAIL=1; }
+            (cd "$d" && cargo fmt --check) \
+              || echo "::warning::rustfmt-Baseline in $d nicht sauber (Altbestand, nicht blockierend)"
           done
-          exit $FAIL
       - name: cargo clippy --all-targets -- -D warnings (jedes Crate)
         run: |
           set -euo pipefail
