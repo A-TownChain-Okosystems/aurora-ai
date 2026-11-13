@@ -32,6 +32,10 @@ fn fassade_trifft_den_orakel_vektor() {
         let hexwert = atc_aurora_tokenizer::sha256::sha256_hex(&daten);
         assert_eq!(hexwert, erwartet, "Laenge {laenge} (Hex-Fassade)");
         let roh = atc_aurora_tokenizer::sha256::sha256(&daten);
-        assert_eq!(roh, atc_aurora_digest::digest(&daten), "Laenge {laenge} (Rohform)");
+        assert_eq!(
+            roh,
+            atc_aurora_digest::digest(&daten),
+            "Laenge {laenge} (Rohform)"
+        );
     }
 }
