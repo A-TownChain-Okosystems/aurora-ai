@@ -1,7 +1,7 @@
 ---
 document_id: ATC-AI-LLM-001
 title: Aurora Foundation Model (Aurora LLM): P0 Architektur und Spezifikation
-version: 1.6.1
+version: 1.6.2
 status: accepted
 owner: A-TownChain-Okosystems
 created: 2026-11-10
@@ -20,6 +20,22 @@ Dieses Dokument ist P0 des Entwicklungsfahrplans. Es legt Architektur, Numerik,
 Determinismus, Artefaktformat, Phasengrenzen und Abnahmekriterien fest. Es
 enthält keinen Produktivcode und behauptet keine Implementierung.
 
+
+## Revision 1.6.2 vom 2026-11-13: Abschnitt 8 bleibt unveraendert nummeriert
+
+Der Owner hat am 13.11.2026 entschieden: **keine Umnummerierung von Abschnitt 8.**
+P3 bleibt Transformer und Ref-1, P4 bleibt Trainings-Engine.
+
+Begruendung, wie festgehalten: die Ergaenzung in 7.2.1 fuegt Zeilen innerhalb eines
+bestehenden Abschnitts ein und erzeugt keinen neuen Hauptabschnitt zwischen 7 und 8;
+eine Umnummerierung wuerde Querverweise, Referenzen und moeglicherweise bestehende
+Evidenzbindungen ohne inhaltlichen Gewinn verschieben. Die normative Kontinuitaat
+dieses Dokuments hat Vorrang vor kosmetischer Nummerierung.
+
+Die Arbeitsreihenfolge des Owners (P1 Tokenizer, P2 Autograd, Training danach) bleibt
+davon unberuehrt: sie beschreibt die Abfolge der Arbeit, nicht die Nummern des
+normativen Phasenplans. Praezisierung fuer die Lesbarkeit: "Training danach" ist
+P4 dieses Plans, und "1B-Profil" ist die Zielzeile aus 7.2.1, keine Phase.
 
 ## Revision 1.6.1 vom 2026-11-13: Modellbezeichnung `Aurora-LLM-1B (Prototyp)`
 
