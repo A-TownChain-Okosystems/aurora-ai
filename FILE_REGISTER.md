@@ -14,33 +14,35 @@
 > **Stand-Vermerk 11.11.2026 (M-03):** fünf Dateien ergänzt — `AUTOGRAD-CONTRACT.md` sowie `src/autograd.rs`, `src/layers.rs`, `src/loss.rs`, `src/tests_autograd.rs`. Damit 493 Dateien und `.rs` 41.
 > **Standards:** ATC-STD-201 · Evidence: `.atc/evidence/evidence.yaml`
 
+> **Stand-Vermerk 13.11.2026 (M-04 Tokenizer):** neun Dateien ergaenzt — Crate `modules/atc-aurora-tokenizer` (`Cargo.toml`, `Cargo.lock`, `README.md`, `STATUS.md`, `src/{lib,error,sha256,bpe,tests}.rs`); zwei Verzeichnisse. Damit 524 Dateien, 63 Verzeichnisse, `.rs` 58.
+
 ---
 
 ## Zusammenfassung
 
 | Metrik | Wert |
 |--------|------|
-| **Total Dateien** | 515 |
-| **Verzeichnisse** | 61 |
+| **Total Dateien** | 524 |
+| **Verzeichnisse** | 63 |
 | **.tsx** | 157 |
+| **.md** | 93 |
 | **.atc** | 80 |
-| **.md** | 91 |
+| **.rs** | 58 |
 | **.ts** | 43 |
-| **.rs** | 53 |
 | **.js** | 17 |
-| **.json** | 11 |
 | **.cjs** | 11 |
+| **.json** | 11 |
 | **.yaml** | 9 |
 | **(keine)** | 8 |
-| **.yml** | 7 |
+| **.toml** | 8 |
 | **.gitignore** | 7 |
-| **.toml** | 7 |
+| **.yml** | 7 |
 | **.py** | 6 |
+| **.lock** | 3 |
 | **.txt** | 3 |
+| **.css** | 1 |
 | **.example** | 1 |
 | **.html** | 1 |
-| **.css** | 1 |
-| **.lock** | 2 |
 
 ---
 
@@ -552,6 +554,15 @@
 - `modules/atc-aurora-tensor/src/tensor.rs`
 - `modules/atc-aurora-tensor/src/tests.rs`
 - `modules/atc-aurora-tensor/src/tests_autograd.rs`
+- `modules/atc-aurora-tokenizer/Cargo.lock`
+- `modules/atc-aurora-tokenizer/Cargo.toml`
+- `modules/atc-aurora-tokenizer/README.md`
+- `modules/atc-aurora-tokenizer/STATUS.md`
+- `modules/atc-aurora-tokenizer/src/bpe.rs`
+- `modules/atc-aurora-tokenizer/src/error.rs`
+- `modules/atc-aurora-tokenizer/src/lib.rs`
+- `modules/atc-aurora-tokenizer/src/sha256.rs`
+- `modules/atc-aurora-tokenizer/src/tests.rs`
 - `schemas/aurora-action-request.schema.yaml`
 - `schemas/memory/capability.schema.json`
 - `schemas/memory/federation_handshake.schema.json`
