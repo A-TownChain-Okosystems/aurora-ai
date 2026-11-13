@@ -45,6 +45,7 @@ This document defines the target contract. It does not claim that the complete f
 ```
 
 The authoritative security boundary remains outside Aurora:
+
 - ShivaCore owns kernel/TCB primitives and capability enforcement.
 - GlobusOS owns userspace identity, policy, services and privileged system interfaces.
 - Aurora consumes authorized memory and context; it does not acquire implicit authority over memory.
@@ -55,6 +56,7 @@ The authoritative security boundary remains outside Aurora:
 A memory node is an authorized execution/storage endpoint.
 
 Supported target node classes:
+
 1. Device Node — PC, laptop, workstation, tablet or smartphone.
 2. GlobusOS Node — a device running the GlobusOS userspace memory services.
 3. Server Node — user-controlled or authorized infrastructure.
@@ -171,6 +173,7 @@ Node A
 ```
 
 Federation must support:
+
 - node identity;
 - explicit scope grants;
 - read/write capability separation;
@@ -189,6 +192,7 @@ Federation must support:
 Federation must not use silent last-write-wins for security-sensitive or semantically conflicting memory.
 
 Target resolution order:
+
 1. owner policy;
 2. authoritative source;
 3. version relationship;
@@ -217,6 +221,7 @@ Aurora must not receive raw private keys merely because it has access to a memor
 A-TownChain is not the primary bulk-memory database.
 
 Target use:
+
 ```text
 Large Memory Payload
         |
@@ -259,6 +264,7 @@ World and player memory remain subject to their own ownership and game-world pol
 ## 13. Current implementation evidence
 
 The existing Aurora repository already contains a memory module with:
+
 - KnowledgeBase;
 - VectorStore;
 - MemoryIndex;
