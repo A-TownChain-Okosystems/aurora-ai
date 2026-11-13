@@ -27,7 +27,11 @@ pub trait Agent: Send + Sync {
 
 impl AgentContext {
     pub fn new(task_id: &str, input: &str) -> Self {
-        Self { task_id: task_id.into(), input: input.into(), metadata: HashMap::new() }
+        Self {
+            task_id: task_id.into(),
+            input: input.into(),
+            metadata: HashMap::new(),
+        }
     }
     pub fn with_meta(mut self, key: &str, val: &str) -> Self {
         self.metadata.insert(key.into(), val.into());
@@ -37,9 +41,19 @@ impl AgentContext {
 
 impl AgentResponse {
     pub fn success(task_id: &str, output: &str) -> Self {
-        Self { task_id: task_id.into(), output: output.into(), success: true, metadata: HashMap::new() }
+        Self {
+            task_id: task_id.into(),
+            output: output.into(),
+            success: true,
+            metadata: HashMap::new(),
+        }
     }
     pub fn failure(task_id: &str, error: &str) -> Self {
-        Self { task_id: task_id.into(), output: error.into(), success: false, metadata: HashMap::new() }
+        Self {
+            task_id: task_id.into(),
+            output: error.into(),
+            success: false,
+            metadata: HashMap::new(),
+        }
     }
 }
