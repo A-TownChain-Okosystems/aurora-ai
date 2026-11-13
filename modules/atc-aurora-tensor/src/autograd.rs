@@ -914,7 +914,9 @@ fn rope_forward(
         });
     }
     let (rows, cols) = (x.shape()[0], x.shape()[1]);
-    if d_head == 0 || !d_head.is_multiple_of(2) || !cols.is_multiple_of(d_head) {
+    // `is_multiple_of` ist bis 1.87 instabil; `%` rechnet dasselbe. `d_head == 0`
+    // steht vorn, damit der Teiler nicht 0 sein kann.
+    if d_head == 0 || d_head % 2 != 0 || cols % d_head != 0 {
         return Err(TensorError::InvalidArgument {
             what: "rope: d_head",
         });
