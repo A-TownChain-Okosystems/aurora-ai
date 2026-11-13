@@ -1,5 +1,20 @@
 # Changelog
 
+## 2026-11-13 — §8 bleibt unverändert, Freigabestand festgehalten
+
+- **Keine Umnummerierung von `ATC-AI-LLM-001` §8** (Owner, 13.11.2026): P3 bleibt
+  Transformer/Ref-1, P4 bleibt Trainings-Engine. Die Ergänzung in 7.2.1 fügt Zeilen
+  in einem bestehenden Abschnitt ein, erzeugt keinen neuen Hauptabschnitt und
+  rechtfertigt keine Verschiebung von Querverweisen oder Evidenzbindungen.
+  Normative Kontinuität vor kosmetischer Nummerierung. Dokumentstand **1.6.2**.
+- **Freigabestand:** `ATC-AI-LLM-001` v1.6.2 · Modellname `Aurora-LLM-1B (Prototyp)`
+  · exakte Profilgröße 1 036 077 056 · 7.2.1 ergänzt · §8 unverändert · K4, K5, K6
+  und Ref-1 unverändert · Tests `TESTED` · CI `BLOCKED` (keine verwertbare
+  CI-Evidenz, Actions endet mit `startup_failure` ohne Job).
+- **P1 beginnt:** Tokenizer auf dem bestehenden Codebestand, ohne neue
+  Root-Verzeichnisse und ohne zusätzliche Crates über den Blueprint hinaus. P2 folgt
+  danach, Training bleibt bis zum Abschluss beider Schritte zurückgestellt.
+
 ## 2026-11-13 — Modellbezeichnung `Aurora-LLM-1B (Prototyp)`
 
 - **Zielmodell benannt:** `Aurora-LLM-1B (Prototyp)`, Entwicklungsstatus
