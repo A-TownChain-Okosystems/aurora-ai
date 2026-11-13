@@ -112,3 +112,11 @@ Norm nicht mit, mit ihr sind es 5 868 800, und so rechnet dieses Crate.
 
 Entscheidungsvorlage mit Rechenweg, Suchraum, zwei exakten Aufloesungen und drei
 Optionen: [`docs/decisions/AD-B18-PARAMETERHAUSHALT.md`](../../docs/decisions/AD-B18-PARAMETERHAUSHALT.md).
+
+## Digest-Autorität (AD-FT1)
+
+Die SHA-256-Umsetzung liegt seit dem 13.11.2026 nicht mehr in diesem Crate, sondern in
+`atc-aurora-digest` (`ATC-AI-DIGEST-001`). `artifact::sha256` ist ein Re-Export; die
+Streaming-API bleibt unverändert. Cross-Crate-Nachweis:
+`tests/digest_vectors.rs` prüft die Fassade gegen denselben unabhängigen Orakel-Vektor
+wie der Tokenizer.
