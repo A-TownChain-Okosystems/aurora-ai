@@ -7,3 +7,5 @@ description = "Referenzmodell der Aurora-Implementierung (M-05 model): Konfigura
 
 [dependencies]
 atc-aurora-tensor = { path = "../atc-aurora-tensor" }
+# AD-FT1: die Pruefsumme kommt aus der Digest-Autoritaet, nicht aus einer Kopie.
+atc-aurora-digest = { path = "../atc-aurora-digest" }
