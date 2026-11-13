@@ -3,5 +3,12 @@
 version = 4
 
 [[package]]
+name = "atc-aurora-digest"
+version = "1.0.0"
+
+[[package]]
 name = "atc-aurora-tokenizer"
 version = "0.1.0"
+dependencies = [
+ "atc-aurora-digest",
+]
