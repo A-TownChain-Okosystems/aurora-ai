@@ -3,6 +3,7 @@
 Provider-independent localization core for Aurora AI.
 
 ## Scope
+
 - Locale validation and language fallback.
 - Translation Memory.
 - Terminology glossary.
@@ -13,5 +14,6 @@ Provider-independent localization core for Aurora AI.
 The crate does not claim to be an AI model. Model inference is supplied through TranslationProvider.
 
 ## Status
+
 IMPLEMENTED: deterministic core.
 PENDING: model/provider adapters and .loc/.locpack serialization.
