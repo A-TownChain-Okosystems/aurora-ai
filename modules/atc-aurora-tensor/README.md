@@ -76,7 +76,7 @@ verbindlich ist und welche Speicherlebensdauer der Graph verlangt, steht in
 Zusätzlich ein echter Bare-Metal-Build statt nur `cargo check`, weil `cargo test`
 mit std übersetzt und Fehler ohne std verdeckt:
 
-```
+```text
 cargo check --lib --target thumbv7em-none-eabihf
 ```
 
