@@ -24,6 +24,7 @@
 **Status:** 🔄 STUB (ATCLang v0.3 Syntax, parst bereit)
 
 **Akzeptanzkriterien:**
+
 1. Datei existiert und parst mit ATCLang v0.3 Parser
 2. Alle öffentlichen Funktionen haben Type-Signatures (struct-basiert)
 3. Modul ist im FILE_REGISTER.md eingetragen
@@ -40,6 +41,7 @@
 **Status:** 🔄 STUB (ATCLang v0.3 Syntax, parst bereit)
 
 **Akzeptanzkriterien:**
+
 1. Datei existiert und parst mit ATCLang v0.3 Parser
 2. Alle öffentlichen Funktionen haben Type-Signatures (struct-basiert)
 3. Modul ist im FILE_REGISTER.md eingetragen
@@ -56,6 +58,7 @@
 **Status:** 🔄 STUB (ATCLang v0.3 Syntax, parst bereit)
 
 **Akzeptanzkriterien:**
+
 1. Datei existiert und parst mit ATCLang v0.3 Parser
 2. Alle öffentlichen Funktionen haben Type-Signatures (struct-basiert)
 3. Modul ist im FILE_REGISTER.md eingetragen
@@ -72,6 +75,7 @@
 **Status:** 🔄 STUB (ATCLang v0.3 Syntax, parst bereit)
 
 **Akzeptanzkriterien:**
+
 1. Datei existiert und parst mit ATCLang v0.3 Parser
 2. Alle öffentlichen Funktionen haben Type-Signatures (struct-basiert)
 3. Modul ist im FILE_REGISTER.md eingetragen
@@ -88,6 +92,7 @@
 **Status:** 🔄 STUB (ATCLang v0.3 Syntax, parst bereit)
 
 **Akzeptanzkriterien:**
+
 1. Datei existiert und parst mit ATCLang v0.3 Parser
 2. Alle öffentlichen Funktionen haben Type-Signatures (struct-basiert)
 3. Modul ist im FILE_REGISTER.md eingetragen
@@ -104,6 +109,7 @@
 **Status:** 🔄 STUB (ATCLang v0.3 Syntax, parst bereit)
 
 **Akzeptanzkriterien:**
+
 1. Datei existiert und parst mit ATCLang v0.3 Parser
 2. Alle öffentlichen Funktionen haben Type-Signatures (struct-basiert)
 3. Modul ist im FILE_REGISTER.md eingetragen
@@ -120,6 +126,7 @@
 **Status:** 🔄 STUB (ATCLang v0.3 Syntax, parst bereit)
 
 **Akzeptanzkriterien:**
+
 1. Datei existiert und parst mit ATCLang v0.3 Parser
 2. Alle öffentlichen Funktionen haben Type-Signatures (struct-basiert)
 3. Modul ist im FILE_REGISTER.md eingetragen
@@ -136,6 +143,7 @@
 **Status:** 🔄 STUB (ATCLang v0.3 Syntax, parst bereit)
 
 **Akzeptanzkriterien:**
+
 1. Datei existiert und parst mit ATCLang v0.3 Parser
 2. Alle öffentlichen Funktionen haben Type-Signatures (struct-basiert)
 3. Modul ist im FILE_REGISTER.md eingetragen
@@ -152,6 +160,7 @@
 **Status:** 🔄 STUB (ATCLang v0.3 Syntax, parst bereit)
 
 **Akzeptanzkriterien:**
+
 1. Datei existiert und parst mit ATCLang v0.3 Parser
 2. Alle öffentlichen Funktionen haben Type-Signatures (struct-basiert)
 3. Modul ist im FILE_REGISTER.md eingetragen
@@ -168,6 +177,7 @@
 **Status:** 🔄 STUB (ATCLang v0.3 Syntax, parst bereit)
 
 **Akzeptanzkriterien:**
+
 1. Datei existiert und parst mit ATCLang v0.3 Parser
 2. Alle öffentlichen Funktionen haben Type-Signatures (struct-basiert)
 3. Modul ist im FILE_REGISTER.md eingetragen
@@ -184,6 +194,7 @@
 **Status:** 🔄 STUB (ATCLang v0.3 Syntax, parst bereit)
 
 **Akzeptanzkriterien:**
+
 1. Datei existiert und parst mit ATCLang v0.3 Parser
 2. Alle öffentlichen Funktionen haben Type-Signatures (struct-basiert)
 3. Modul ist im FILE_REGISTER.md eingetragen
@@ -200,6 +211,7 @@
 **Status:** 🔄 STUB (ATCLang v0.3 Syntax, parst bereit)
 
 **Akzeptanzkriterien:**
+
 1. Datei existiert und parst mit ATCLang v0.3 Parser
 2. Alle öffentlichen Funktionen haben Type-Signatures (struct-basiert)
 3. Modul ist im FILE_REGISTER.md eingetragen
@@ -216,6 +228,7 @@
 **Status:** 🔄 STUB (ATCLang v0.3 Syntax, parst bereit)
 
 **Akzeptanzkriterien:**
+
 1. Datei existiert und parst mit ATCLang v0.3 Parser
 2. Alle öffentlichen Funktionen haben Type-Signatures (struct-basiert)
 3. Modul ist im FILE_REGISTER.md eingetragen
@@ -232,6 +245,7 @@
 **Status:** 🔄 STUB (ATCLang v0.3 Syntax, parst bereit)
 
 **Akzeptanzkriterien:**
+
 1. Datei existiert und parst mit ATCLang v0.3 Parser
 2. Alle öffentlichen Funktionen haben Type-Signatures (struct-basiert)
 3. Modul ist im FILE_REGISTER.md eingetragen
@@ -248,6 +262,7 @@
 **Status:** 🔄 STUB (ATCLang v0.3 Syntax, parst bereit)
 
 **Akzeptanzkriterien:**
+
 1. Datei existiert und parst mit ATCLang v0.3 Parser
 2. Alle öffentlichen Funktionen haben Type-Signatures (struct-basiert)
 3. Modul ist im FILE_REGISTER.md eingetragen
@@ -264,6 +279,7 @@
 **Status:** 🔄 STUB (ATCLang v0.3 Syntax, parst bereit)
 
 **Akzeptanzkriterien:**
+
 1. Datei existiert und parst mit ATCLang v0.3 Parser
 2. Alle öffentlichen Funktionen haben Type-Signatures (struct-basiert)
 3. Modul ist im FILE_REGISTER.md eingetragen
@@ -280,6 +296,7 @@
 **Status:** 🔄 STUB (ATCLang v0.3 Syntax, parst bereit)
 
 **Akzeptanzkriterien:**
+
 1. Datei existiert und parst mit ATCLang v0.3 Parser
 2. Alle öffentlichen Funktionen haben Type-Signatures (struct-basiert)
 3. Modul ist im FILE_REGISTER.md eingetragen
