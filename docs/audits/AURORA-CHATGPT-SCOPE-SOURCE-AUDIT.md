@@ -16,6 +16,7 @@ This audit is bound to repository commit `032519b5bac505b25651214ec717f448264c89
 A path in the “source / symbol” column can mean either (a) an observed implementation, or (b) the canonical place inspected where no implementation was found. “No symbol found” is not proof of global absence; it is a GAP only within the audited canonical path and must remain a residual if another SSOT has not been searched. File presence, inline tests, and green CI do not establish feature completeness.
 
 Status vocabulary used here:
+
 - **PARTIAL** — some relevant behavior exists, but the requirement is not fulfilled end-to-end.
 - **GAP** — audited canonical source contains an explicit placeholder or lacks the required behavior.
 - **UNMAPPED_RESIDUAL** — canonical symbol/test/evidence not yet established; no absence claim.
@@ -101,11 +102,13 @@ Status vocabulary used here:
 ## 3. Revalidated P0 findings
 
 ### Inference
+
 - `ModelHub::inference` checks whether a name is registered, then returns a generated placeholder string. It does not invoke a model/provider.
 - The current inline test `test_model_hub` and UTF-8 regression test `test_inference_handles_multibyte_prompt_boundary` establish narrow behavior only, not inference correctness.
 - Required follow-up: provider trait/ABI, one real test provider, success/error/timeout/cancellation tests, and an integration test proving the router reaches the provider.
 
 ### Authorization and approval
+
 - `CapabilityPolicyEngine` has deny-by-default behavior for unknown and duplicate matching policies, exact principal/capability/action/scope matching, and approval-required decisions.
 - `AuroraCore::authorize_action` checks core active state, principal identity, agent active state, registered capability and policy.
 - `AgentPool::execute` directly calls `agent.execute(ctx)`; no call to `authorize_action` or an equivalent guard is present in this inspected function. Thus the local policy unit tests do not prove all side effects are mediated.
@@ -114,12 +117,14 @@ Status vocabulary used here:
 - Required follow-up: one canonical execution gateway used by every tool invocation; deny-by-default negative tests for missing/wrong/revoked/expired scope and unauthenticated/replayed approval; prove a denied action never reaches the tool.
 
 ### Memory
+
 - The inspected `KnowledgeBase`, `MemoryIndex` and `VectorStore` use in-memory collections and expose add/query or store/search primitives.
 - No owner/tenant/agent ACL fields, provenance/integrity enforcement, retention policy, delete operation, or coordinated index/embedding/cache deletion is present in these inspected types.
 - MEMORY-001 and ATC-AI-MEM-001 are documentation contracts; the compatibility JSON vectors exist, but the audit has not established that the Rust module executes them.
 - Required follow-up: one canonical memory API enforcing owner/scope on every read/write, provenance validation, retention/deletion orchestration, and negative cross-tenant plus deletion-completeness tests.
 
 ### Runtime
+
 - The Rust manifests for core, agents and memory exist; no Cargo.toml is present under `modules/atc-aurora-runtime` in the audited tree.
 - Runtime ATCLang files contain TODO/default-return placeholders. `ARCHITECTURE.md` and `STATUS.md` still describe the module as planned / zero tests, despite the files existing in the tree.
 - A second declarative tool executor exists at `modules/atc-aurora-ai/runtime/tool_executor.atc`; it also contains stub bodies. This is a duplicate/disconnected implementation risk, not a reason to create a third executor.
@@ -131,35 +136,39 @@ Commit: `032519b5bac505b25651214ec717f448264c8948`.
 
 | Workflow | Run ID | Result | Evidence URL |
 |---|---:|---|---|
-| Repository Governance (ATC-STD-201/202/203) | 39458604443 | success | https://github.com/A-TownChain-Okosystems/aurora-ai/actions/runs/39458604443 |
-| SDK Build and Test | 39458604344 | success | https://github.com/A-TownChain-Okosystems/aurora-ai/actions/runs/39458604344 |
-| Dependency Review | 39458604775 | success | https://github.com/A-TownChain-Okosystems/aurora-ai/actions/runs/39458604775 |
-| Aurora AI Code Quality | 39458604332 | success | https://github.com/A-TownChain-Okosystems/aurora-ai/actions/runs/39458604332 |
-| CodeQL | 39458604435 | success | https://github.com/A-TownChain-Okosystems/aurora-ai/actions/runs/39458604435 |
+| Repository Governance (ATC-STD-201/202/203) | 39458604443 | success | <https://github.com/A-TownChain-Okosystems/aurora-ai/actions/runs/39458604443> |
+| SDK Build and Test | 39458604344 | success | <https://github.com/A-TownChain-Okosystems/aurora-ai/actions/runs/39458604344> |
+| Dependency Review | 39458604775 | success | <https://github.com/A-TownChain-Okosystems/aurora-ai/actions/runs/39458604775> |
+| Aurora AI Code Quality | 39458604332 | success | <https://github.com/A-TownChain-Okosystems/aurora-ai/actions/runs/39458604332> |
+| CodeQL | 39458604435 | success | <https://github.com/A-TownChain-Okosystems/aurora-ai/actions/runs/39458604435> |
 
 These are PR-triggered workflow run results associated with the exact head SHA. They establish that the configured jobs passed, not that the 71 product requirements are implemented or E2E-verified. No separate combined commit status entries were returned by the status endpoint. Job/step-level evidence should be attached to each implementation task as relevant.
 
 ## 5. Minimal implementation work packages — proposed, not authorized or started
 
 ### P0-A — Real inference provider path
+
 **Owner:** `modules/atc-aurora-core` + designated canonical runtime/provider adapter.
 **Scope:** Replace placeholder inference behind a versioned provider interface; preserve explicit mock mode only when marked as such.
 **Tests:** fake-provider success; unknown model; provider error; timeout; cancellation; UTF-8 input; router-to-provider integration; verify no silent mock fallback.
 **Evidence:** exact commit SHA; source path/symbol/blob SHA; test names and outputs; CI Run→Job→Step logs; provider integration test result. No real model credentials in CI logs.
 
 ### P0-B — Single authorized tool execution gateway
+
 **Owner:** choose one canonical runtime execution path; do not extend both ATCLang tool-executor stubs independently.
 **Scope:** `Intent → Policy → Capability → Approval if required → Tool invocation → Result validation → Audit`. Every side effect must pass through the gateway immediately before execution.
 **Tests:** missing policy/capability denied; wrong principal/scope denied; inactive agent denied; approval absent/rejected/expired/replayed denied; allowed exact tuple invokes once; denied request invokes zero times; tool output validation and audit correlation.
 **Evidence:** call graph showing all tool paths enter the gateway; negative-test logs; exact-SHA CI; integration test with a test tool that records invocation count.
 
 ### P0-C — Memory security and deletion
+
 **Owner:** `modules/atc-aurora-memory` and existing MEMORY-001 contract.
 **Scope:** tenant/user/agent owner + ACL, provenance/integrity, read/write capability checks, retention, delete API that covers primary records, tag indexes, vectors and derived caches; no second memory store.
 **Tests:** cross-tenant read/write denied; wrong-agent denied; malformed provenance rejected; retention expiry; deletion completeness across all stores; vector version mismatch rejected; poisoning content never treated as authority.
 **Evidence:** contract-to-symbol mapping, unit and adversarial test results, deletion inventory, exact-SHA CI, integration proof that derived records cannot be retrieved after deletion.
 
 ### P0-D — Runtime ownership and executable boundary
+
 **Owner:** architecture decision for `modules/atc-aurora-runtime` versus `modules/atc-aurora-ai/runtime`.
 **Scope:** record canonical SSOT and dependency direction; only then replace TODOs with executable lifecycle/tool/sandbox contracts.
 **Tests:** parse/compile valid and invalid runtime files; register/invoke tool through P0-B gateway; timeout/cancel; resource and filesystem/network isolation; failed startup and cleanup.
@@ -168,7 +177,6 @@ These are PR-triggered workflow run results associated with the exact head SHA. 
 ## 6. Release gate
 
 No broad product implementation should be authorized until P0-A through P0-D have an accepted owner, stable contract, explicit tests and exact-SHA evidence. Keep all other requirements as `UNMAPPED_RESIDUAL` or `SPECIFIED` until their canonical source, symbol, contract and test are actually established. No E2E or production-ready claim is made by this audit.
-
 
 ## 7. Final CI evidence for audit-document head
 
