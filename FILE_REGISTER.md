@@ -13,11 +13,11 @@
 > **Stand-Vermerk 11.11.2026 (M-05):** sieben Dateien ergänzt — Crate `modules/atc-aurora-model` (`Cargo.toml`, `README.md`, `STATUS.md`, `src/{lib,config,params,tests}.rs`). Damit 500 Dateien, 58 Verzeichnisse, `.md` 85, `.rs` 45, `.toml` 7.
 > **Stand-Vermerk 11.11.2026 (M-03):** fünf Dateien ergänzt — `AUTOGRAD-CONTRACT.md` sowie `src/autograd.rs`, `src/layers.rs`, `src/loss.rs`, `src/tests_autograd.rs`. Damit 493 Dateien und `.rs` 41.
 > **Standards:** ATC-STD-201 · Evidence: `.atc/evidence/evidence.yaml`
-
+>
 > **Stand-Vermerk 13.11.2026 (M-04 Tokenizer):** neun Dateien ergaenzt — Crate `modules/atc-aurora-tokenizer` (`Cargo.toml`, `Cargo.lock`, `README.md`, `STATUS.md`, `src/{lib,error,sha256,bpe,tests}.rs`); zwei Verzeichnisse. Damit 524 Dateien, 63 Verzeichnisse, `.rs` 58.
-
+>
 > **Stand-Vermerk 13.11.2026 (K-T1):** eine Datei ergaenzt — `docs/specs/ATC-AI-LLM-004-TOKENIZER-ARTIFACT-CONTRACT.md`. Damit 525 Dateien, 63 Verzeichnisse, `.md` 94.
-
+>
 > **Stand-Vermerk 13.11.2026 (AD-FT1 / P1-C):** elf Dateien ergaenzt — Crate `modules/atc-aurora-digest` (Manifest, Lock, README, STATUS, `src/lib.rs`, `tests/vectors.rs`, `tests/vectors.txt`), Cross-Crate-Tests in Model und Tokenizer, `ATC-AI-DIGEST-001`, `AD-FT1`. Dazu fuenf Verzeichnisse. Damit 536 Dateien, 68 Verzeichnisse, `.rs` 62, `.md` 98.
 
 ---
