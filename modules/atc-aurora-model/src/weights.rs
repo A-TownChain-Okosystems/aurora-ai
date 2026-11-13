@@ -133,6 +133,61 @@ impl Weights {
         Self::deterministic(cfg, seed, scale)
     }
 
+    /// Kanonische Tensorfolge als Sichten, in der Reihenfolge des
+    /// Artefaktformats (`artifact::write`): Einbettung, optionaler Ausgabekopf,
+    /// je Block die acht Tensoren, abschliessende Norm.
+    ///
+    /// Der Index in dieser Folge ist der Index des Parameters. Graph (M-03),
+    /// Optimierer und Pruefsumme (M-06) benutzen deshalb dieselbe Zahl und
+    /// brauchen keine Namensaufloesung.
+    pub fn tensors(&self) -> Vec<&Tensor> {
+        let mut list = Vec::with_capacity(crate::artifact::tensor_count_for(
+            self.blocks.len(),
+            self.lm_head.is_none(),
+        ));
+        list.push(&self.tok_emb);
+        if let Some(head) = &self.lm_head {
+            list.push(head);
+        }
+        for b in &self.blocks {
+            list.push(&b.attn_norm);
+            list.push(&b.wq);
+            list.push(&b.wk);
+            list.push(&b.wv);
+            list.push(&b.wo);
+            list.push(&b.mlp_norm);
+            list.push(&b.wgu);
+            list.push(&b.wd);
+        }
+        list.push(&self.final_norm);
+        list
+    }
+
+    /// Dieselbe Folge mit Schreibzugriff, fuer den Optimierer (M-06).
+    ///
+    /// Die Reihenfolge ist zeichengleich mit [`Weights::tensors`]; ein Test
+    /// haelt beide Folgen gegen die erwarteten Formen, damit sie nicht
+    /// auseinanderlaufen.
+    pub fn tensors_mut(&mut self) -> Vec<&mut Tensor> {
+        let mut list: Vec<&mut Tensor> = Vec::with_capacity(self.blocks.len() * 8 + 2);
+        list.push(&mut self.tok_emb);
+        if let Some(head) = &mut self.lm_head {
+            list.push(head);
+        }
+        for b in self.blocks.iter_mut() {
+            list.push(&mut b.attn_norm);
+            list.push(&mut b.wq);
+            list.push(&mut b.wk);
+            list.push(&mut b.wv);
+            list.push(&mut b.wo);
+            list.push(&mut b.mlp_norm);
+            list.push(&mut b.wgu);
+            list.push(&mut b.wd);
+        }
+        list.push(&mut self.final_norm);
+        list
+    }
+
     /// Summe aller Gewichtselemente. Muss `param_count(cfg)` entsprechen.
     pub fn param_count(&self) -> usize {
         let mut n = self.tok_emb.size() + self.final_norm.size();
