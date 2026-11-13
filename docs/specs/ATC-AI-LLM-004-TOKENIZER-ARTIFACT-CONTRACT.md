@@ -1,7 +1,7 @@
 ---
 document_id: ATC-AI-LLM-004
 title: Kanonisches Tokenizer-Artefaktformat (K-T1) — normativer Vertrag
-version: 1.0.0
+version: 1.0.1
 status: proposed
 owner: A-TownChain-Okosystems
 created: 2026-11-13
@@ -255,5 +255,13 @@ den ein Vokabular hätte geprüft werden können.
 | Punkt | Stand |
 |---|---|
 | Vokabular einfrieren | erst nach P1-E (Benchmark auf dem P1-Zielkorpus) |
-| Digest-Autorität | F-T1: zwei SHA-256-Umsetzungen im Repo, Entscheidung offen |
-| Rust-CI | F-T2: Workflow ohne Rust-Job |
+| Digest-Autorität | **geschlossen** (AD-FT1, 13.11.2026): SHA-256 kommt aus `atc-aurora-digest`, Vertrag `ATC-AI-DIGEST-001`. C-21 bis C-23 bleiben unverändert, sie beschreiben die Eingabe, nicht die Implementierung |
+| Rust-CI | F-T2: Job in `test-suite.yml` eingebaut, aber nie gelaufen (Actions `startup_failure`) |
+
+## 14. Revisionsstand
+
+| Fassung | Datum | Änderung |
+|---|---|---|
+| 1.0.0 | 13.11.2026 | Erstfassung, Klauseln C-01 bis C-26, Konformitätsmatrix |
+| 1.0.1 | 13.11.2026 | F-T1 als geschlossen geführt (AD-FT1); keine Klausel geändert |
+
