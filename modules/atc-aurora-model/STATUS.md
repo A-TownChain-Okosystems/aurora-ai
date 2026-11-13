@@ -3,9 +3,11 @@
 | Bereich | Status | Beleg |
 |---|---|---|
 | Parameterhaushalt | `IMPLEMENTED` | `Config`, `Breakdown`, `param_count`, gepruefte Arithmetik; Sollwert 5 868 800 (B-18, A + F1 vom 11.11.2026) |
-| Lokale Pruefung | `TESTED` | 61 Tests (inkl. Messfall, `#[ignore]`), `cargo test` gruen, clippy `-D warnings` sauber, fmt sauber |
+| Lokale Pruefung | `TESTED` | 69 Tests plus ein `#[ignore]`-Messfall, `cargo test` gruen, clippy `-D warnings` sauber, fmt sauber (13.11.2026) |
 | Vorwaertslauf (B-19, B-20) | `IMPLEMENTED` | `forward`, `Weights`, RoPE, kausale Multi-Head-Attention, gebundener Kopf |
 | Artefakt (B-21) | `IMPLEMENTED` | `write`/`read` gegen `ATC-AI-LLM-002` v1.2.0, AT-01…AT-35 grün |
+| Differenzierbarer Vorwaertslauf (P4) | `IMPLEMENTED` | `graph::forward_graph`, Logits gleich `forward` (1e-4 relativ), Gradient gegen Finitedifferenz |
+| Dekodierung (P4) | `IMPLEMENTED` | `decode::generate`, argmax, reproduzierbar, Kontextgrenze beachtet |
 | `CI_VERIFIED` | **offen** | Actions starten nicht, solange die Commit-Herkunft unverifiziert ist |
 | `E2E_VERIFIED` | **offen** | kein Lauf im Gesamtsystem |
 
@@ -109,7 +111,25 @@ Einbettung braucht einen eigenen Ausgabekopf `lm_head`. Dazu kommen der
 Ressourcenerschöpfungsschutz (Abschnitt 8.1) und sechs zusätzliche Testfälle
 (AT-29 bis AT-34, zusammen 34).
 
+## P4: differenzierbarer Lauf und Dekodierung
+
+`graph::forward_graph` baut denselben Baum als Rechengraph: Einbettung,
+RMSNorm, Q/K/V, RoPE, kopfweise kausale Attention, kopfweise
+Ausgabeprojektion (Summe statt Zusammenfuegen), SwiGLU, abschliessende Norm,
+gebundener oder eigener Kopf. Die Parameter sind Blattknoten in der kanonischen
+Tensorfolge (`Weights::tensors`), damit der Gradientenindex der Parameterindex
+ist. Geprueft: Gleichheit mit `forward` fuer gebundene und nicht gebundene
+Einbettung, Gleichheit der Parameterformen, Gradient fuer jeden Parameter,
+Richtungsableitung gegen die Finitedifferenz des **unabhaengigen**
+Vorwaertslaufs, Budgetrueckgabe nach `clear`, dieselben Grenzen wie `forward`.
+
+`decode::generate` ist `argmax` ueber die letzte Logitzeile, ein
+Vorwaertslauf je Schritt, ohne KV-Cache. Das ist die kleinste inferenzfaehige
+Form, nicht die spaetere Laufzeit.
+
 ## Nicht enthalten
 
-Training (M-06), KV-Cache, Sampler, die Implementierung des Dateiformats `.atcm`
-(der Vertrag steht in `ATC-AI-LLM-002`, der Code fehlt noch). Diese Teile sind hier weder angefangen noch vorgetaeuscht.
+Training (M-06, eigenes Crate `atc-aurora-train`), KV-Cache, Batching im
+Vorwaertslauf, Sampling ausser `argmax`, die Implementierung des Dateiformats
+`.atcm` (der Vertrag steht in `ATC-AI-LLM-002`, der Code fehlt noch). Diese Teile
+sind hier weder angefangen noch vorgetaeuscht.
