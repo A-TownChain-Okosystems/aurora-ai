@@ -94,7 +94,7 @@ struct Cursor<'a> {
     at: usize,
 }
 
-impl<'a> Cursor<'a> {
+impl Cursor<'_> {
     fn need(&self, len: usize) -> Result<(), TrainError> {
         if self.at + len > self.bytes.len() {
             return Err(TrainError::CorruptState { what: "truncated" });
