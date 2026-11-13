@@ -7,7 +7,7 @@
 | Trainingsschleife | `IMPLEMENTED` | `Trainer::step` / `fit`, Mittelung im Graphen, Begrenzung optional |
 | Bewertung | `IMPLEMENTED` | `evaluate`: Verlust, Perplexitaet, Trefferquote |
 | Pruefpunkte | `IMPLEMENTED` | ATCM plus `AURST001`, externer Digest-Anker, Register nach Schritt |
-| Lokale Pruefung | `TESTED` | 15 Tests gruen (nightly-2026-08-01), clippy `-D warnings` sauber, fmt sauber |
+| Lokale Pruefung | `TESTED` | 15 Tests gruen auf **stable 1.83.0** (Gegenprobe nightly 1.99 ebenfalls gruen), clippy `-D warnings` sauber, fmt sauber |
 | `CI_VERIFIED` | **offen** | Actions starten nicht, solange die Commit-Herkunft unverifiziert ist |
 | `E2E_VERIFIED` | **offen** | kein Lauf im Gesamtsystem, keine Laufzeitbindung (P8) |
 
