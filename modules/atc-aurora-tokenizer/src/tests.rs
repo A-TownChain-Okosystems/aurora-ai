@@ -307,9 +307,9 @@ fn b_17_manipulierte_merge_tabelle_wird_abgelehnt() {
     // Auch mit passendem Digest bleibt die Tabelle strukturell falsch:
     // die Merge-Bytes stimmen dann nicht mehr.
     let manipulierter_digest = sha256::sha256_hex(manipuliert_bytes.as_bytes());
-    assert_eq!(
+    assert_code(
         Bpe::from_canonical(manipuliert_bytes.as_bytes(), &manipulierter_digest),
-        Err(Error::Malformed("Merge-Bytes stimmen nicht"))
+        "E-13",
     );
 }
 
@@ -317,10 +317,7 @@ fn b_17_manipulierte_merge_tabelle_wird_abgelehnt() {
 fn b_17_kaputte_kopfzeile_wird_abgelehnt() {
     let kaputt = b"ATC-BPE 2\nvocab 256\nmerges 0\n".to_vec();
     let digest = sha256::sha256_hex(&kaputt);
-    assert_eq!(
-        Bpe::from_canonical(&kaputt, &digest),
-        Err(Error::Malformed("Kopfzeile"))
-    );
+    assert_code(Bpe::from_canonical(&kaputt, &digest), "E-01");
 }
 
 #[test]
@@ -341,4 +338,255 @@ fn vokabular_und_digest_haengen_zusammen() {
     assert_ne!(klein.digest_hex(), gross.digest_hex());
     assert_eq!(klein.vocab_size(), 300);
     assert_eq!(gross.vocab_size(), 380);
+}
+
+// --------------------------------------- Artefakte für die Vertragsprüfungen
+
+fn ist_code(err: &Error, code: &str) -> bool {
+    matches!(err, Error::Malformed(text) if text.starts_with(code))
+}
+
+fn assert_code(res: Result<Bpe, Error>, code: &str) {
+    match res {
+        Err(err) if ist_code(&err, code) => {}
+        other => panic!("erwartet {code}, war {other:?}"),
+    }
+}
+
+fn assert_abgewiesen(res: Result<Bpe, Error>) {
+    assert!(res.is_err(), "Artefakt haette abgewiesen werden muessen");
+}
+
+fn als_bytes(zeilen: &[String]) -> Vec<u8> {
+    let mut text = String::new();
+    for zeile in zeilen {
+        text.push_str(zeile);
+        text.push('\n');
+    }
+    text.into_bytes()
+}
+
+/// Bytes plus der dazugehoerige Digest: die Strukturpruefung wird getestet, nicht
+/// die Digestpruefung.
+fn lade(zeilen: &[String]) -> Result<Bpe, Error> {
+    let bytes = als_bytes(zeilen);
+    let digest = sha256::sha256_hex(&bytes);
+    Bpe::from_canonical(&bytes, &digest)
+}
+
+fn zeilen(canon: &str) -> Vec<String> {
+    canon.lines().map(String::from).collect()
+}
+
+/// Basisartefakt (256 Byte-Token, keine Merges) plus frei gewaehlte Zusatzzeilen.
+fn handartefakt(zusatz_tokens: &[&str], merges: &[&str]) -> Vec<String> {
+    let mut zeilen: Vec<String> = Vec::new();
+    zeilen.push(String::from("ATC-BPE 1"));
+    zeilen.push(alloc::format!(
+        "vocab {}",
+        BASE_VOCAB_SIZE + zusatz_tokens.len()
+    ));
+    for id in 0..BASE_VOCAB_SIZE {
+        zeilen.push(alloc::format!("{id} {id:02x}"));
+    }
+    for (i, token) in zusatz_tokens.iter().enumerate() {
+        zeilen.push(alloc::format!("{} {token}", BASE_VOCAB_SIZE + i));
+    }
+    zeilen.push(alloc::format!("merges {}", merges.len()));
+    for merge in merges {
+        zeilen.push(String::from(*merge));
+    }
+    zeilen
+}
+
+fn basis() -> Vec<String> {
+    zeilen(&Bpe::base().canonical())
+}
+
+// ------------------------------------- Klauseln C-03 bis C-24 (ATC-AI-LLM-004)
+
+#[test]
+fn c_03_zeichensatz_und_cr_werden_abgewiesen() {
+    let mut bytes = als_bytes(&basis());
+    // CRLF statt LF
+    bytes = bytes
+        .iter()
+        .flat_map(|b| {
+            if *b == b'\n' {
+                alloc::vec![b'\r', b'\n']
+            } else {
+                alloc::vec![*b]
+            }
+        })
+        .collect();
+    let digest = sha256::sha256_hex(&bytes);
+    assert_code(Bpe::from_canonical(&bytes, &digest), "E-18");
+
+    // Nicht-ASCII
+    let mut bytes = als_bytes(&basis());
+    let stelle = bytes.len() / 2;
+    bytes[stelle] = 0xC3;
+    let digest = sha256::sha256_hex(&bytes);
+    assert_code(Bpe::from_canonical(&bytes, &digest), "E-18");
+}
+
+#[test]
+fn c_05_fehlendes_abschliessendes_lf_ist_nicht_kanonisch() {
+    let mut bytes = als_bytes(&basis());
+    assert_eq!(bytes.pop(), Some(b'\n'));
+    let digest = sha256::sha256_hex(&bytes);
+    assert_code(Bpe::from_canonical(&bytes, &digest), "E-16");
+}
+
+#[test]
+fn c_06_doppeltes_leerzeichen_wird_abgewiesen() {
+    let mut zeilen = basis();
+    zeilen[2] = String::from("0  00");
+    assert_abgewiesen(lade(&zeilen));
+}
+
+#[test]
+fn c_07_ueberzaehlige_zeile_wird_abgewiesen() {
+    let mut zeilen = basis();
+    zeilen.push(String::from("kommentar"));
+    assert_code(lade(&zeilen), "E-15");
+}
+
+#[test]
+fn c_09_token_ids_muessen_fortlaufend_sein() {
+    let mut zeilen = basis();
+    zeilen.swap(2, 3);
+    assert_code(lade(&zeilen), "E-05");
+}
+
+#[test]
+fn c_10_grossbuchstaben_im_hexfeld_werden_abgewiesen() {
+    let mut zeilen = basis();
+    zeilen[2] = String::from("0 0A");
+    assert_code(lade(&zeilen), "E-07");
+}
+
+#[test]
+fn c_11_basisidentitaet_wird_geprueft() {
+    let mut zeilen = basis();
+    zeilen[2] = String::from("0 01");
+    assert_code(lade(&zeilen), "E-06");
+}
+
+#[test]
+fn c_13_merge_zeile_mit_zwei_feldern_wird_abgewiesen() {
+    let mut zeilen = handartefakt(&["6162"], &["97 98 256"]);
+    let letzte = zeilen.len() - 1;
+    zeilen[letzte] = String::from("97 98");
+    assert_code(lade(&zeilen), "E-10");
+}
+
+#[test]
+fn c_14_merge_anzahl_passt_nicht_zum_vokabular() {
+    let mut zeilen = handartefakt(&["6162"], &["97 98 256"]);
+    let kopf = zeilen.len() - 2;
+    zeilen[kopf] = String::from("merges 0");
+    assert_code(lade(&zeilen), "E-09");
+}
+
+#[test]
+fn c_15_merge_ids_muessen_fortlaufend_sein() {
+    let zeilen = handartefakt(&["6162"], &["97 98 257"]);
+    assert_code(lade(&zeilen), "E-11");
+}
+
+#[test]
+fn c_16_vorwaertsverweis_wird_abgewiesen() {
+    let zeilen = handartefakt(&["6162"], &["97 256 256"]);
+    assert_code(lade(&zeilen), "E-12");
+}
+
+#[test]
+fn c_17_doppeltes_paar_wird_abgewiesen() {
+    let zeilen = handartefakt(&["6162", "6162"], &["97 98 256", "97 98 257"]);
+    assert_code(lade(&zeilen), "E-14");
+}
+
+#[test]
+fn c_18_reihenfolge_aendert_den_digest() {
+    // Dieselben Paare, dieselben Bytes, andere Reihenfolge.
+    let a = Bpe::from_canonical(
+        &als_bytes(&handartefakt(
+            &["6162", "616263"],
+            &["97 98 256", "256 99 257"],
+        )),
+        &sha256::sha256_hex(&als_bytes(&handartefakt(
+            &["6162", "616263"],
+            &["97 98 256", "256 99 257"],
+        ))),
+    )
+    .expect("A ist gueltig");
+    let b = Bpe::from_canonical(
+        &als_bytes(&handartefakt(
+            &["6263", "616263"],
+            &["98 99 256", "97 256 257"],
+        )),
+        &sha256::sha256_hex(&als_bytes(&handartefakt(
+            &["6263", "616263"],
+            &["98 99 256", "97 256 257"],
+        ))),
+    )
+    .expect("B ist gueltig");
+    assert_ne!(a.digest_hex(), b.digest_hex());
+}
+
+#[test]
+fn c_20_fuehrende_null_wird_abgewiesen() {
+    let mut zeilen = basis();
+    zeilen[1] = String::from("vocab 0256");
+    assert_code(lade(&zeilen), "E-02");
+}
+
+#[test]
+fn c_22_digestformat_wird_geprueft() {
+    let bytes = als_bytes(&basis());
+    let digest = sha256::sha256_hex(&bytes);
+    let gross = digest.to_uppercase();
+    assert_code(Bpe::from_canonical(&bytes, &gross), "E-17");
+    assert_code(Bpe::from_canonical(&bytes, &digest[..63]), "E-17");
+    assert_code(
+        Bpe::from_canonical(&bytes, &alloc::format!("{digest} ")),
+        "E-17",
+    );
+}
+
+#[test]
+fn c_23_digest_vergleich_ist_exakt() {
+    let bytes = als_bytes(&basis());
+    let digest = sha256::sha256_hex(&bytes);
+    let mut verfaelscht: Vec<char> = digest.chars().collect();
+    verfaelscht[0] = if verfaelscht[0] == 'a' { 'b' } else { 'a' };
+    let verfaelscht: String = verfaelscht.into_iter().collect();
+    assert_eq!(
+        Bpe::from_canonical(&bytes, &verfaelscht),
+        Err(Error::DigestMismatch)
+    );
+}
+
+#[test]
+fn c_24_digest_vor_struktur() {
+    // Strukturell kaputte Datei, aber mit dem Digest der kaputten Bytes: die
+    // Struktur wird geprueft. Mit dem Digest der heilen Bytes: nur der Digest.
+    let heil = als_bytes(&basis());
+    let heiler_digest = sha256::sha256_hex(&heil);
+    let mut kaputt = heil.clone();
+    kaputt[0] = b'X';
+    assert_eq!(
+        Bpe::from_canonical(&kaputt, &heiler_digest),
+        Err(Error::DigestMismatch),
+        "Digest wird vor der Struktur geprueft"
+    );
+}
+
+#[test]
+fn vertragliche_reihenfolge_der_fehlerklassen() {
+    // Digestformat vor Digest: ein Artefakt mit kaputtem Digestformat und
+    // falschem Digest meldet das Format, nicht den Mismatch.
+    let bytes = als_bytes(&basis());
+    assert_code(Bpe::from_canonical(&bytes, "nicht-hex"), "E-17");
 }
