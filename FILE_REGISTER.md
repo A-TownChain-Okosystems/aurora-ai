@@ -16,16 +16,18 @@
 
 > **Stand-Vermerk 13.11.2026 (M-04 Tokenizer):** neun Dateien ergaenzt — Crate `modules/atc-aurora-tokenizer` (`Cargo.toml`, `Cargo.lock`, `README.md`, `STATUS.md`, `src/{lib,error,sha256,bpe,tests}.rs`); zwei Verzeichnisse. Damit 524 Dateien, 63 Verzeichnisse, `.rs` 58.
 
+> **Stand-Vermerk 13.11.2026 (K-T1):** eine Datei ergaenzt — `docs/specs/ATC-AI-LLM-004-TOKENIZER-ARTIFACT-CONTRACT.md`. Damit 525 Dateien, 63 Verzeichnisse, `.md` 94.
+
 ---
 
 ## Zusammenfassung
 
 | Metrik | Wert |
 |--------|------|
-| **Total Dateien** | 524 |
+| **Total Dateien** | 525 |
 | **Verzeichnisse** | 63 |
 | **.tsx** | 157 |
-| **.md** | 93 |
+| **.md** | 94 |
 | **.atc** | 80 |
 | **.rs** | 58 |
 | **.ts** | 43 |
@@ -39,6 +41,10 @@
 | **.yml** | 7 |
 | **.py** | 6 |
 | **.lock** | 3 |
+| **.txt** | 3 |
+| **.css** | 1 |
+| **.example** | 1 |
+| **.html** | 1 |
 | **.txt** | 3 |
 | **.css** | 1 |
 | **.example** | 1 |
@@ -102,6 +108,7 @@
 - `docs/specs/ATC-AI-LLM-001-C-T2.6-MESSPROTOKOLL.md`
 - `docs/specs/ATC-AI-LLM-002-ATCM-ARTIFACT-CONTRACT.md`
 - `docs/specs/ATC-AI-LLM-003-ARTIFACT-PROVENANCE.md`
+- `docs/specs/ATC-AI-LLM-004-TOKENIZER-ARTIFACT-CONTRACT.md`
 - `docs/specs/ATC-AI-LOC-001-LOCALIZATION.md`
 - `docs/specs/ATC-AI-MEM-001-MEMORY-SECURITY.md`
 - `docs/specs/ATC-AI-S2-001-S2-CONTROLS.md`
