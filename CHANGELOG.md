@@ -1,5 +1,17 @@
 # Changelog
 
+## 2026-11-13 — Modellbezeichnung `Aurora-LLM-1B (Prototyp)`
+
+- **Zielmodell benannt:** `Aurora-LLM-1B (Prototyp)`, Entwicklungsstatus
+  `PROTOTYPE`, festgehalten in `ATC-AI-LLM-001` **1.6.1**, Abschnitt 7.2.1. Die
+  Bezeichnung `1B` ist ein Modellname, kein gerundeter Ersatz für die Parameterzahl.
+- **Exakte Größe bleibt technisch bindend:** 1 036 077 056 Parameter, `d_ff` 5632.
+  Der Name ersetzt die Zahl nicht; bei Profiländerungen wird die Zahl neu
+  nachgerechnet, nicht aus dem Namen abgeleitet.
+- **Reihenfolge unverändert:** P1 Tokenizer zuerst abschließen, P2 Autograd danach,
+  Training erst nach P1 und P2. K4, K5, K6 und Ref-1 bleiben unangetastet; kein Code,
+  keine Parameterzählung, kein Test geändert.
+
 ## 2026-11-13 — 1B-Zielprofil 1 036 077 056, B-18-Dokumentationsdrift geschlossen
 
 - **B-18-Dokumentationsdrift geschlossen.** `modules/atc-aurora-model/STATUS.md`
