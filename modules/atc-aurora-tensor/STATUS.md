@@ -3,18 +3,31 @@
 | Bereich | Status | Beleg |
 |---|---|---|
 | M-03 Implementierung | `IMPLEMENTED` | Rechengraph, Rückwärtspass, Akkumulation, transaktionaler Fehlerpfad |
-| Frischer Klon / Tests | `TESTED` | 53 Tests grün aus frischem Klon am 11.11.2026 |
+| Frischer Klon / Tests | `TESTED` | 61 Tests gruen (53 bis M-03, 8 fuer die P4-Operationen) am 13.11.2026 |
 | Lokale technische Prüfung | nachgewiesen | clippy 0 Warnungen, rustfmt sauber, Bare-Metal-Build grün, Register-Invariante Exit 0 |
 | `CI_VERIFIED` | **offen** | alle Workflow-Läufe `startup_failure` ohne Job, siehe Abschnitt Nachweise |
 | `E2E_VERIFIED` | **offen** | kein Lauf im Gesamtsystem; M-05/M-06 existieren noch nicht |
 | Mirror-Integration | `IN_SYNC` | `sync_modules.py --check` aus frischem Mirror-Klon: Exit 0, 437 von 437 Scope-Dateien byte-identisch |
-| K6 (LayerNorm, GELU, Dropout, Embedding) | `RESIDUAL` | bewusst nicht in M-03, eigene Contract-Prüfung nötig |
+| K6 (LayerNorm, GELU, Dropout, Embedding) | `RESIDUAL` | LayerNorm, GELU, Dropout bewusst nicht in M-03; **Embedding seit P4 implementiert** (`gather`), Rest offen |
 | Git-Identität | `BLOCKED` | E-Mail des Kontos unbestätigt, `git push` 403, Git-Data-API 403 |
 | Performance-Referenz (T2.6) | `BLOCKED_EXTERNAL` | keine qualifizierte Maschine (K3) |
 
 `CI_VERIFIED` wird ausdrücklich nicht beansprucht: push-getriggerte Workflows
 scheitern derzeit am unbestätigten GitHub-Konto. `TESTED` heißt hier lokal
 ausgeführt, nicht in CI bestätigt.
+
+## P4-Ergaenzung: drei Operationen mit Ableitung
+
+Fuer die Modellkette (M-05/M-06) sind `gather` (Einbettungs-Lookup),
+`slice_cols` (Spaltenblock) und `rope` (Rotation je Kopf) ergaenzt worden. Jede
+hat einen Finitedifferenz-Test gegen die f64-Referenz
+(`src/tests_model_ops.rs`), und `AUTOGRAD-CONTRACT.md` fuehrt sie in Abschnitt
+2.1.1. `cos` und `sin` sind Blattknoten ohne Gradientenpflicht; ein Test haelt
+fest, dass sie keinen Gradienten bekommen.
+
+Dabei geschlossen: `Graph::cross_entropy` gab den verworfenen Vorwaertsgradienten
+nicht ins Budget zurueck. Der Befund kam aus `p4_graph_gibt_budget_zurueck` in
+M-05 und ist dort dauerhaft geprueft.
 
 ## P2-Bedingungen nach Blueprint Kapitel 4
 
