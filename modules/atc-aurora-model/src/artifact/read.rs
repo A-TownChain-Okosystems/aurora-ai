@@ -180,7 +180,9 @@ impl<'a> Artifact<'a> {
     pub fn tensor_f32(&self, index: usize) -> Option<Vec<f32>> {
         let bytes = self.tensor_bytes(index)?;
         let mut out = Vec::with_capacity(bytes.len() / 4);
-        for chunk in bytes.as_chunks::<4>().0 {
+        // `chunks_exact` statt `as_chunks` (bis 1.87 instabil): beide liefern
+        // genau die vollstaendigen Vierergruppen und ignorieren den Rest.
+        for chunk in bytes.chunks_exact(4) {
             out.push(f32::from_le_bytes([chunk[0], chunk[1], chunk[2], chunk[3]]));
         }
         Some(out)
