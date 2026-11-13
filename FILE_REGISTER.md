@@ -18,34 +18,32 @@
 
 > **Stand-Vermerk 13.11.2026 (K-T1):** eine Datei ergaenzt — `docs/specs/ATC-AI-LLM-004-TOKENIZER-ARTIFACT-CONTRACT.md`. Damit 525 Dateien, 63 Verzeichnisse, `.md` 94.
 
+> **Stand-Vermerk 13.11.2026 (AD-FT1 / P1-C):** elf Dateien ergaenzt — Crate `modules/atc-aurora-digest` (Manifest, Lock, README, STATUS, `src/lib.rs`, `tests/vectors.rs`, `tests/vectors.txt`), Cross-Crate-Tests in Model und Tokenizer, `ATC-AI-DIGEST-001`, `AD-FT1`. Dazu fuenf Verzeichnisse. Damit 536 Dateien, 68 Verzeichnisse, `.rs` 62, `.md` 98.
+
 ---
 
 ## Zusammenfassung
 
 | Metrik | Wert |
 |--------|------|
-| **Total Dateien** | 525 |
-| **Verzeichnisse** | 63 |
+| **Total Dateien** | 536 |
+| **Verzeichnisse** | 68 |
 | **.tsx** | 157 |
-| **.md** | 94 |
+| **.md** | 98 |
 | **.atc** | 80 |
-| **.rs** | 58 |
+| **.rs** | 62 |
 | **.ts** | 43 |
 | **.js** | 17 |
 | **.cjs** | 11 |
 | **.json** | 11 |
+| **.toml** | 9 |
 | **.yaml** | 9 |
 | **(keine)** | 8 |
-| **.toml** | 8 |
 | **.gitignore** | 7 |
 | **.yml** | 7 |
 | **.py** | 6 |
-| **.lock** | 3 |
-| **.txt** | 3 |
-| **.css** | 1 |
-| **.example** | 1 |
-| **.html** | 1 |
-| **.txt** | 3 |
+| **.lock** | 4 |
+| **.txt** | 4 |
 | **.css** | 1 |
 | **.example** | 1 |
 | **.html** | 1 |
@@ -99,9 +97,11 @@
 - `docs/audits/AURORA-CHATGPT-SCOPE-SOURCE-AUDIT.md`
 - `docs/aurora-swarm-orchestration.md`
 - `docs/decisions/AD-B18-PARAMETERHAUSHALT.md`
+- `docs/decisions/AD-FT1-DIGEST-SSOT.md`
 - `docs/decisions/AD-K6-ROPE-BASE.md`
 - `docs/measurements/2026-11-11-artifact-decode-cost.md`
 - `docs/specs/ATC-AI-CAP-001-CAPABILITY-TOKENS.md`
+- `docs/specs/ATC-AI-DIGEST-001-DIGEST-API-CONTRACT.md`
 - `docs/specs/ATC-AI-LLM-001-A-REF1-IMPLEMENTATION-ENVELOPE.md`
 - `docs/specs/ATC-AI-LLM-001-AURORA-FOUNDATION-MODEL.md`
 - `docs/specs/ATC-AI-LLM-001-B-P1-P2-BLUEPRINT.md`
@@ -486,6 +486,13 @@
 - `modules/atc-aurora-core/src/result_collector.rs`
 - `modules/atc-aurora-core/src/state.rs`
 - `modules/atc-aurora-core/src/task_scheduler.rs`
+- `modules/atc-aurora-digest/Cargo.lock`
+- `modules/atc-aurora-digest/Cargo.toml`
+- `modules/atc-aurora-digest/README.md`
+- `modules/atc-aurora-digest/STATUS.md`
+- `modules/atc-aurora-digest/src/lib.rs`
+- `modules/atc-aurora-digest/tests/vectors.rs`
+- `modules/atc-aurora-digest/tests/vectors.txt`
 - `modules/atc-aurora-localization/Cargo.lock`
 - `modules/atc-aurora-localization/Cargo.toml`
 - `modules/atc-aurora-localization/README.md`
@@ -533,6 +540,7 @@
 - `modules/atc-aurora-model/src/tests.rs`
 - `modules/atc-aurora-model/src/tests_forward.rs`
 - `modules/atc-aurora-model/src/weights.rs`
+- `modules/atc-aurora-model/tests/digest_vectors.rs`
 - `modules/atc-aurora-runtime/.gitignore`
 - `modules/atc-aurora-runtime/ARCHITECTURE.md`
 - `modules/atc-aurora-runtime/CHANGELOG.md`
@@ -570,6 +578,7 @@
 - `modules/atc-aurora-tokenizer/src/lib.rs`
 - `modules/atc-aurora-tokenizer/src/sha256.rs`
 - `modules/atc-aurora-tokenizer/src/tests.rs`
+- `modules/atc-aurora-tokenizer/tests/digest_vectors.rs`
 - `schemas/aurora-action-request.schema.yaml`
 - `schemas/memory/capability.schema.json`
 - `schemas/memory/federation_handshake.schema.json`
