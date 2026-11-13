@@ -63,12 +63,37 @@ Testfall B-01 bis B-24 geprüft, keine kommt in der Ref-1-Konfiguration vor
 | LayerNorm | nicht implementiert | Konfiguration nutzt RMSNorm; zwei Normen wären zwei Semantiken | **K6** |
 | GELU | nicht implementiert | Konfiguration nutzt SwiGLU; keine Ableitung ohne Testfall | **K6** |
 | Dropout | nicht implementiert | Referenzwert 0,0, also Identität; ein Gradient für die Identität wäre eine leere Zusage | **K6** |
-| Embedding-Lookup | nicht implementiert | braucht die Modellschicht (M-05, P3); ohne sie kein sinnvoller Test | **K6** |
+| Embedding-Lookup | **implementiert (P4)** | brauchte die Modellschicht (M-05); seit P4 als `gather` mit Ableitung und Finitedifferenz-Test vorhanden | – |
 
 Das ist eine **offene Entscheidung für den Owner**, keine erledigte Lücke: entweder
 werden die vier in P2 nachgezogen (dann brauchen sie Testfälle, denn ohne
 Finitedifferenz ist eine Ableitung eine Behauptung), oder der P2-Absatz wird auf
 die API-Fläche eingeengt.
+
+### 2.1.1 Ergaenzung P4: drei Operationen fuer die Modellkette
+
+Der Verbund aus M-05 und M-06 braucht drei Operationen, die in der Tabelle oben
+fehlten. Sie sind ergaenzt, jede mit Finitedifferenz-Test in
+`src/tests_model_ops.rs`, und sie aendern keine bestehende Ableitung:
+
+| Operation | Rang | Backward | Begruendung | Pruefung |
+|---|---|---|---|---|
+| `gather` | Tabelle 2, Ausgabe 2 | ja | Einbettung zieht Zeilen; mehrfach gelesene Zeilen summieren (B-12) | `p4_gather_*` |
+| `slice_cols` | 2 | ja | Kopfzerlegung von `q`, `k`, `v` und `wo` ohne Zusammenfuege-Operation | `p4_slice_*` |
+| `rope` | 2 | ja | Positionskodierung; Ableitung ist die Rotation um `-angle` | `p4_rope_*` |
+
+`cos` und `sin` sind Blattknoten ohne Gradientenpflicht; ein Test haelt fest,
+dass sie keinen Gradienten bekommen. Der Grundsatz aus 2.2 gilt unveraendert:
+es gibt weiterhin keinen generischen Rueckfall.
+
+### 2.1.2 Befund P4: `cross_entropy` gab Budget nicht zurueck
+
+Der Vorwaertspass von `Graph::cross_entropy` holte den Gradienten der
+Einzelfunktion (`softmax - target`) nur zur Pruefung von B-08 und legte ihn weg,
+ohne die reservierten Bytes freizugeben. Der Graph nahm beim Aufraeumen weniger
+zurueck als er genommen hatte. Gefunden durch `p4_graph_gibt_budget_zurueck` in
+M-05, behoben durch ein `budget.release` mit der Groesse des verworfenen
+Puffers.
 
 ### 2.2 Regel gegen Wildwuchs
 
