@@ -256,7 +256,7 @@ den ein Vokabular hätte geprüft werden können.
 |---|---|
 | Vokabular einfrieren | erst nach P1-E (Benchmark auf dem P1-Zielkorpus) |
 | Digest-Autorität | **geschlossen** (AD-FT1, 13.11.2026): SHA-256 kommt aus `atc-aurora-digest`, Vertrag `ATC-AI-DIGEST-001`. C-21 bis C-23 bleiben unverändert, sie beschreiben die Eingabe, nicht die Implementierung |
-| Rust-CI | F-T2: Job in `test-suite.yml` eingebaut, aber nie gelaufen (Actions `startup_failure`) |
+| Rust-CI | F-T2: Job in `test-suite.yml` eingebaut, aber nie gelaufen (Actions `startup_failure`). Ein früherer Rust-Workflow (`rust-module-validation.yml`) ist aus dem Baum verschwunden, bei GitHub aber noch registriert |
 
 ## 14. Revisionsstand
 
