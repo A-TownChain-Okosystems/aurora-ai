@@ -86,33 +86,29 @@ Beide stehen im Artefaktformat als Felder, damit ein Modell seine Numerik selbst
 deklariert: der Leser prüft sie gegen das erwartete Profil und lehnt Abweichungen
 ab, statt still falsch zu rechnen.
 
-## Befund zu B-18
+## B-18: entschieden und belegt
 
-Das Blueprint nennt fuer B-18 den Sollwert **5 771 776**. Die Ableitung aus der
-eingefrorenen Konfiguration (K4 Vokabular 4096, K5 `d_ff` 704, sechs Bloecke,
-geteilte Einbettung, keine Bias-Terme) ergibt **5 868 800**, ohne die
-abschliessende Norm **5 868 544**.
+B-18 ist am 11.11.2026 mit **A + F1** geschlossen: Sollwert **5 868 800**, K5 bleibt
+(`d_ff` 704), die abschliessende Norm zaehlt mit
+(`P = L(4d^2 + 3 d d_ff + 2d) + V d + d`). Der Test
+`b_18_parameterzahl_der_referenz_ist_abgeleitet` prueft die Zerlegung gegen genau diese
+Summe, `b_18_historischer_stand_ist_dokumentiert` haelt fest, woher die alte Zahl kommt.
 
-Differenz: **97 024** beziehungsweise **96 768** Elemente. Das ist keine
-Rundung und keine Frage der Zaehlweise, sondern eine offene Entscheidung: der
-Sollwert und die Architektur passen nicht zueinander. Der Test
-`b_18_blueprint_sollwert_weicht_von_der_ableitung_ab` haelt die Abweichung fest,
-damit sie nicht stillschweigend verschwindet.
+Die aeltere Zahl **5 771 776** aus dem Blueprint ist der Stand **vor** der
+K5-Entscheidung und wird nicht geglaettet. Die Ableitung aus der eingefrorenen
+Konfiguration (K4 Vokabular 4096, K5 `d_ff` 704, sechs Bloecke, geteilte Einbettung,
+keine Bias-Terme) ergibt 5 868 800, ohne die abschliessende Norm 5 868 544. Differenz
+zur alten Zahl: **97 024** beziehungsweise **96 768** Elemente.
 
-Bis der Owner entscheidet, gilt: die Implementierung folgt der Architektur, nicht
-dem Sollwert. Ein Test, der 5 771 776 erzwingen wuerde, waere entweder falsch
-oder wuerde eine unbekannte Architekturaenderung verstecken.
-
-Die Differenz laesst sich zerlegen: 97 024 = 379 x 256, ohne die abschliessende
-Norm 96 768 = 6 x 63 Zeilen. Sie entspricht damit genau der abschliessenden Norm
-plus 63 Zeilen je Block, also `d_ff` 683 statt 704. Mit `d_ff` 683 und ohne
-abschliessende Norm ergibt die Ableitung exakt 5 771 776, und 683 ist gerade
-aufgerundetes 8/3 x 256. Der Sollwert ist damit belegt die Zahl **vor** der K5-Entscheidung: der Blueprint
-nennt in §6 selbst `d_ff` 683 oder 704 als offenen Punkt, und 683 gegen 704 sind
-genau 96 768 Parameter, also 1,68 Prozent. Die Modellspezifikation nennt in
-Abschnitt 7.1.1 nach K5 5 868 544 aus der Formel
-`P = L(4d^2 + 3 d d_ff + 2d) + V d`. Diese Formel zaehlt die abschliessende Norm
-allerdings nicht mit; mit ihr sind es 5 868 800, und so rechnet dieses Crate.
+Die Differenz laesst sich zerlegen: 97 024 = 379 x 256, ohne die abschliessende Norm
+96 768 = 6 x 63 Zeilen. Sie entspricht damit genau der abschliessenden Norm plus 63
+Zeilen je Block, also `d_ff` 683 statt 704. Mit `d_ff` 683 und ohne abschliessende Norm
+ergibt die Ableitung exakt 5 771 776, und 683 ist gerade aufgerundetes 8/3 x 256. Der
+Sollwert ist damit belegt die Zahl **vor** K5: der Blueprint nennt in §6 selbst `d_ff`
+683 oder 704 als offenen Punkt, und 683 gegen 704 sind genau 96 768 Parameter, also
+1,68 Prozent. Die Modellspezifikation nennt in Abschnitt 7.1.1 nach K5 5 868 544 aus
+der Formel `P = L(4d^2 + 3 d d_ff + 2d) + V d`; diese Formel zaehlt die abschliessende
+Norm nicht mit, mit ihr sind es 5 868 800, und so rechnet dieses Crate.
 
 Entscheidungsvorlage mit Rechenweg, Suchraum, zwei exakten Aufloesungen und drei
 Optionen: [`docs/decisions/AD-B18-PARAMETERHAUSHALT.md`](../../docs/decisions/AD-B18-PARAMETERHAUSHALT.md).
