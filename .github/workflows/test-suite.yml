@@ -75,3 +75,50 @@ jobs:
           git add .atc/evidence/evidence.yaml
           git commit -m "chore(evidence): bound_commit + test_run aktualisiert (SCR-0086) [skip ci]" || echo "nichts zu committen"
           git push
+
+  rust:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Toolchain auf stable festlegen
+        run: |
+          set -euo pipefail
+          rustup toolchain install stable --profile minimal -c rustfmt -c clippy
+          rustup default stable
+          rustc --version
+          cargo --version
+      # Kein Root-Workspace: jedes Crate unter modules/ ist ein eigenes Paket und
+      # wird einzeln geprueft. Ein Fehler in einem Crate laesst den Job scheitern,
+      # aber erst nachdem alle Crates gelaufen sind, damit der Report vollstaendig
+      # ist (set +e je Gate, Gesamtergebnis am Ende).
+      - name: cargo fmt --check (jedes Crate)
+        run: |
+          set -euo pipefail
+          FAIL=0
+          for manifest in modules/*/Cargo.toml; do
+            d="$(dirname "$manifest")"
+            echo "=== fmt $d"
+            (cd "$d" && cargo fmt --check) || { echo "FMT FAILED in $d"; FAIL=1; }
+          done
+          exit $FAIL
+      - name: cargo clippy --all-targets -- -D warnings (jedes Crate)
+        run: |
+          set -euo pipefail
+          FAIL=0
+          for manifest in modules/*/Cargo.toml; do
+            d="$(dirname "$manifest")"
+            echo "=== clippy $d"
+            (cd "$d" && cargo clippy --all-targets -- -D warnings) || { echo "CLIPPY FAILED in $d"; FAIL=1; }
+          done
+          exit $FAIL
+      - name: cargo test (jedes Crate)
+        run: |
+          set -euo pipefail
+          FAIL=0
+          for manifest in modules/*/Cargo.toml; do
+            d="$(dirname "$manifest")"
+            echo "=== test $d"
+            (cd "$d" && cargo test --quiet) || { echo "TEST FAILED in $d"; FAIL=1; }
+          done
+          exit $FAIL
