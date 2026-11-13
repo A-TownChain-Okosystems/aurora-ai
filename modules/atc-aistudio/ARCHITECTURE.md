@@ -1,7 +1,9 @@
 # ARCHITECTURE.md — atc-aistudio
+>
 > Copyright © Michael Wroblewski / A-TownChain-Okosystems. Apache-2.0 lizenziert — siehe LICENSE
 
 ## File Tree
+
 ```tree
 ├── .env.example
 ├── .gitignore
