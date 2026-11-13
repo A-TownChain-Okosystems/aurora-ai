@@ -32,3 +32,5 @@ pub use tensor::{Dtype, Tensor, BYTES_PER_ELEMENT, DTYPE};
 mod tests;
 #[cfg(test)]
 mod tests_autograd;
+#[cfg(test)]
+mod tests_model_ops;
