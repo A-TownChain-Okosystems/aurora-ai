@@ -6,12 +6,11 @@
 
 This contains everything you need to run your app locally.
 
-View your app in AI Studio: https://ai.studio/apps/7546bfc1-4139-434e-aef9-3c24e6578bb2
+View your app in AI Studio: <https://ai.studio/apps/7546bfc1-4139-434e-aef9-3c24e6578bb2>
 
 ## Run Locally
 
 **Prerequisites:**  Node.js
-
 
 1. Install dependencies:
    `npm install`
@@ -20,4 +19,5 @@ View your app in AI Studio: https://ai.studio/apps/7546bfc1-4139-434e-aef9-3c24e
    `npm run dev`
 
 ## Abhängigkeiten
+
 - [`A-TownChain-Okosystems/atc-backend`](https://github.com/A-TownChain-Okosystems/a-townchain-os/tree/main/src/modules/atc-backend)
