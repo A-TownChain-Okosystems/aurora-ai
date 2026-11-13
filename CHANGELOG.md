@@ -1,5 +1,32 @@
 # Changelog
 
+## 2026-11-13 — AD-FT1 Digest-Autorität, P1-C Rust-CI-Job
+
+- **Neu: `atc-aurora-digest` v1.0.0** als einzige SHA-256-Autorität. Streaming-API ist
+  die normative Form, keine Abhängigkeit, kein `unsafe`, `no_std` plus `alloc` für Hex.
+  `atc-aurora-model` und `atc-aurora-tokenizer` enthalten keine eigene
+  Hash-Implementierung mehr, ihre Module `artifact::sha256` und `sha256` sind
+  Re-Exporte. Abhängigkeitsrichtung strikt Model → Digest und Tokenizer → Digest.
+- **Neu: `ATC-AI-DIGEST-001` v1.0.0** (Digest-API-Vertrag, Klauseln D-01 bis D-12,
+  Status `proposed`) und **`AD-FT1`** als Entscheidungsakte mit Befund, verworfene
+  Alternativen und Konsequenzen.
+- **Nachweis nicht zirkulär:** `modules/atc-aurora-digest/tests/vectors.txt` enthält 301
+  Sollwerte aus python hashlib über ein festes Byte-Muster; das Digest-Crate prüft sie
+  selbst, Model und Tokenizer prüfen sie gegen ihre eigenen Fassaden
+  (`tests/digest_vectors.rs`). Dazu FIPS-180-4-Beispiele und Chunking-Invarianz über 11
+  Schrittweiten.
+- **P1-C: Rust-Job in `.github/workflows/test-suite.yml`.** Kein Root-Workspace, jedes
+  Crate unter `modules/` einzeln; `cargo fmt --check`, `cargo clippy --all-targets -- -D
+  warnings`, `cargo test` je Crate; Toolchain stable; ein Fehler in einem Crate lässt
+  den Job scheitern, nachdem alle Crates gelaufen sind.
+- **Teststand:** digest 1 + 4, model 61 (1 ignoriert) + 1 Cross-Crate, tokenizer 33 + 1
+  Cross-Crate, tensor 53, core 47, memory 9, agents 4, localization 4 = 212 + 2 = 214
+  grüne Tests, 0 rot, auf stable und (Tokenizer, Model) nightly.
+- **`ATC-AI-LLM-004` 1.0.1:** F-T1 als geschlossen geführt, keine Klausel geändert,
+  Lifecycle-Status bleibt `proposed`.
+- **Weiter offen:** `CI_VERIFIED` (Actions `startup_failure`, F-T2), P1-E
+  Vokabular-Benchmark (braucht den P1-Zielkorpus).
+
 ## 2026-11-13 — K-T1 normativ geschlossen, P1-B Vertragskonformität
 
 - **Neu: `ATC-AI-LLM-004` v1.0.0 „Kanonisches Tokenizer-Artefaktformat (K-T1)"**,
