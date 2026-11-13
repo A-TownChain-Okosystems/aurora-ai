@@ -10,7 +10,9 @@
 
 pub mod artifact;
 pub mod config;
+pub mod decode;
 pub mod forward;
+pub mod graph;
 pub mod params;
 pub mod weights;
 
@@ -18,6 +20,8 @@ pub mod weights;
 mod tests;
 #[cfg(test)]
 mod tests_forward;
+#[cfg(test)]
+mod tests_graph;
 
 pub use artifact::{
     read, write, Artifact, ReadError, ReadOptions, TensorDesc, TrustAnchor, WriteError,
