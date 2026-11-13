@@ -64,7 +64,7 @@ unzulässig (E-18). CRLF ist damit keine Variante, sondern ein Fehler.
 
 **C-04** Die Zeilenfolge ist bindend:
 
-```
+```text
 ATC-BPE 1
 vocab <n>
 <id> <hexbytes>            × n
@@ -264,4 +264,3 @@ den ein Vokabular hätte geprüft werden können.
 |---|---|---|
 | 1.0.0 | 13.11.2026 | Erstfassung, Klauseln C-01 bis C-26, Konformitätsmatrix |
 | 1.0.1 | 13.11.2026 | F-T1 als geschlossen geführt (AD-FT1); keine Klausel geändert |
-
