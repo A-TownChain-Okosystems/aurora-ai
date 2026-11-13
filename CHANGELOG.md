@@ -1,5 +1,28 @@
 # Changelog
 
+## 2026-11-13 — Formatierungsbereinigung, vollständiges blockierendes Format-Gate
+
+- **Rein mechanischer `cargo fmt`-Commit** für `atc-aurora-agents`,
+  `atc-aurora-localization` und `atc-aurora-memory`: 10 Dateien, +295/−77 Zeilen.
+  Keine fachliche Änderung, keine API-Änderung, keine Teständerung außer Formatierung.
+- **Nachweis der Semantikfreiheit:**
+  - rustdoc-JSON-Vergleich vorher/nachher (nightly, `--output-format json`): die
+    Item-Multisets sind identisch — agents 358, localization 283, memory 190 Items,
+    inklusive Signaturen, Feldern, Varianten und Trait-Item-Zahlen.
+  - Testnamen vorher/nachher identisch (17 Tests in den drei Crates), Ergebnisse
+    unverändert grün.
+  - Die einzigen Ordnungsänderungen sind rustfmt-Defaults (`reorder_modules`,
+    `reorder_imports`) in den `lib.rs`-Dateien. Item- und `use`-Reihenfolge ist in Rust
+    namensauflösungsneutral; das einzige ordnungsabhängige Konstrukt (`macro_rules!
+    impl_agent!` in `agents.rs`) liegt dateilokal und wurde nicht bewegt.
+- **Vollständiges Format-Gate aktiviert:** `.github/workflows/test-suite.yml` prüft
+  jetzt `cargo fmt --check` blockierend für alle acht Crates. Die Ausnahmebehandlung
+  (blockierend nur auf geänderten Dateien, Vollprüfung als Warnung) ist entfernt.
+- **Teststand unverändert 218 grün, 0 rot:** agents 4, core 47, digest 5,
+  localization 4, memory 9, model 62, tensor 53, tokenizer 34. Clippy `-D warnings`
+  für alle acht Crates sauber, `cargo fmt --check` für alle acht grün.
+- `ATC-AI-LLM-004` bleibt `proposed`; `CI_VERIFIED` bleibt offen (F-T2).
+
 ## 2026-11-13 — AD-FT1 Digest-Autorität, P1-C Rust-CI-Job
 
 - **Neu: `atc-aurora-digest` v1.0.0** als einzige SHA-256-Autorität. Streaming-API ist
