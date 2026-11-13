@@ -12,6 +12,8 @@
 > **Stand-Vermerk 11.11.2026 (B-18):** eine Datei ergänzt — `docs/decisions/AD-B18-PARAMETERHAUSHALT.md` (Entscheidungsvorlage, neues Verzeichnis `docs/decisions`). Damit 501 Dateien, 59 Verzeichnisse, `.md` 86.
 > **Stand-Vermerk 11.11.2026 (M-05):** sieben Dateien ergänzt — Crate `modules/atc-aurora-model` (`Cargo.toml`, `README.md`, `STATUS.md`, `src/{lib,config,params,tests}.rs`). Damit 500 Dateien, 58 Verzeichnisse, `.md` 85, `.rs` 45, `.toml` 7.
 > **Stand-Vermerk 11.11.2026 (M-03):** fünf Dateien ergänzt — `AUTOGRAD-CONTRACT.md` sowie `src/autograd.rs`, `src/layers.rs`, `src/loss.rs`, `src/tests_autograd.rs`. Damit 493 Dateien und `.rs` 41.
+> **Stand-Vermerk 13.11.2026 (Markdown-Qualitaet):** eine Datei ergaenzt — `.github/workflows/markdownlint.yml` (Caller des zentralen reusable Workflows). Dazu 41 Dateien strukturell nach der Org-Policy bereinigt (263 auf 0 Treffer, markdownlint-cli2 0.19.1). Damit 537 Dateien, 68 Verzeichnisse, `.md` 98, `.yml` 8.
+
 > **Standards:** ATC-STD-201 · Evidence: `.atc/evidence/evidence.yaml`
 >
 > **Stand-Vermerk 13.11.2026 (M-04 Tokenizer):** neun Dateien ergaenzt — Crate `modules/atc-aurora-tokenizer` (`Cargo.toml`, `Cargo.lock`, `README.md`, `STATUS.md`, `src/{lib,error,sha256,bpe,tests}.rs`); zwei Verzeichnisse. Damit 524 Dateien, 63 Verzeichnisse, `.rs` 58.
@@ -26,7 +28,7 @@
 
 | Metrik | Wert |
 |--------|------|
-| **Total Dateien** | 536 |
+| **Total Dateien** | 537 |
 | **Verzeichnisse** | 68 |
 | **.tsx** | 157 |
 | **.md** | 98 |
@@ -40,7 +42,7 @@
 | **.yaml** | 9 |
 | **(keine)** | 8 |
 | **.gitignore** | 7 |
-| **.yml** | 7 |
+| **.yml** | 8 |
 | **.py** | 6 |
 | **.lock** | 4 |
 | **.txt** | 4 |
@@ -63,6 +65,7 @@
 - `.github/workflows/codeql.yml`
 - `.github/workflows/dependency-review.yml`
 - `.github/workflows/governance-ci.yml`
+- `.github/workflows/markdownlint.yml`
 - `.github/workflows/sdk.yml`
 - `.github/workflows/test-suite.yml`
 - `.gitignore`
