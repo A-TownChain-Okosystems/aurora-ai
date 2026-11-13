@@ -73,7 +73,7 @@ Detached, byte-genau, little endian, **152 Byte** fest:
 | 64 | 8 | `issued_at` | Unix-Sekunden, **nicht signiert**, nur Anzeige |
 | 72 | 2 | `signer_len` | 1..=16, Zeichen `[a-z0-9_.-]` |
 | 74 | 14 | `signer` | Name des Unterzeichners, NUL-aufgefüllt, **nicht signiert** |
-| 88 | 64 | `signature` | `r || s`, je 32 Byte, big endian |
+| 88 | 64 | `signature` | `r \|\| s`, je 32 Byte, big endian |
 
 Feldsumme: 4+2+2+4+4+8+32+2+2+4+8+2+14 = **88**, plus 64 Byte Signatur = **152**.
 Reservierte Felder müssen 0 sein; alles andere ist `BadSignatureContainer`.
@@ -108,7 +108,7 @@ gültig erscheinen (Befund F-07).
 |---|---|
 | Kurve | secp256k1, kanonische Parameter |
 | Nonce | RFC 6979, HMAC-SHA256, deterministisch; keine Zufallsnonce, keine Wiederverwendung |
-| Signaturkodierung | fest `r || s`, je 32 Byte, big endian; **kein DER** (eine Signatur hat genau eine Darstellung) |
+| Signaturkodierung | fest `r \|\| s`, je 32 Byte, big endian; **kein DER** (eine Signatur hat genau eine Darstellung) |
 | Low-S | verbindlich: `s ≤ n/2`. `s > n/2` wird abgelehnt, nicht normalisiert |
 | Bereich | `r, s ∈ [1, n-1]`, sonst `SignatureInvalid` |
 | Öffentlicher Schlüssel | komprimiert SEC1, 33 Byte (`0x02`/`0x03`); entpackt muss der Punkt auf der Kurve liegen, nicht der Punkt im Unendlichen sein; unkomprimiert (65 Byte) und Hybridformen werden abgelehnt |
