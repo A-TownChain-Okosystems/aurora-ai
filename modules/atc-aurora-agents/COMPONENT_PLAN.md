@@ -9,11 +9,13 @@
 **Status:** 📋 GEPLANT
 
 **Schnittstellen:**
+
 - Eingabe: —
 - Ausgabe: —
 - Abhängigkeiten: —
 
 **Akzeptanzkriterien:**
+
 1. Datei existiert und parst mit ATCLang v0.3 Parser
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
@@ -25,11 +27,13 @@
 **Status:** 📋 GEPLANT
 
 **Schnittstellen:**
+
 - Eingabe: —
 - Ausgabe: —
 - Abhängigkeiten: —
 
 **Akzeptanzkriterien:**
+
 1. Datei existiert und parst mit ATCLang v0.3 Parser
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
@@ -41,11 +45,13 @@
 **Status:** 📋 GEPLANT
 
 **Schnittstellen:**
+
 - Eingabe: —
 - Ausgabe: —
 - Abhängigkeiten: —
 
 **Akzeptanzkriterien:**
+
 1. Datei existiert und parst mit ATCLang v0.3 Parser
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
@@ -57,11 +63,13 @@
 **Status:** 📋 GEPLANT
 
 **Schnittstellen:**
+
 - Eingabe: —
 - Ausgabe: —
 - Abhängigkeiten: —
 
 **Akzeptanzkriterien:**
+
 1. Datei existiert und parst mit ATCLang v0.3 Parser
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
@@ -73,11 +81,13 @@
 **Status:** 📋 GEPLANT
 
 **Schnittstellen:**
+
 - Eingabe: —
 - Ausgabe: —
 - Abhängigkeiten: —
 
 **Akzeptanzkriterien:**
+
 1. Datei existiert und parst mit ATCLang v0.3 Parser
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
@@ -89,11 +99,13 @@
 **Status:** 📋 GEPLANT
 
 **Schnittstellen:**
+
 - Eingabe: —
 - Ausgabe: —
 - Abhängigkeiten: —
 
 **Akzeptanzkriterien:**
+
 1. Datei existiert und parst mit ATCLang v0.3 Parser
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
@@ -105,11 +117,13 @@
 **Status:** 📋 GEPLANT
 
 **Schnittstellen:**
+
 - Eingabe: —
 - Ausgabe: —
 - Abhängigkeiten: —
 
 **Akzeptanzkriterien:**
+
 1. Datei existiert und parst mit ATCLang v0.3 Parser
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
@@ -121,11 +135,13 @@
 **Status:** 📋 GEPLANT
 
 **Schnittstellen:**
+
 - Eingabe: —
 - Ausgabe: —
 - Abhängigkeiten: —
 
 **Akzeptanzkriterien:**
+
 1. Datei existiert und parst mit ATCLang v0.3 Parser
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
@@ -137,11 +153,13 @@
 **Status:** 📋 GEPLANT
 
 **Schnittstellen:**
+
 - Eingabe: —
 - Ausgabe: —
 - Abhängigkeiten: —
 
 **Akzeptanzkriterien:**
+
 1. Datei existiert und parst mit ATCLang v0.3 Parser
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
@@ -153,11 +171,13 @@
 **Status:** 📋 GEPLANT
 
 **Schnittstellen:**
+
 - Eingabe: —
 - Ausgabe: —
 - Abhängigkeiten: —
 
 **Akzeptanzkriterien:**
+
 1. Datei existiert und parst mit ATCLang v0.3 Parser
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
@@ -169,11 +189,13 @@
 **Status:** 📋 GEPLANT
 
 **Schnittstellen:**
+
 - Eingabe: —
 - Ausgabe: —
 - Abhängigkeiten: —
 
 **Akzeptanzkriterien:**
+
 1. Datei existiert und parst mit ATCLang v0.3 Parser
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
@@ -185,11 +207,13 @@
 **Status:** 📋 GEPLANT
 
 **Schnittstellen:**
+
 - Eingabe: —
 - Ausgabe: —
 - Abhängigkeiten: —
 
 **Akzeptanzkriterien:**
+
 1. Datei existiert und parst mit ATCLang v0.3 Parser
 2. Alle öffentlichen Funktionen haben Type-Signatures
 3. Modul ist im FILE_REGISTER.md eingetragen
