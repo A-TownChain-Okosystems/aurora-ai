@@ -39,6 +39,7 @@ request -> identity -> capability -> policy -> validation -> state change -> aud
 ## Non-claims
 
 This catalog does not claim:
+
 - every PC or smartphone is currently a memory node;
 - cross-device synchronization is currently implemented;
 - decentralized storage is currently implemented;
