@@ -1,5 +1,37 @@
 # Changelog
 
+## 2026-11-13 — P4: Trainingskette geschlossen (Autograd-Bruecke, Optimierer, Registry, Inferenz)
+
+- **Neu: `modules/atc-aurora-train` (M-06)** — Gradientenspeicher in kanonischer
+  Parameterfolge, Adam mit entkoppelter Gewichtsdaempfung (AdamW), Trainingsschleife,
+  Bewertung (Verlust, Perplexitaet, Trefferquote), Pruefpunktregister. 15 Tests.
+  Pruefpunkte bestehen aus dem ATCM-Artefakt mit externem Digest-Anker und dem
+  Zustandsformat `AURST001` mit eigener Pruefsumme; ein veraenderter Teil wird
+  abgelehnt, ein fortgesetzter Lauf ergibt denselben naechsten Schritt.
+- **Neu im Tensor-Kern: drei Graphoperationen mit Ableitung** — `gather`
+  (Einbettungs-Lookup, Streuung auf gelesene Zeilen), `slice_cols` (Kopfzerlegung)
+  und `rope` (Rotation je Kopf, Ableitung als Rotation um `-angle`). Jede gegen die
+  zentrale Finitedifferenz geprueft; `cos`/`sin` bleiben gradientenfrei. 61 Tests
+  (vorher 53).
+- **Neu im Modell: differenzierbarer Vorwaertslauf und Dekodierung** —
+  `atc_aurora_model::graph::forward_graph` verdrahtet denselben Baum als Graphen;
+  die Logits stimmen mit `forward` auf 1e-4 relativ ueberein (gebundene und nicht
+  gebundene Einbettung). `decode::generate` ist die kleinste inferenzfaehige Form
+  (argmax, je Schritt ein Vorwaertslauf, kein KV-Cache). 69 Tests (1 ignoriert).
+- **Zwei Befunde geschlossen.** `Graph::cross_entropy` reservierte den verworfenen
+  Vorwaertsgradienten im Budget und gab ihn nie zurueck; behoben und dauerhaft
+  geprueft (`p4_graph_gibt_budget_zurueck`). `AUTOGRAD-CONTRACT.md` fuehrte
+  Einbettungs-Lookup, RoPE und Kopfzerlegung als offen (K6); jetzt implementiert und
+  im Contract dokumentiert, samt Befund zum Budget.
+- **Gradientennachweis ohne Selbstbestaetigung:** die Richtungsableitung des
+  Graphen wird gegen die zentrale Finitedifferenz des **unabhaengigen**
+  Vorwaertslaufs geprueft, nicht gegen den Graphen selbst.
+- **Teststand:** tensor 61, model 69 (+1 ignoriert), train 15, digest 5,
+  tokenizer 34 — 184 gruen, 0 rot. `cargo fmt --check` und clippy `-D warnings`
+  fuer alle fuenf Crates sauber (nightly-2026-08-01). `AD-P4` dokumentiert
+  Entscheidungen und offene Punkte.
+- `CI_VERIFIED` bleibt offen (F-T2); Actions enden weiterhin mit `startup_failure`.
+
 ## 2026-11-13 — Formatierungsbereinigung, vollständiges blockierendes Format-Gate
 
 - **Rein mechanischer `cargo fmt`-Commit** für `atc-aurora-agents`,
