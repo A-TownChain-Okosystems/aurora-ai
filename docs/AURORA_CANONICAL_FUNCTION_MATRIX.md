@@ -13,7 +13,7 @@ This document is the implementation contract for the Aurora AI platform. It does
 
 ## Canonical architecture
 
-```
+```text
 AI Governance
     ↓
 Identity / Access
@@ -41,7 +41,7 @@ Hardware
 
 ## Authority invariant
 
-```
+```text
 Model output
   → Agent proposal
   → Capability check
@@ -86,7 +86,7 @@ Model output MUST NOT directly grant capability, authorization, OS privilege, si
 
 Every implemented function is classified independently:
 
-```
+```text
 Architecture
   → Source Discovery
   → Implementation
@@ -100,7 +100,7 @@ Architecture
 
 The following are never interchangeable:
 
-```
+```text
 Error Evidence ≠ Finding Evidence ≠ Verification Evidence
 Source present ≠ Implemented
 Implemented ≠ Tested
@@ -129,7 +129,6 @@ CI Verified ≠ E2E Verified
 - Provider-specific inference, production-grade RAG, multimodal backends, full agent planning, blockchain signing execution, deployment automation and complete end-to-end verification remain separate implementation/evidence gates.
 
 No item in this document is a production-readiness claim.
-
 
 ## ChatGPT-comparable product scope mapping
 
