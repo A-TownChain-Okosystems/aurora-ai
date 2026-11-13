@@ -1,5 +1,40 @@
 # Changelog
 
+## 2026-11-13 — Stable Rust als Produktionsbasis (Nachtrag zu P4)
+
+- **Entscheidung des Eigentuemers:** Stable ist die regulaere Produktionsbasis,
+  Nightly nur fuer ausdruecklich begruendete Entwicklungsfunktionen. Variante
+  „Nightly festschreiben" (ein `rust-toolchain.toml` auf `nightly-2026-08-01`)
+  ist damit verworfen; es wird **keine** Toolchain-Datei angelegt.
+- **Vier instabile Bibliotheksfunktionen ersetzt, semantisch identisch:**
+  `n_heads.is_multiple_of(n_kv_heads)` → `%` (Model, `config.rs`),
+  `bytes.as_chunks::<4>()` → `bytes.chunks_exact(4)` (Model, `artifact/read.rs`),
+  `d_head.is_multiple_of(2)` / `cols.is_multiple_of(d_head)` → `%`
+  (Tensor, `autograd.rs`), `bytes.len().is_multiple_of(2)` → `%`
+  (Tokenizer, `bpe.rs`). Kein Ersatz durch eine eigene Hilfsimplementierung.
+- **Zwei Clippy-Befunde des Stable-Linters** (der Nightly-Linter 1.99 kennt sie
+  nicht mehr): `format!` je Byte in zwei Digest-Pruefungen → `write!` in einen
+  `String` (gleiche Ausgabe, `tests/digest_vectors.rs` und
+  `src/artifact/tests.rs`), entbehrliche Lifetime in `train::state::Cursor`.
+- **Nachweis mit Stable 1.83.0**, aus lokalem Klon: tokenizer 34, tensor 61,
+  model 70 (+1 ignoriert), train 15, digest 5 — **185 gruen, 0 rot**;
+  `cargo fmt --check` 5/5, clippy `-D warnings` 5/5. Gegenprobe mit
+  nightly-1.99.0: dieselben 185 gruen, fmt 5/5. Clippy `-D warnings` ist auf
+  Nightly **nicht** sauber, weil der dortige Linter `manual_is_multiple_of`
+  genau die instabile Methode verlangt, die hier entfernt wurde — das Gate ist
+  Stable, wie dokumentiert.
+- **Unveraendert:** Modellarchitektur, Tensorsemantik, Gradientenrechnung,
+  Pruefpunktformat (`ATCM` + `AURST001`), Testnamen und Testergebnisse.
+- **CI:** der Rust-Job in `test-suite.yml` bleibt auf `stable` (keine
+  Aenderung noetig, `rustup default stable`), untere geprueft Grenze ist 1.83.0.
+- **Offener Punkt, nicht Teil dieser Aenderung:** `atc-aurora-core` zieht
+  `getrandom 0.4.3`, das Cargo mit Edition-2024-Unterstuetzung verlangt; mit
+  Cargo 1.83 bricht der Download ab. Vor einer Stable-CI ueber alle acht Crates
+  zu entscheiden.
+- `CI_VERIFIED` bleibt offen (F-T2). Der Stand `a654387` bleibt als
+  dokumentierter historischer Verifikationsstand erhalten; diese Aenderung
+  erzeugt einen neuen HEAD, an den die Evidenz neu gebunden wird.
+
 ## 2026-11-13 — P4: Trainingskette geschlossen (Autograd-Bruecke, Optimierer, Registry, Inferenz)
 
 - **Neu: `modules/atc-aurora-train` (M-06)** — Gradientenspeicher in kanonischer
