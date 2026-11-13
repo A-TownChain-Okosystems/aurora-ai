@@ -1,5 +1,27 @@
 # Changelog
 
+## 2026-11-13 — K-T1 normativ geschlossen, P1-B Vertragskonformität
+
+- **Neu: `ATC-AI-LLM-004` v1.0.0 „Kanonisches Tokenizer-Artefaktformat (K-T1)"**,
+  Status `proposed`. Klauseln C-01 bis C-26: Zeichenvorrat (ASCII, LF), Feldreihenfolge,
+  Trennzeichen ohne Escape-Mechanismus, Token- und Merge-Darstellung, Sortierung und
+  Eindeutigkeit, Zahlenformate (0 oder `[1-9][0-9]*`), Digest über exakt die
+  Datei-Bytes als 64 Zeichen kleingeschriebenes Hex, Prüfreihenfolge in zehn Schritten,
+  Fehlerklassen E-01 bis E-18, Einfrieren der Fassung 1. §12 ist die
+  Konformitätsmatrix der Referenzimplementierung, alle Klauseln PASS.
+- **P1-B umgesetzt:** `from_canonical` folgt der Prüfreihenfolge. Neu durchgesetzt:
+  Basisidentität der Token 0..255 (E-06), Eindeutigkeit der Merge-Paare (E-14),
+  abschließendes LF als Kanonizitätsbedingung (E-16), CRLF und Nicht-ASCII (E-18),
+  strikte Dezimalfelder ohne führende Null (E-02/E-04/E-10), Hex nur kleingeschrieben
+  (E-07), Digestformat nur 64 Zeichen kleingeschriebenes Hex (E-17), Digestvergleich
+  exakt statt schreibweisen-tolerant. Kanonizität wird durch Re-Serialisierung
+  geprüft: der Import akzeptiert nie mehr als der Export erzeugt.
+- **Tests:** 33 grün auf stable und nightly (vorher 15), clippy `-D warnings` und fmt
+  sauber. Neu 18 Vertragsprüfungen, benannt nach Klausel.
+- **Unverändert:** K4, K5, K6, Ref-1, kein neues Root-Verzeichnis, keine
+  Zusatzabhängigkeit. Offen bleiben F-T1 (Digest-Autorität), F-T2 (Rust-CI-Job) und
+  P1-E (Vokabular-Benchmark auf dem P1-Zielkorpus).
+
 ## 2026-11-13 — §8 bleibt unverändert, Freigabestand festgehalten
 
 - **Keine Umnummerierung von `ATC-AI-LLM-001` §8** (Owner, 13.11.2026): P3 bleibt
