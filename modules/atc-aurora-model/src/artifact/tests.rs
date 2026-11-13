@@ -80,7 +80,14 @@ fn read_err(bytes: &[u8], cfg: Option<&Config>) -> ReadError {
 
 #[test]
 fn sha256_trifft_die_bekannten_werte() {
-    let hex = |d: [u8; 32]| -> String { d.iter().map(|b| format!("{b:02x}")).collect() };
+    let hex = |d: [u8; 32]| -> String {
+        use std::fmt::Write as _;
+        let mut s = String::with_capacity(64);
+        for b in d {
+            write!(s, "{b:02x}").unwrap();
+        }
+        s
+    };
     assert_eq!(
         hex(digest(b"")),
         "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
