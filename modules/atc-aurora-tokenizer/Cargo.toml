@@ -5,6 +5,8 @@ edition = "2021"
 license = "Apache-2.0"
 description = "Nativer Byte-Level-BPE-Tokenizer der Aurora-Implementierung (M-04 tokenizer): deterministisches Training, verlustfreier Rundlauf, digest-gebundenes Artefakt"
 
-# Keine Abhaengigkeit: weder `tokenizers` noch eine andere Fremdbibliothek im Pfad
-# (ATC-AI-LLM-001 §3.2). Vokabular und Merge-Tabelle werden hier erzeugt.
+# Keine Fremdbibliothek im Pfad: weder `tokenizers` noch eine andere (ATC-AI-LLM-001
+# §3.2). Vokabular und Merge-Tabelle entstehen hier. Die Pruefsumme kommt seit
+# AD-FT1 aus der gemeinsamen Digest-Autoritaet, nicht aus einer zweiten Kopie.
 [dependencies]
+atc-aurora-digest = { path = "../atc-aurora-digest" }
