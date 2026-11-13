@@ -3,6 +3,7 @@
 ## v1.0.0 — 2026-08-06
 
 ### Added
+
 - 17 ATCLang-Module (Stubs) erstellt
 - ARCHITECTURE.md mit Architektur-Baum
 - COMPONENT_PLAN.md mit 17 Komponenten
