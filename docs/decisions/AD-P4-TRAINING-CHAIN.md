@@ -101,6 +101,40 @@ Batching und Sampling gehoeren zu P8/`atc-aurora-runtime`. Der Nutzen ist der
 Nachweis, dass der inferenzfaehige Pfad derselbe `forward` ist, den B-19 und
 B-20 abdecken.
 
+### D6 — Produktionsbasis ist Stable, kein Nightly (Nachtrag 13.11.2026)
+
+Beim Verifizieren des P4-Stands zeigte sich, dass vier von fuenf Crates mit
+Stable 1.83.0 nicht bauen: `unsigned_is_multiple_of` (Model, Tensor, Tokenizer)
+und `slice_as_chunks` (Model) sind bis 1.87 instabile Bibliotheksfunktionen.
+Der Eigentuemer hat entschieden: **Stable ist die regulaere Produktionsbasis**,
+Nightly nur fuer ausdruecklich begruendete Entwicklungsfunktionen. Damit ist
+Variante 1 (Nightly festschreiben) verworfen.
+
+Umgesetzt, semantisch identisch:
+
+| Stelle | vorher | nachher |
+|---|---|---|
+| `model::config` | `n_heads.is_multiple_of(n_kv_heads)` | `n_heads % n_kv_heads != 0` (Nullpruefung steht davor) |
+| `model::artifact::read` | `bytes.as_chunks::<4>().0` | `bytes.chunks_exact(4)` (gleiche vollstaendige Vierergruppen) |
+| `tensor::autograd::rope` | `d_head.is_multiple_of(2)`, `cols.is_multiple_of(d_head)` | `d_head % 2 != 0`, `cols % d_head != 0` (`d_head == 0` steht davor) |
+| `tokenizer::bpe::parse_hex` | `bytes.len().is_multiple_of(2)` | `bytes.len() % 2 != 0` |
+
+Dazu zwei Clippy-Befunde, die nur mit dem Stable-Linter auftreten (der
+Nightly-Linter 1.99 kennt sie nicht mehr): `format!` je Byte in zwei
+Digest-Tests (jetzt `write!` in einen `String`, gleiche Ausgabe) und eine
+entbehrliche Lifetime in `train::state::Cursor`. Keine dieser Aenderungen
+beruehrt Modellarchitektur, Tensorsemantik, Gradientenrechnung oder das
+Pruefpunktformat.
+
+Konsequenz: kein `rust-toolchain.toml`, der CI-Job bleibt auf `stable`, die
+dokumentierte und geprueft untere Grenze ist **1.83.0**. Die fuenf Crates sind
+dort gruen (185 Tests).
+
+Offener Punkt, nicht Teil dieser Entscheidung: `atc-aurora-core` zieht
+`getrandom 0.4.3`, das Cargo mit Edition-2024-Unterstuetzung verlangt; mit
+Cargo 1.83 bricht schon der Download ab. Das betrifft nicht die P4-Kette, muss
+aber vor einer Stable-CI ueber alle acht Crates entschieden werden.
+
 ## 4. Konsequenzen
 
 - Ein Rueckwaertspass durch das Ref-1-Modell ist moeglich und numerisch belegt:
@@ -108,8 +142,8 @@ B-20 abdecken.
   (`p4_graph_gradient_gegen_finitedifferenz_der_richtung`).
 - Der Budgetbefund aus §2.3 ist behoben; `p4_graph_gibt_budget_zurueck` haelt ihn
   geschlossen.
-- Die Kette ist lokal gruen: Tensor 61, Model 69 (1 ignoriert), Training 15,
-  Digest 5, Tokenizer 34 Tests.
+- Die Kette ist lokal gruen: Tensor 61, Model 70 (1 ignoriert), Training 15,
+  Digest 5, Tokenizer 34 Tests — mit Stable 1.83.0 und mit Nightly 1.99.
 - **Nicht** belegt: Sprachqualitaet, ein Lauf auf Ref-1, Laufzeitbindung. Der
   Verlust sinkt auf einem winzigen Korpus; das ist ein Rechennachweis.
 - `CI_VERIFIED` bleibt offen (F-T2, unverifizierte Konto-E-Mail).
