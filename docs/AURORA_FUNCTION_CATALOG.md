@@ -79,7 +79,6 @@ For every function, complete the following fields before promoting its status be
 
 This inventory covers only files actually inspected during the current pass. It is intentionally conservative. It is not a complete recursive source-tree census, and absence in this table must not be interpreted as proof that a capability is absent elsewhere in the repository.
 
-
 ## ChatGPT-Comparable Functional Scope — Normative Specification Draft
 
 **Status:** SPECIFIED (target requirements only); repository implementation and verification status remain independent.  
