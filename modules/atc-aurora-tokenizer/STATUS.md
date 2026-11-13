@@ -5,7 +5,7 @@
 | Training (Byte-Level-BPE) | `IMPLEMENTED` | `Bpe::train`, Häufigkeit absteigend, Tie-Break lexikografisch kleinste Paarung, Abbruch bei Einmal-Paarungen |
 | Kodieren / Dekodieren | `IMPLEMENTED` | `encode` (Rang-Minimum zuerst, überlappungsfrei), `decode` (typisierter Fehler bei unbekannter ID) |
 | Artefakt / Digest | `IMPLEMENTED` | `canonical`, `digest_hex`, `from_canonical` mit Prüfung **vor** dem Parsen |
-| Lokale Prüfung | `TESTED` | 33 Tests grün (stable und nightly), clippy `-D warnings` sauber, fmt sauber |
+| Lokale Prüfung | `TESTED` | 33 Tests plus 1 Cross-Crate-Digest-Test grün (stable und nightly), clippy `-D warnings` sauber, fmt sauber |
 | `CI_VERIFIED` | **offen** | Actions endet mit `startup_failure` ohne Job, Step und Log |
 | `E2E_VERIFIED` | **offen** | kein Lauf im Gesamtsystem, kein trainierter Korpus |
 
