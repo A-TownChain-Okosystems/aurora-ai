@@ -20,7 +20,6 @@ Dieses Dokument ist P0 des Entwicklungsfahrplans. Es legt Architektur, Numerik,
 Determinismus, Artefaktformat, Phasengrenzen und Abnahmekriterien fest. Es
 enthält keinen Produktivcode und behauptet keine Implementierung.
 
-
 ## Revision 1.6.2 vom 2026-11-13: Abschnitt 8 bleibt unveraendert nummeriert
 
 Der Owner hat am 13.11.2026 entschieden: **keine Umnummerierung von Abschnitt 8.**
@@ -189,12 +188,10 @@ Lokalisierung. Das ist wertvoll und bleibt unangetastet.
 
 Stichwortsuche über alle `*.rs` des Repositories, Trefferzahl je Begriff:
 
-```text
-tensor 0 · matmul 0 · attention 0 · softmax 0 · transformer 0
-tokenizer 0 · vocab 0 · autograd 0 · gradient 0 · backward 0
-optimizer 0 · AdamW 0 · checkpoint 0 · logits 0 · rms_norm 0
-bf16 0 · f16 0 · embedding 1 (nur im Kommentar von vector_store.rs)
-```
+    tensor 0 · matmul 0 · attention 0 · softmax 0 · transformer 0
+    tokenizer 0 · vocab 0 · autograd 0 · gradient 0 · backward 0
+    optimizer 0 · AdamW 0 · checkpoint 0 · logits 0 · rms_norm 0
+    bf16 0 · f16 0 · embedding 1 (nur im Kommentar von vector_store.rs)
 
 Es gibt keine Tensoroperation, keine automatische Differenzierung, keinen
 Tokenizer, keine Transformer-Schicht, keine Trainingsschleife und keine
@@ -316,28 +313,24 @@ Referenzpfad grün ist.
 
 ### 5.1 Crate-Zuschnitt
 
-```text
-modules/atc-aurora-tensor/      Tensortyp, Speicher, Operationen, Autograd   (P2)
-modules/atc-aurora-tokenizer/   ATC Tokenizer: BPE, Vokabular, Korpus-Codec   (P1)
-modules/atc-aurora-model/       Transformer-Definition, Artefaktformat        (P3)
-modules/atc-aurora-train/       Optimierer, Trainingsschleife, Checkpoints   (P4/P5)
-modules/atc-aurora-runtime/     Inferenz, KV-Cache, Sampler                  (P8, heute leer)
-```
+    modules/atc-aurora-tensor/      Tensortyp, Speicher, Operationen, Autograd   (P2)
+    modules/atc-aurora-tokenizer/   ATC Tokenizer: BPE, Vokabular, Korpus-Codec   (P1)
+    modules/atc-aurora-model/       Transformer-Definition, Artefaktformat        (P3)
+    modules/atc-aurora-train/       Optimierer, Trainingsschleife, Checkpoints   (P4/P5)
+    modules/atc-aurora-runtime/     Inferenz, KV-Cache, Sampler                  (P8, heute leer)
 
 Bestehende Crates bleiben unverändert in ihrer Rolle: `atc-aurora-core` bleibt
 Orchestrierung und Autorisierung.
 
 ### 5.2 Abhängigkeitsrichtung
 
-```text
-atc-aurora-tokenizer     (keine Abhängigkeit zu Tensor)
-        │
-atc-aurora-tensor  ◄──  atc-aurora-model  ◄──  atc-aurora-train
-                              ▲
-                              └──────────────  atc-aurora-runtime
-                                                        ▲
-atc-aurora-core ──(nur über Provider-Vertrag, nicht über Tensoren)──┘
-```
+    atc-aurora-tokenizer     (keine Abhängigkeit zu Tensor)
+            │
+    atc-aurora-tensor  ◄──  atc-aurora-model  ◄──  atc-aurora-train
+                                  ▲
+                                  └──────────────  atc-aurora-runtime
+                                                            ▲
+    atc-aurora-core ──(nur über Provider-Vertrag, nicht über Tensoren)──┘
 
 Regeln:
 
@@ -368,26 +361,24 @@ Versionierung und wird von Fremdwerkzeugen gepflegt; ein eigenes Format erlaubt
 Digest-Bindung, Versionsprüfung und Ablehnung unbekannter Felder nach eigenem
 Vertrag.
 
-```text
-Header
-  magic           "ATCM"              4 Byte
-  format_version  u16                 = 1
-  flags           u16
-  reserved        u32                 = 0
-  manifest_len    u64
-  manifest_sha256 32 Byte
-Manifest (UTF-8 JSON, kanonisch serialisiert)
-  model_id, model_version
-  arch: decoder_only_transformer
-  config: d_model, n_layers, n_heads, n_kv_heads, d_ff, vocab_size,
-          max_context, rope_theta, norm_eps, tie_embeddings, mlp_kind
-  dtype, byte_order
-  tokenizer: id, version, vocab_sha256, merge_table_sha256
-  tensors: [{name, shape, dtype, offset, length, sha256}]
-  training: {step, tokens_seen, seed, dataset_manifest_sha256}
-  produced_by: {crate, crate_version, source_commit}
-Tensor-Block (ausgerichtet, Little Endian, row major)
-```
+    Header
+      magic           "ATCM"              4 Byte
+      format_version  u16                 = 1
+      flags           u16
+      reserved        u32                 = 0
+      manifest_len    u64
+      manifest_sha256 32 Byte
+    Manifest (UTF-8 JSON, kanonisch serialisiert)
+      model_id, model_version
+      arch: decoder_only_transformer
+      config: d_model, n_layers, n_heads, n_kv_heads, d_ff, vocab_size,
+              max_context, rope_theta, norm_eps, tie_embeddings, mlp_kind
+      dtype, byte_order
+      tokenizer: id, version, vocab_sha256, merge_table_sha256
+      tensors: [{name, shape, dtype, offset, length, sha256}]
+      training: {step, tokens_seen, seed, dataset_manifest_sha256}
+      produced_by: {crate, crate_version, source_commit}
+    Tensor-Block (ausgerichtet, Little Endian, row major)
 
 Verbindlich:
 
