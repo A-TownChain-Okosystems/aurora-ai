@@ -1,11 +1,11 @@
 ---
 document_id: ATC-AI-LLM-001
 title: Aurora Foundation Model (Aurora LLM): P0 Architektur und Spezifikation
-version: 1.5.0
+version: 1.6.0
 status: accepted
 owner: A-TownChain-Okosystems
 created: 2026-11-10
-updated: 2026-11-11
+updated: 2026-11-13
 standard: atc-standards
 layer: L2 (aurora-ai)
 security_class: S3
@@ -20,6 +20,18 @@ Dieses Dokument ist P0 des Entwicklungsfahrplans. Es legt Architektur, Numerik,
 Determinismus, Artefaktformat, Phasengrenzen und Abnahmekriterien fest. Es
 enthält keinen Produktivcode und behauptet keine Implementierung.
 
+
+## Revision 1.6.0 vom 2026-11-13: Zielprofil Aurora-1B als Zielzeile (nicht normativ)
+
+Der Owner hat am 13.11.2026 bestätigt: B-18 bleibt geschlossen (A + F1), das
+1B-Parameterprofil gilt mit **1 036 077 056** Parametern, `d_ff` = 5632 bleibt, und
+`V` = 4096 ist **Zielwert**, kein Normwert. Das Profil wird als Zielzeile neben
+Abschnitt 7.2 geführt (neuer Abschnitt 7.2.1).
+
+Das ist **keine** rückwirkende normative Spezifikation des bestehenden Ref-1-Modells:
+K4 (`V` = 4096 für Ref-1), K5 (`d_ff` = 704) und K6 (`rope_base` = 10 000) bleiben
+unverändert, und keine Zahl in den Abschnitten 7.1 und 7.2 ändert sich. Kein Code,
+keine Parameterzählung und kein Test wurde angefasst.
 
 ## Revision 1.5.0 vom 2026-11-11: `rope_base` normativ festgelegt (K6 entschieden)
 
@@ -440,6 +452,27 @@ P1-Zielkorpus, kein künstlicher Testkorpus.
 
 Diese Zahlen sind Entwicklungsziele. Sie sind keine Zusage erreichbarer
 Modellqualität.
+
+### 7.2.1 Zielprofil Aurora-1B (Zielzeile, nicht normativ)
+
+Ein eigenes Profil neben den Größen aus 7.2, nicht deren Ersatz. Es leitet sich aus
+derselben Formel ab und ändert Ref-1 nicht.
+
+| Parameter | Zielwert | Herkunft |
+|---|---|---|
+| Parameter (Formel aus 7.1) | **1 036 077 056** | nachgerechnet mit den Werten dieser Tabelle |
+| Transformer-Blöcke `L` | 20 | Zielprofil |
+| `d_model` | 2048 | Zielprofil |
+| Attention-Köpfe / Kopfbreite | 16 / 128 | Zielprofil, 16 · 128 = `d_model` |
+| `d_ff` | 5632 | Zielprofil, 8 · 704, also Vielfaches der Cache-Line-Ausrichtung aus K5 |
+| Vokabular `V` | 4096 als **Zielwert** | entscheidet der P1-Tokenizer-Benchmark, nicht diese Zeile |
+| Kontextziel, Präzision, Bereitstellung | offen | entscheiden P1 und der Rechenpfad |
+
+Zerlegung, nachgerechnet: Einbettung 8 388 608; je Block 51 384 320
+(4d² = 16 777 216, 3·d·d_ff = 34 603 008, 2d = 4 096), zwanzig Blöcke
+1 027 686 400; abschließende Norm 2 048. Summe 1 036 077 056, also 1,036 Milliarden.
+`V` = 4096 trägt davon 8 388 608 bei, 0,81 Prozent: die Vokabulargröße ist im
+Parameterhaushalt fast kostenlos und trotzdem die falsche Frage an dieser Stelle.
 
 ### 7.3 Rechenbedarf, damit die Skalierung eine Entscheidung bleibt und keine Hoffnung
 
