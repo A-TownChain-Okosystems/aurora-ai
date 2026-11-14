@@ -68,8 +68,12 @@ impl Config {
         if self.n_heads * self.d_head != self.d_model {
             return Err(RefusalReason::HeadDimMismatch);
         }
-        // `is_multiple_of` ist bis 1.87 instabil; `%` rechnet dasselbe. Die
-        // Nullpruefung oben schliesst den Teiler 0 vorher aus.
+        // `is_multiple_of` ist bis 1.87 instabil, deshalb steht hier `%`. Clippy
+        // schlaegt ab 1.87 die instabile Funktion vor; der Hinweis wird gezielt
+        // stummgeschaltet, damit die stabile Produktionsbasis (1.83) gilt und
+        // aeltere Clippy-Versionen den Lint-Namen nicht als unbekannt melden.
+        // Die Nullpruefung oben schliesst den Teiler 0 aus.
+        #[allow(unknown_lints, clippy::manual_is_multiple_of)]
         if self.n_kv_heads > self.n_heads || self.n_heads % self.n_kv_heads != 0 {
             return Err(RefusalReason::KvHeadMismatch);
         }
