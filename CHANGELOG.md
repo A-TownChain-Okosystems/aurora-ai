@@ -1,20 +1,26 @@
 # Changelog
 
-## 2026-11-11 — M-05: Parameterhaushalt entschieden, B-18 als offener Klärungsfall
+## 2026-11-11 nachgetragen — Korrektur meiner eigenen Veröffentlichung (14.11.2026)
 
-- **Owner-Entscheidung zu B-18:** Die aus K4/K5 abgeleitete Architektur ist maßgeblich.
-  Der Sollwert 5 771 776 wird nicht als Implementierungsvorgabe übernommen, aber auch nicht
-  als veraltet bezeichnet — seine Herleitung ist nicht nachgewiesen. Einstufung:
-  `INCONSISTENT / REQUIRES RECONCILIATION`. Dokument:
-  `docs/decisions/M-05-B18-PARAMETERHAUSHALT.md`.
-- **Zahlen:** 5 868 800 einschließlich abschließender Normierung, 5 868 544 ohne.
-  Abweichung zu B-18: 97 024 / 96 768 Elemente. Die Normierung erklärt 256, nicht die
-  restlichen 96 768. Regressionstest
-  `b_18_blueprint_sollwert_weicht_von_der_ableitung_ab` bleibt bestehen.
-- **Grenze:** getestet ist der Parameterhaushalt, nicht das Modell. Keine Aussage zu
-  Modellinferenz, Attention-Berechnung, Gewichtsspeicherung, Training,
-  Modellartefakt-Erzeugung.
-- **Status:** `IMPLEMENTED` / `TESTED`; `CI_VERIFIED` offen, `VERIFIED` offen.
+- **Was falsch lief:** Am 14.11. habe ich `README.md` und `STATUS.md` des Crates
+  `atc-aurora-model` mit einem Stand vom 11.11. ueberschrieben und dabei den
+  Fortschritt vom 13.11. (Vorwaertslauf, Gewichte, Artefakt, Graph, Dekodierung,
+  69 Tests) aus der Dokumentation entfernt. Zusaetzlich habe ich ein zweites
+  Entscheidungsdokument `docs/decisions/M-05-B18-PARAMETERHAUSHALT.md` angelegt,
+  das B-18 als offen fuehrte, obwohl B-18 am 11.11. durch **A + F1** geschlossen
+  wurde.
+- **Korrektur:** beide Dateien auf den Stand 8ff18a2 zurueckgefuehrt; das doppelte
+  Dokument wird geloescht. Massgeblich bleibt
+  `docs/decisions/AD-B18-PARAMETERHAUSHALT.md` (Sollwert 5 868 800, Formel
+  `P = L(4d^2 + 3 d d_ff + 2d) + V d + d`, Revision 1.4.0 in `ATC-AI-LLM-001-A`;
+  5 771 776 ist der Stand **vor** K5, also `d_ff` 683).
+- **Lehre:** vor dem Ueberschreiben einer Datei den Remote-Stand lesen und
+  vergleichen, nicht den lokalen. Ein Stand von vor drei Tagen ist keine
+  Aktualisierung.
+- **Unveraendert:** kein Code, kein Gewicht, kein Test. Die zwei Clippy-Befunde
+  (`config.rs` `%` statt `is_multiple_of`, `artifact/read.rs` `chunks_exact`) sind
+  gewollt und stammen aus der Stable-Entscheidung vom 13.11., nicht aus dieser
+  Korrektur.
 
 ## 2026-11-13 — Stable Rust als Produktionsbasis (Nachtrag zu P4)
 
