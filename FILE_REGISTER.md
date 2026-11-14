@@ -5,6 +5,7 @@
 > **Korrektur:** Die Fassung vom 2026-09-10 nannte 425 Dateien und war gegenüber dem Bestand veraltet (`*.rs` 16 statt 31, `*.md` 61 statt 78, `*.ts` 40 statt 43, sechs Workflow-Dateien fehlend).
 > **Zählweise:** Gezählt werden Blobs, also echte Dateien. Verzeichnisse zählen nicht mit. Der Baum enthält 59 Verzeichnisse zusätzlich.
 >
+> **Stand-Vermerk 11.11.2026 (M-05/B-18):** Entscheidungsdokument `docs/decisions/M-05-B18-PARAMETERHAUSHALT.md` ergänzt. Damit 557 Dateien, `.md` 102.
 > **Stand-Vermerk 13.11.2026 (P4 Trainingskette):** 19 Dateien ergaenzt — Crate `modules/atc-aurora-train` (Manifest, Lock, README, STATUS und neun `src`-Dateien), `modules/atc-aurora-model/src/{graph,decode,tests_graph}.rs`, `modules/atc-aurora-tensor/src/tests_model_ops.rs`, `modules/atc-aurora-tensor/Cargo.lock`, `docs/decisions/AD-P4-TRAINING-CHAIN.md`. Damit 556 Dateien, 70 Verzeichnisse, `.rs` 75, `.md` 101.
 > **Stand-Vermerk 11.11.2026 (K7/K6/Messung):** drei Dateien ergänzt — `docs/specs/ATC-AI-LLM-003-ARTIFACT-PROVENANCE.md`, `docs/decisions/AD-K6-ROPE-BASE.md`, `docs/measurements/2026-11-11-artifact-decode-cost.md`; ein Verzeichnis (`docs/measurements`). Damit 515 Dateien, 61 Verzeichnisse, `.md` 91.
 > **Stand-Vermerk 11.11.2026 (B-21 implementiert):** fünf Dateien ergänzt — `modules/atc-aurora-model/src/artifact/{mod,sha256,write,read,tests}.rs`. Damit 512 Dateien, 60 Verzeichnisse, `.rs` 53.
@@ -30,10 +31,10 @@
 
 | Metrik | Wert |
 |--------|------|
-| **Total Dateien** | 556 |
+| **Total Dateien** | 557 |
 | **Verzeichnisse** | 70 |
 | **.tsx** | 157 |
-| **.md** | 101 |
+| **.md** | 102 |
 | **.atc** | 80 |
 | **.rs** | 75 |
 | **.ts** | 43 |
@@ -105,6 +106,7 @@
 - `docs/decisions/AD-FT1-DIGEST-SSOT.md`
 - `docs/decisions/AD-K6-ROPE-BASE.md`
 - `docs/decisions/AD-P4-TRAINING-CHAIN.md`
+- `docs/decisions/M-05-B18-PARAMETERHAUSHALT.md`
 - `docs/measurements/2026-11-11-artifact-decode-cost.md`
 - `docs/specs/ATC-AI-CAP-001-CAPABILITY-TOKENS.md`
 - `docs/specs/ATC-AI-DIGEST-001-DIGEST-API-CONTRACT.md`
