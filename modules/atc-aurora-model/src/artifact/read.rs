@@ -180,10 +180,18 @@ impl<'a> Artifact<'a> {
     pub fn tensor_f32(&self, index: usize) -> Option<Vec<f32>> {
         let bytes = self.tensor_bytes(index)?;
         let mut out = Vec::with_capacity(bytes.len() / 4);
-        // `chunks_exact` statt `as_chunks` (bis 1.87 instabil): beide liefern
-        // genau die vollstaendigen Vierergruppen und ignorieren den Rest.
-        for chunk in bytes.chunks_exact(4) {
-            out.push(f32::from_le_bytes([chunk[0], chunk[1], chunk[2], chunk[3]]));
+        // Bewusst ohne `as_chunks` (bis 1.87 instabil) und ohne `chunks_exact`
+        // (Clippy schlaegt dafuer `as_chunks` vor): die Indexschleife liefert
+        // genau die vollstaendigen Vierergruppen und ignoriert den Rest.
+        let mut i = 0usize;
+        while i + 4 <= bytes.len() {
+            out.push(f32::from_le_bytes([
+                bytes[i],
+                bytes[i + 1],
+                bytes[i + 2],
+                bytes[i + 3],
+            ]));
+            i += 4;
         }
         Some(out)
     }
