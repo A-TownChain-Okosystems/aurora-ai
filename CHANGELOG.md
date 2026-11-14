@@ -1,5 +1,21 @@
 # Changelog
 
+## 2026-11-11 — M-05: Parameterhaushalt entschieden, B-18 als offener Klärungsfall
+
+- **Owner-Entscheidung zu B-18:** Die aus K4/K5 abgeleitete Architektur ist maßgeblich.
+  Der Sollwert 5 771 776 wird nicht als Implementierungsvorgabe übernommen, aber auch nicht
+  als veraltet bezeichnet — seine Herleitung ist nicht nachgewiesen. Einstufung:
+  `INCONSISTENT / REQUIRES RECONCILIATION`. Dokument:
+  `docs/decisions/M-05-B18-PARAMETERHAUSHALT.md`.
+- **Zahlen:** 5 868 800 einschließlich abschließender Normierung, 5 868 544 ohne.
+  Abweichung zu B-18: 97 024 / 96 768 Elemente. Die Normierung erklärt 256, nicht die
+  restlichen 96 768. Regressionstest
+  `b_18_blueprint_sollwert_weicht_von_der_ableitung_ab` bleibt bestehen.
+- **Grenze:** getestet ist der Parameterhaushalt, nicht das Modell. Keine Aussage zu
+  Modellinferenz, Attention-Berechnung, Gewichtsspeicherung, Training,
+  Modellartefakt-Erzeugung.
+- **Status:** `IMPLEMENTED` / `TESTED`; `CI_VERIFIED` offen, `VERIFIED` offen.
+
 ## 2026-11-13 — Stable Rust als Produktionsbasis (Nachtrag zu P4)
 
 - **Entscheidung des Eigentuemers:** Stable ist die regulaere Produktionsbasis,
