@@ -1,5 +1,22 @@
 # Changelog
 
+## 2026-11-14 — Clippy-Gate des Crates `atc-aurora-model` wieder gruen
+
+- **Was rot war:** `cargo clippy --all-targets -- -D warnings` meldete zwei Befunde,
+  beide Folgen der Stable-Entscheidung vom 13.11.: `n_heads % n_kv_heads != 0`
+  (`config.rs`, Lint `manual_is_multiple_of`) und `chunks_exact(4)`
+  (`artifact/read.rs`, Lint `chunks_exact_to_as_chunks`). Clippy schlug jeweils die
+  bis 1.87 instabile Funktion vor, also genau das, was am 13.11. ersetzt wurde.
+- **Behebung ohne Rueckfall auf instabile API:** in `read.rs` eine Indexschleife
+  statt `chunks_exact` (gleiche Semantik, letzte unvollstaendige Gruppe bleibt
+  ignoriert); in `config.rs` bleibt `%` stehen, der Lint-Hinweis wird an der Stelle
+  mit Begruendung stummgeschaltet (`#[allow(unknown_lints,
+  clippy::manual_is_multiple_of)]`), damit die stabile Produktionsbasis 1.83 gilt
+  und aeltere Clippy-Versionen den Lint-Namen nicht als unbekannt melden.
+- **Nachweis (lokal, Stable):** clippy `-D warnings` Exit 0, 69 Tests gruen,
+  `cargo fmt --check` sauber, `cargo build` sauber. **TESTED**, kein `CI_VERIFIED`.
+- **Unveraendert:** keine Architektur, kein Gewicht, kein Testfall, keine Zahl.
+
 ## 2026-11-11 nachgetragen — Korrektur meiner eigenen Veröffentlichung (14.11.2026)
 
 - **Was falsch lief:** Am 14.11. habe ich `README.md` und `STATUS.md` des Crates
