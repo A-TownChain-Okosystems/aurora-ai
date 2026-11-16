@@ -32,7 +32,7 @@
     "dompurify": "^3.4.17",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
-    "esbuild": "^0.25.0",
+    "esbuild": "^0.28.2",
     "express": "^5.2.1",
     "firebase": "^12.19.0",
     "firebase-admin": "^14.4.0",
