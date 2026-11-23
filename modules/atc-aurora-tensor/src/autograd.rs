@@ -915,7 +915,10 @@ fn rope_forward(
     }
     let (rows, cols) = (x.shape()[0], x.shape()[1]);
     // `is_multiple_of` ist bis 1.87 instabil; `%` rechnet dasselbe. `d_head == 0`
-    // steht vorn, damit der Teiler nicht 0 sein kann.
+    // steht vorn, damit der Teiler nicht 0 sein kann. Clippy schlaegt ab 1.87 die
+    // instabile Funktion vor; der Hinweis wird gezielt stummgeschaltet, damit die
+    // stabile Produktionsbasis (1.83) gilt.
+    #[allow(unknown_lints, clippy::manual_is_multiple_of)]
     if d_head == 0 || d_head % 2 != 0 || cols % d_head != 0 {
         return Err(TensorError::InvalidArgument {
             what: "rope: d_head",
