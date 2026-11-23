@@ -378,6 +378,9 @@ fn parse_decimal(field: &str, code: &'static str) -> Result<u32, Error> {
 /// C-10: Hex kleingeschrieben, gerade Stellenzahl, mindestens zwei Stellen.
 fn parse_hex(text: &str) -> Result<Vec<u8>, Error> {
     let bytes = text.as_bytes();
+    // `is_multiple_of` ist bis 1.87 instabil; `%` rechnet dasselbe. Der
+    // Clippy-Hinweis wird gezielt stummgeschaltet (stabile Basis 1.83).
+    #[allow(unknown_lints, clippy::manual_is_multiple_of)]
     if bytes.is_empty() || bytes.len() % 2 != 0 {
         return Err(Error::Malformed(E_HEX));
     }
