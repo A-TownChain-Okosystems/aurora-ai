@@ -1,12 +1,12 @@
 ---
 document_id: ATC-AI-LLM-002
 title: Artefaktvertrag ATC Model Artifact v1 (.atcm) — Layout, Digest, Vertrauensmodell, adversarial getestete Parser-Grenzen
-version: 1.2.0
+version: 1.2.1
 status: proposed
 owner: A-TownChain-Okosystems
 created: 2026-11-11
 updated: 2026-11-11
-parent: ATC-AI-LLM-001 v1.4.0, Blueprint ATC-AI-LLM-001-B (B-21)
+parent: ATC-AI-LLM-001 v1.5.0, Blueprint ATC-AI-LLM-001-B (B-21)
 layer: L2 (aurora-ai)
 security_class: S3
 evidence_gate: AURORA-001
@@ -17,6 +17,15 @@ evidence_gate: AURORA-001
 **Status: SPECIFIED, Implementierung 0 Zeilen.** Dieses Dokument legt den
 Vertrag fest, nicht seine Umsetzung. Es enthält keine Behauptung, dass ein
 Leser oder Schreiber existiert.
+
+## Revision 1.2.1 vom 2026-11-23 — Querverweise auf K6 nachgezogen
+
+Nach der Entscheidung von K6 (`ATC-AI-LLM-001` 1.5.0, `rope_base = 10 000` ist
+Normwert) stand dieses Dokument noch auf dem alten Stand: `parent` nannte 001 in
+1.4.0, das Feld `rope_base` war als „heute 10 000" beschrieben und K6 erschien
+in Abschnitt 13 weiter als offener Punkt. Drei Stellen berichtigt, keine
+Formatanderung, kein Byte betroffen. Der Hinweis stammt aus dem woechentlichen
+Sicherheitscheck vom 23.11.2026.
 
 ## Revision 1.2.0 vom 2026-11-11 — Präzisierungen aus der Implementierung
 
@@ -133,7 +142,7 @@ ein Rechenfehler (Befund F-01 der Gate-Prüfung, siehe
 | 40 | 4 | `tensor_count` | u32 | == `2 + 8 * n_layers + (gebunden ? 0 : 1)`, ≤ 8194 |
 | 44 | 4 | `dtype` | u32 | `0` = f32; alles andere `UnsupportedDtype` |
 | 48 | 4 | `layout` | u32 | `0` = zeilenweise, dicht, little endian; sonst `UnsupportedLayout` |
-| 52 | 4 | `rope_base` | f32-Bits | endlich, > 0; heute 10 000 (Abschnitt 11, K6) |
+| 52 | 4 | `rope_base` | f32-Bits | endlich, > 0; Normwert 10 000 fuer das Profil `ref1` (K6 entschieden 11.11.2026, `ATC-AI-LLM-001` 1.5.0), Abweichung = `ArchMismatch` |
 | 56 | 4 | `norm_eps` | f32-Bits | endlich, > 0; heute 1e-8 |
 | 60 | 4 | `reserved` | u32 | muss 0 sein, sonst `ReservedNotZero` |
 | 64 | 8 | `tensor_data_bytes` | u64 | Summe aller Tensor-Bytes, ≤ 2^30 |
@@ -417,7 +426,7 @@ Seed), damit der Lauf reproduzierbar bleibt.
 
 | ID | Punkt | Wirkung |
 |---|---|---|
-| K6 | `rope_base` normativ festlegen (heute Implementierungsparameter 10 000) | ändert die Bedeutung trainierter Gewichte, deshalb im Artefakt deklariert |
+| K6 | ~~`rope_base` normativ festlegen~~ — **ENTSCHIEDEN 11.11.2026: 10 000 ist Normwert** (`ATC-AI-LLM-001` 1.5.0) | ändert die Bedeutung trainierter Gewichte, deshalb im Artefakt deklariert und vom Leser gegen das Profil geprueft |
 | K7 | Signaturverfahren für Authentizität (R1) | ohne ihn bleibt der Digest reine Integritätsprüfung |
 | K8 | Kompression oder Quantisierung als zweite Formatversion | würde `dtype` und `layout` erweitern |
 
