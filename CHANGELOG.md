@@ -1,5 +1,26 @@
 # Changelog
 
+## 2026-11-23 — Clippy-Gate repo-weit repariert, Querverweise auf K6 nachgezogen
+
+Der woechentliche Sicherheitscheck hat zwei Befunde ergeben, beide behoben:
+
+- **Das Rust-Gate der CI war repo-weit rot.** Der Job `rust` in
+  `code-quality.yml` prueft **jedes** `Cargo.toml` unter `modules/`; in
+  `atc-aurora-tensor` (`src/autograd.rs:919`) und `atc-aurora-tokenizer`
+  (`src/bpe.rs:381`) schlug `clippy::manual_is_multiple_of` unter
+  `-D warnings` fehl (Exit 101). Die Korrektur vom 14.11. hatte nur das
+  Modell-Crate erwischt. Beide Stellen tragen jetzt dieselbe gezielte
+  `#[allow(unknown_lints, clippy::manual_is_multiple_of)]`-Auszeichnung wie
+  `atc-aurora-model/src/config.rs`, weil `is_multiple_of` erst ab 1.87 stabil
+  ist und die Produktionsbasis 1.83 bleibt. Verhalten unveraendert.
+- **`ATC-AI-LLM-002` stand noch auf 001 v1.4.0.** `parent` auf 1.5.0 gezogen,
+  `rope_base` als Normwert des Profils `ref1` beschrieben, K6 in Abschnitt 13
+  als entschieden gefuehrt. Version 1.2.1, kein Formatbyte beruehrt.
+
+Nachweis: `cargo fmt -- --check` und `cargo clippy --all-targets -- -D warnings`
+sauber in allen neun Modulen, `cargo test` 69 gruen und 1 ignoriert im
+Modell-Crate, 61 in `atc-aurora-tensor`, 33 in `atc-aurora-tokenizer`.
+
 ## 2026-11-14 — Clippy-Gate des Crates `atc-aurora-model` wieder gruen
 
 - **Was rot war:** `cargo clippy --all-targets -- -D warnings` meldete zwei Befunde,
