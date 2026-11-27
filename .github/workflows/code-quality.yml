@@ -58,7 +58,7 @@ jobs:
       - uses: actions/setup-node@v4
         if: ${{ hashFiles('modules/**/package.json') != '' }}
         with:
-          node-version: '20'
+          node-version: '22.19.0'
       - name: Validate Node module
         if: ${{ hashFiles('modules/**/package.json') != '' }}
         shell: bash
